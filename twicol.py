@@ -33,8 +33,11 @@ if __name__ == "__main__":
     # setup thread to output counts
     count_interval = config.getint("logging", "interval", fallback=5)
     tweet_interval = config.getint("logging", "tweetintervals", fallback=2*6*60)
-    count_thread = CounterThread(api_settings, count_interval)
+    count_thread = CounterThread(api_settings, count_interval, tweet_interval)
     count_thread.start()
+
+    logging.info ("Count interval: {0}s".format(count_interval))
+    logging.info ("Tweet interval: {0} counts".format(tweet_interval))
 
     # setup the threads for the collections
     tweet_threads = []
