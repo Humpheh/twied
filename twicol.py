@@ -48,6 +48,8 @@ if __name__ == "__main__":
         tweet_threads.append(tt)
         break # only support for 1 thread at the moment
 
+    twicol.send_tweet(api_settings, "Started twicol...")
+
     try:
         while True:
             time.sleep(1000)
