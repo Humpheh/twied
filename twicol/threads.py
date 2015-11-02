@@ -3,6 +3,7 @@ import sys
 import threading
 import time
 
+from datetime import datetime
 from twython import TwythonStreamer
 import twicol
 
@@ -22,6 +23,10 @@ class TweetStreamer(TwythonStreamer):
         if 'text' in data:
             # save the collection key
             data['collection'] = self.name
+
+            ts_float = float(data['timestamp_ms'])
+            data['timestamp_obj'] = datetime.utcfromtimestamp(ts_float/1000)
+            
             self.db.insert_one(data)#.inserted_id
             self.counter.add_count(self.name)
         else:
