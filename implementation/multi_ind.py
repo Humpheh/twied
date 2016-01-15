@@ -1,27 +1,19 @@
-import sys
 
-lastudllen = 0
-def update_line(*args, set=False):
-    global lastudllen
-    newstr = "".join(str(i) for i in args)
-    count = lastudllen - len(newstr)
-    sys.stdout.write("\r" + newstr + (" " * count if count > 0 else ""))
-    sys.stdout.flush()
-    lastudllen = len(newstr)
-    if set: print ('')
-
-def set_line():
-    print ('')
 
 # get tweets (without geotag)
 
 # get tweet message polygons
 
 import logging
+import sys
+from multiprocessing.dummy import Pool as ThreadPool
 
 from pymongo import MongoClient
 
-from multiind import messageindicator, tzindicator, tzoffindicator, locfieldindicator, coordinateindicator, websiteindicator
+from multiind import (
+    messageindicator, tzindicator, tzoffindicator,
+    locfieldindicator, coordinateindicator, websiteindicator
+)
 import twieds
 import polyplotter
 import time
@@ -47,24 +39,40 @@ logging.info("Connected to database.")
 # get the tweet cursor
 cursor = db.tweets.find()
 
-def add_ind(ind, field, res):
-    start = time.clock()
-    logging.info ("[%-20s] -> %-50s" % (type(ind).__name__, field))
-    result = ind.get_loc(field)
-    res.append(result)
-    timetaken = time.clock() - start
-    pargs = (type(ind).__name__, timetaken, len(result[0]), len(result[1]))
-    logging.info ("[%-20s] -> Took %.2f seconds. (%i poly, %i point)" % pargs)
+def add_ind(task):
+    ind = task[0]
+    field = task[1]
 
+    start = time.clock()
+    logging.info ("%10s <- Value: %-50s" % (type(ind).__name__[:-9], field))
+    result = ind.get_loc(field)
+    timetaken = time.clock() - start
+    pargs = (type(ind).__name__[:-9], timetaken, len(result[0]), len(result[1]))
+    logging.info ("%10s -> Took %.2f seconds. (%i poly, %i point)" % pargs)
+    return result
+
+
+# loc field and ms_ind first
+
+pool = ThreadPool(4)
 
 for doc in cursor:
-    res = []
-    add_ind(ws_ind, doc['user']['url'], res)
-    add_ind(lf_ind, doc['user']['location'], res)
-    add_ind(co_ind, doc['user']['location'], res)
-    add_ind(tz_ind, doc['user']['time_zone'], res)
-    add_ind(to_ind, doc['user']['utc_offset'], res)
-    add_ind(ms_ind, doc['text'], res)
+
+    logging.info ("Processing tweet %s", doc['_id'])
+
+    indicators = [
+        (ms_ind, doc['text']),
+        (lf_ind, doc['user']['location']),
+        (ws_ind, doc['user']['url']),
+        (co_ind, doc['user']['location']),
+        (tz_ind, doc['user']['time_zone']),
+        (to_ind, doc['user']['utc_offset'])
+    ]
+
+    res = pool.map(add_ind, indicators)
+
+    #pool.close()
+    #pool.join()
 
     polys = []
     points = []

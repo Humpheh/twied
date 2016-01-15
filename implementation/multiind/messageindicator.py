@@ -1,4 +1,5 @@
 import json
+import logging
 
 from multiind.webinterfaces import DBPInterface, DBPSpotlightInterface
 from multiind.dbinterfaces import GADMPolyInterface
@@ -6,22 +7,24 @@ from multiind.dbinterfaces import GADMPolyInterface
 class MessageIndicator:
     def __init__(self, config):
         spotlight_url = config.get("multiindicator", "dbpedia_spotlight_url")
-        polydb_url = config.get("multiindicator", "gadm_polydb_path")
+        self.polydb_url = config.get("multiindicator", "gadm_polydb_path")
 
         self.dbps = DBPSpotlightInterface(spotlight_url)
         self.dbpi = DBPInterface()
-        self.gadmpoly = GADMPolyInterface(polydb_url)
 
     def get_loc(self, message):
         if message == None: return [], []
 
+        # setup db connection
+        self.gadmpoly = GADMPolyInterface(self.polydb_url)
+
         j = json.loads(self.dbps.req(message))
 
+        statstr = ""
         polygons = []
         polypoints = []
 
         for resource in j['Resources']:
-            print ("RESOURCE:", resource['@URI'])
             if 'Schema:Place' in resource['@types']:
                 r_url = resource['@URI']
                 name = self.dbpi.extract_name(r_url)
@@ -32,17 +35,23 @@ class MessageIndicator:
 
                 if not len(polys) == 0:
                     polygons += polys
-                    print ("Added polygons:", len(polys))
+                    statstr += '#'
                 else:
                     try:
                         lon, lat = datareq['http://www.georss.org/georss/point'][0]['value'].split(" ")
                         pos = (float(lat), float(lon))
-                        print ("Added point:", pos)
                         polypoints.append(pos)
+                        statstr += '.'
                     except:
-                        print ("WARNING: No georss field on 'place'...")
+                        logging.warning ("No georss field on 'place': %s" % (name))
+                        statstr += '!'
                         # TODO: try latd or longd
             else:
-                print ("Not Schema:Place...")
+                statstr += ' '
+
+        pargs = (MessageIndicator.__name__[:-9], len(j['Resources']), statstr)
+        logging.info ("%10s =  %i resources [%s]" % pargs)
+
+        self.gadmpoly.destroy()
 
         return polygons, polypoints

@@ -19,12 +19,14 @@ class GADMPolyInterface:
         for i in polys:
             ji = ast.literal_eval(i[0])
             for p in ji['coordinates']:
-                #print (str(p)[:100])
                 if isinstance(p[0], list):
                     allpolys += p
                 else:
                     allpolys.append(p)
         return allpolys
+
+    def destroy(self):
+        self.conn.close()
 
 
 class CountryPolyInterface:
@@ -40,13 +42,14 @@ class CountryPolyInterface:
         for i in polys:
             ji = ast.literal_eval(i[0])
             for p in ji['coordinates']:
-                #print (str(p)[:100])
                 if isinstance(p[0], list):
                     allpolys += p
                 else:
                     allpolys.append(p)
         return allpolys
 
+    def destroy(self):
+        self.conn.close()
 
 class TZPolyInterface:
     def __init__(self, dbloc):
@@ -61,7 +64,6 @@ class TZPolyInterface:
         for i in polys:
             ji = ast.literal_eval(i[0])
             for p in ji['coordinates']:
-                print (str(p)[:100])
                 if isinstance(p[0], list):
                     allpolys += p
                 else:
@@ -78,5 +80,8 @@ class TZPolyInterface:
         return self.proc_polys(self.c.fetchall())
 
     def get_polys_america(self, code):
-        self.c.execute(self.qstringoff, { 'zone': "%America%", 'code' : code })
+        self.c.execute(self.qstringamerica, { 'zone': "%America%", 'code' : code })
         return self.proc_polys(self.c.fetchall())
+
+    def destroy(self):
+        self.conn.close()

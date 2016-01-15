@@ -65,7 +65,6 @@ class GeonamesInterface:
         }
 
     def req(self, query):
-        print(query)
         self.post_data['q'] = query
         postfields = urlencode(self.post_data)
         self.c.setopt(self.c.POSTFIELDS, postfields)

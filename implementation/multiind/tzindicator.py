@@ -1,12 +1,15 @@
 from multiind.dbinterfaces import TZPolyInterface
+import re
 
 class TZIndicator:
     def __init__(self, config):
-        polydb_url = config.get("multiindicator", "gadm_polydb_path")
-        self.tzpoly = TZPolyInterface(polydb_url)
+        self.polydb_url = config.get("multiindicator", "gadm_polydb_path")
 
     def get_loc(self, tz):
         if tz == None: return [], []
+
+        # setup db connection
+        self.tzpoly = TZPolyInterface(self.polydb_url)
 
         # Check if falls in america
         if 'Pacific Time (US & Canada)' in tz:
@@ -17,8 +20,9 @@ class TZIndicator:
             return self.tzpoly.get_polys_america('CST'), []
 
         # Format timezone a little better
-        tz = re.sub(r'\([^)]*\)', '', name)
-        tz = name.strip()
-        tz = name.replace(' ', '_')
+        tz = re.sub(r'\([^)]*\)', '', tz).strip().replace(' ', '_')
 
-        return self.tzpoly.get_polys(tz), []
+        result = self.tzpoly.get_polys(tz)
+
+        self.tzpoly.destroy()
+        return result, []
