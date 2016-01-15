@@ -65,4 +65,4 @@ $RECYCLE.BIN/
 
 *.pyc
 *.time
-settings.ini
+/settings.ini

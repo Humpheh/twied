@@ -1,0 +1,69 @@
+CHOICES
+
+Language:
+    Decided on Python - easy development, familiar with language, many libraries available for twitter, easily transferrable to other machines
+    C, C++, Go etc - too much work, lower level, speed improvement not necessary
+    Java - alternative, libraries available (less choice), easily transferrable
+    .net - not available on linux/mac
+    PHP - web based, familiar with language, closer to HTTP requests made - harder to move between machines
+    Ruby - not familiar with language, libraries available however
+
+Twitter Library:
+    couple of choices, most implement same functionality
+    need for streaming API limits choice
+    tweepy, python-twitter, TweetPony popular, however no streaming
+    chose Twython, ease of development, up and running within minutes
+
+Database:
+    SQLite
+    MySQL / similar
+    MongoDB
+    CouchDB
+    -> used http://kkovacs.eu/cassandra-vs-mongodb-vs-couchdb-vs-redis
+
+Tweet Collection:
+
+    http://stats.seandolinar.com/collecting-twitter-data-storing-tweets-in-mongodb/
+
+    Test with #twitter:
+        Storing tweets within streamer causing issues
+        Possibly due to loop falling behind twitter stream
+        Database of ~35000 tweets equated to ~600MB of storage
+        Changed storage engine to wiredTiger storage engine which includes compression
+        Used default compression settings 'snappy' (not best, but faster, less cpu intensive)
+            mongod --storageEngine wiredTiger --dbpath D:\MongoDBWt\
+        Database directory dropped to less than ~250mb
+        https://www.mongodb.com/blog/post/new-compression-options-mongodb-30
+
+
+    Tested with Raspberry Pi:
+        Performance OK for low tweet volume (3/5secs)
+        Higher numbers would cause issues (95% CPU usage from collection script)
+        Worked in practice, may not be reliable
+        2 day test was positive, no crashes and data collected
+        ARM proccessor limits the MongoDB version to 2.4 - no compression
+        File size grew quickly
+
+    Moved to linux PC (always on):
+        Use SSH to login and install MongoDB
+        Pushed files to git repository and then cloned from github
+        - allows for easy updates (git pull)
+
+
+
+Deploy Notes:
+    sudo pip-3.2 install twython
+    sudo pip-3.2 install pymongo
+    sudo apt-get install screen
+
+    sudo systemctl stop mongodb
+    sudo nano /etc/mongodb.conf
+        - comment out bind_ip line (external access)
+        - change dbpath to /mongo or something?? (ensure folder not sudo)
+    sudo systemctl start mongodb
+
+    screen
+    cd ~/Shared/
+    python3 streaming.py
+    Ctrl-a, d     < detaches the screen
+    screen -r     < reattach the screen
