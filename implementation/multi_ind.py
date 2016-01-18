@@ -1,11 +1,4 @@
-
-
-# get tweets (without geotag)
-
-# get tweet message polygons
-
 import logging
-import sys
 from multiprocessing.dummy import Pool as ThreadPool
 
 from pymongo import MongoClient
@@ -39,16 +32,18 @@ logging.info("Connected to database.")
 # get the tweet cursor
 cursor = db.tweets.find()
 
+
 def add_ind(task):
     ind = task[0]
     field = task[1]
 
     start = time.clock()
-    logging.info ("%10s <- Value: %-50s" % (type(ind).__name__[:-9], field))
+    logging.info("%10s <- Value: %-50s" % (type(ind).__name__[:-9], field))
     result = ind.get_loc(field)
-    timetaken = time.clock() - start
-    pargs = (type(ind).__name__[:-9], timetaken, len(result[0]), len(result[1]))
-    logging.info ("%10s -> Took %.2f seconds. (%i poly, %i point)" % pargs)
+    logging.info("%10s -> Took %.2f seconds. (%i poly, %i point)" % (
+        type(ind).__name__[:-9], (time.clock() - start),
+        len(result[0]), len(result[1])
+    ))
     return result
 
 
@@ -58,7 +53,7 @@ pool = ThreadPool(4)
 
 for doc in cursor:
 
-    logging.info ("Processing tweet %s", doc['_id'])
+    logging.info("Processing tweet %s", doc['_id'])
 
     indicators = [
         (ms_ind, doc['text']),
@@ -71,9 +66,6 @@ for doc in cursor:
 
     res = pool.map(add_ind, indicators)
 
-    #pool.close()
-    #pool.join()
-
     polys = []
     points = []
     for i in res:
@@ -81,3 +73,6 @@ for doc in cursor:
         points += i[1]
 
     polyplotter.polyplot(polygons=polys, points=points)
+
+pool.close()
+pool.join()

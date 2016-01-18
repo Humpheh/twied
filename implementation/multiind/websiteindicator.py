@@ -15,7 +15,7 @@ class WebsiteIndicator:
 
         # load the tlds from the csv, and get and store the polygons
         self.codes = {}
-        with open('D:/ds/tlds.csv', newline='') as csvfile:
+        with open(csv_loc, newline='') as csvfile:
             tldreader = csv.reader(csvfile, delimiter=',', quotechar='|')
             for row in tldreader:
                 countries = self.cpi.get_polys(row[1])
