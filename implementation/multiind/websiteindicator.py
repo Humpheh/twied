@@ -2,8 +2,10 @@ import csv
 import re
 
 from multiind.dbinterfaces import CountryPolyInterface
+from multiind.indicator import Indicator
 
-class WebsiteIndicator:
+
+class WebsiteIndicator(Indicator):
 
     tld_regex = r"[^\s\/](?:\.([a-z]{2,3}))?(?:\s|\/|$)" #r"[^.]*\.[^.]{2,3}(?:\.([a-z]{2,3}))?(?:\s|\/|$)"
 
@@ -24,7 +26,8 @@ class WebsiteIndicator:
         self.tldre = re.compile(self.tld_regex)
 
     def get_loc(self, website):
-        if website == None: return [], []
+        if website is None:
+            return []
 
         tlds = self.tldre.findall(website)
         print (website)
@@ -35,4 +38,4 @@ class WebsiteIndicator:
             if td in self.codes:
                 polys += self.codes[td][1]
 
-        return polys, []
+        return polys

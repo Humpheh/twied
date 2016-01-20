@@ -3,8 +3,10 @@ import logging
 
 from multiind.webinterfaces import DBPInterface, DBPSpotlightInterface
 from multiind.dbinterfaces import GADMPolyInterface
+from multiind.indicator import Indicator
 
-class MessageIndicator:
+
+class MessageIndicator(Indicator):
     def __init__(self, config):
         spotlight_url = config.get("multiindicator", "dbpedia_spotlight_url")
         self.polydb_url = config.get("multiindicator", "gadm_polydb_path")
@@ -13,7 +15,8 @@ class MessageIndicator:
         self.dbpi = DBPInterface()
 
     def get_loc(self, message):
-        if message == None: return [], []
+        if not message:
+            return []
 
         # setup db connection
         self.gadmpoly = GADMPolyInterface(self.polydb_url)
@@ -22,7 +25,6 @@ class MessageIndicator:
 
         statstr = ""
         polygons = []
-        polypoints = []
 
         for resource in j['Resources']:
             if 'Schema:Place' in resource['@types']:
@@ -40,7 +42,7 @@ class MessageIndicator:
                     try:
                         lon, lat = datareq['http://www.georss.org/georss/point'][0]['value'].split(" ")
                         pos = (float(lat), float(lon))
-                        polypoints.append(pos)
+                        polygons.append(self.point_to_poly(pos))
                         statstr += '.'
                     except:
                         logging.warning ("No georss field on 'place': %s" % (name))
@@ -54,4 +56,4 @@ class MessageIndicator:
 
         self.gadmpoly.destroy()
 
-        return polygons, polypoints
+        return polygons

@@ -9,7 +9,7 @@ from multiind import (
 )
 import twieds
 import polyplotter
-import polyunion2
+import polyunion3
 import time
 
 config = twieds.setup("logs/locinf.log", "settings/locinf.ini")
@@ -41,10 +41,9 @@ def add_ind(task):
     start = time.clock()
     logging.info("%10s <- Value: %-50s" % (type(ind).__name__[:-9], field))
     result = ind.get_loc(field)
-    logging.info("%10s -> Took %.2f seconds. (%i poly, %i point)" % (
-        type(ind).__name__[:-9], (time.clock() - start),
-        len(result[0]), len(result[1])
-    ))
+    logging.info("%10s -> Took %.2f seconds. (%i polys)" % (
+        type(ind).__name__[:-9], (time.clock() - start), len(result))
+    )
     return result
 
 
@@ -65,29 +64,16 @@ for doc in cursor:
         (to_ind, doc['user']['utc_offset'])
     ]
 
-    res = pool.map(add_ind, indicators)
+    polys = pool.map(add_ind, indicators)
 
-    polys = []
-    points = []
-    for i in res:
-        polys += i[0]
-        points += i[1]
-
-    print ([type(p) for p in polys])
+    from pprint import pprint
+    #polyplotter.d_polyplot(polyold=polys, polynew=new_polys)
+    pprint ([type(p) for p in polys])
 
     logging.info('Intersecting polygons...')
-    new_polys = polyunion2.get_top(polys)
-    logging.info('Polygon intersection complete. %i highest areas' % len(new_polys))
-
-    for i in new_polys:
-        print(i)
-
-    ply = []
-    for p in new_polys:
-        for c in range(len(p.polygon)):
-            ply.append(p.polygon[c])
-    polyplotter.polyplot(polygons=ply, points=[])
-    #polyplotter.d_polyplot(polyold=polys, polynew=new_polys)
+    new_polys = polyunion3.infer_location(polys)
+    logging.info('Polygon intersection complete. X highest areas')
+    polyplotter.polyplot(polygons=new_polys, points=[])
 
 pool.close()
 pool.join()

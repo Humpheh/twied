@@ -2,8 +2,10 @@ import logging
 
 from multiind.webinterfaces import GeonamesInterface
 from multiind.dbinterfaces import GADMPolyInterface, CountryPolyInterface
+from multiind.indicator import Indicator
 
-class LocFieldIndicator:
+
+class LocFieldIndicator(Indicator):
     # place types which need polygon instead of points
 
     def __init__(self, config):
@@ -16,7 +18,8 @@ class LocFieldIndicator:
         self.geolimit = config.getint("geonames", "limit")
 
     def get_loc(self, location):
-        if location == None: return [], []
+        if location is None:
+            return []
 
         # setup db
         self.countrypoly = CountryPolyInterface(self.polydb_url)
@@ -30,7 +33,6 @@ class LocFieldIndicator:
 
         statstr = ""
         polygons = []
-        polypoints = []
 
         count = 0
 
@@ -53,7 +55,7 @@ class LocFieldIndicator:
                     statstr += "="
 
             if userpoint:
-                polypoints.append((float(g['lng']), float(g['lat'])))
+                polygons.append(self.point_to_poly((float(g['lng']), float(g['lat']))))
                 statstr += "."
 
             count += 1
@@ -66,4 +68,4 @@ class LocFieldIndicator:
         self.countrypoly.destroy()
         self.gadmpoly.destroy()
 
-        return polygons, polypoints
+        return polygons

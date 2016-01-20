@@ -1,30 +1,21 @@
 import sqlite3
 import ast
-import re
-from Polygon import Polygon
-from Polygon.Utils import reducePoints, fillHoles
-
 
 def proc_polystr(polys):
     if len(polys) == 0:
         return []
 
-    # TODO: alter this dependent on the number of polys
-    red_scale = 100
-
-    all_polys = Polygon()
+    all_polys = []
     for i in polys:
         ji = ast.literal_eval(i[0])
         for p in ji['coordinates']:
             if isinstance(p[0], list):
                 for x in p:
-                    all_polys.addContour(reducePoints(x, red_scale))
+                    all_polys.append(x)
             else:
-                all_polys.addContour(reducePoints(p, red_scale))
+                all_polys.append(p)
 
-    all_polys.simplify()
-    all_polys = fillHoles(all_polys)
-    return [all_polys]
+    return all_polys
 
 
 class GADMPolyInterface:
@@ -55,7 +46,6 @@ class CountryPolyInterface:
     def get_polys(self, name):
         self.c.execute(self.qstring, { 'name': name })
 
-        allpolys = Polygon()
         polys = self.c.fetchall()
         return proc_polystr(polys)
 
