@@ -66,3 +66,4 @@ $RECYCLE.BIN/
 *.pyc
 *.time
 /settings.ini
+.idea/*
