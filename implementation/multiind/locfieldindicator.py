@@ -13,6 +13,8 @@ class LocFieldIndicator:
 
         self.geonames = GeonamesInterface(geo_url, geo_user)
 
+        self.geolimit = config.getint("geonames", "limit")
+
     def get_loc(self, location):
         if location == None: return [], []
 
@@ -29,6 +31,8 @@ class LocFieldIndicator:
         statstr = ""
         polygons = []
         polypoints = []
+
+        count = 0
 
         for g in res['geonames']:
             userpoint = True
@@ -52,8 +56,12 @@ class LocFieldIndicator:
                 polypoints.append((float(g['lng']), float(g['lat'])))
                 statstr += "."
 
+            count += 1
+            if count >= self.geolimit:
+                break
+
         pargs = (LocFieldIndicator.__name__[:-9], len(res['geonames']), statstr)
-        logging.info ("%10s =  %i geonames [%s]" % pargs)
+        logging.info("%10s =  %i geonames [%s]" % pargs)
 
         self.countrypoly.destroy()
         self.gadmpoly.destroy()

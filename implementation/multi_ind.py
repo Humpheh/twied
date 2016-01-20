@@ -9,6 +9,7 @@ from multiind import (
 )
 import twieds
 import polyplotter
+import polyunion2
 import time
 
 config = twieds.setup("logs/locinf.log", "settings/locinf.ini")
@@ -72,7 +73,21 @@ for doc in cursor:
         polys += i[0]
         points += i[1]
 
-    polyplotter.polyplot(polygons=polys, points=points)
+    print ([type(p) for p in polys])
+
+    logging.info('Intersecting polygons...')
+    new_polys = polyunion2.get_top(polys)
+    logging.info('Polygon intersection complete. %i highest areas' % len(new_polys))
+
+    for i in new_polys:
+        print(i)
+
+    ply = []
+    for p in new_polys:
+        for c in range(len(p.polygon)):
+            ply.append(p.polygon[c])
+    polyplotter.polyplot(polygons=ply, points=[])
+    #polyplotter.d_polyplot(polyold=polys, polynew=new_polys)
 
 pool.close()
 pool.join()
