@@ -13,6 +13,8 @@ class WebsiteIndicator(Indicator):
         csv_loc = config.get("multiindicator", "tld_csv")
         polydb_url = config.get("multiindicator", "gadm_polydb_path")
 
+        self.weight = config.getfloat("mi_weights", "WS_1")
+
         self.cpi = CountryPolyInterface(polydb_url)
 
         # load the tlds from the csv, and get and store the polygons
@@ -20,21 +22,22 @@ class WebsiteIndicator(Indicator):
         with open(csv_loc, newline='') as csvfile:
             tldreader = csv.reader(csvfile, delimiter=',', quotechar='|')
             for row in tldreader:
-                countries = self.cpi.get_polys(row[1])
+                countries = self.cpi.get_polys(row[1], self)
                 self.codes[row[0]] = (row[1], countries)
 
         self.tldre = re.compile(self.tld_regex)
+
 
     def get_loc(self, website):
         if website is None:
             return []
 
         tlds = self.tldre.findall(website)
-        print (website)
+        print(website)
         polys = []
         for t in tlds:
             td = t.strip()
-            print ("TLD found:", td, 'exists ->', (td in self.codes))
+            print("TLD found:", td, 'exists ->', (td in self.codes))
             if td in self.codes:
                 polys += self.codes[td][1]
 

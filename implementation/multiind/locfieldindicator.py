@@ -16,6 +16,7 @@ class LocFieldIndicator(Indicator):
         self.geonames = GeonamesInterface(geo_url, geo_user)
 
         self.geolimit = config.getint("geonames", "limit")
+        self.weight = config.getfloat("mi_weights", "GN")
 
     def get_loc(self, location):
         if location is None:
@@ -40,7 +41,7 @@ class LocFieldIndicator(Indicator):
             userpoint = True
 
             if 'country' in g['fclName']:
-                polys = self.countrypoly.get_polys(g['name'])
+                polys = self.countrypoly.get_polys(g['name'], self)
                 if len(polys) > 0:
                     polygons += polys
                     userpoint = False
@@ -48,14 +49,15 @@ class LocFieldIndicator(Indicator):
 
             if userpoint and any(p in g['fclName'] for p in ['state', 'region']):
                 # getpolygon for the place
-                polys = self.gadmpoly.get_polys(g['name'])
+                polys = self.gadmpoly.get_polys(g['name'], self)
                 if len(polys) > 0:
                     polygons += polys
                     userpoint = False
                     statstr += "="
 
             if userpoint:
-                polygons.append(self.point_to_poly((float(g['lng']), float(g['lat']))))
+                polypoint = self.point_to_poly((float(g['lng']), float(g['lat'])))
+                polygons.append(polypoint)
                 statstr += "."
 
             count += 1

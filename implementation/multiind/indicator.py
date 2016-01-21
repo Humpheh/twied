@@ -8,4 +8,5 @@ class Indicator:
 
     def point_to_poly(self, point):
         circle = Circle(0.25, point)
-        return pointList(circle)
+        print (point)
+        return pointList(circle), self.weight

@@ -8,6 +8,7 @@ class CoordinateIndicator(Indicator):
 
     def __init__(self, config):
         self.prog = re.compile(CoordinateIndicator.regex)
+        self.weight = config.getfloat("mi_weights", "COD")
 
     def get_loc(self, string):
         if not string:
@@ -15,5 +16,6 @@ class CoordinateIndicator(Indicator):
 
         if self.prog.match(string):
             split = re.split('[\s,]+', string)
-            return [self.point_to_poly((float(split[0]), float(split[1])))]
+            poly = self.point_to_poly((float(split[0]), float(split[1])))
+            return [poly]
         return []

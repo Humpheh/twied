@@ -12,14 +12,19 @@ height = 180 * scale
 def infer_location(polys):
     for i in polys:
         img = Image.new('1' if show else 'L', (width, height), 0)
+        weight = 0
         for poly in i:
-            polygon = [((p[0] + 180) * scale, (-p[1] + 90) * scale) for p in poly]
+            polygon = [((p[0] + 180) * scale, (-p[1] + 90) * scale) for p in poly[0]]
             ImageDraw.Draw(img).polygon(polygon, outline=1, fill=1)
+            weight = poly[1]
 
         try:
-            mask += np.array(img)
+            mask += np.array(img) * weight
         except NameError:
-            mask = np.array(img)
+            mask = np.array(img) * weight
+
+    if np.count_nonzero(mask) == 0:
+        return []
 
     import matplotlib.pyplot as plt
     plt.matshow(mask, fignum=100)

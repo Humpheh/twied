@@ -14,12 +14,14 @@ class MessageIndicator(Indicator):
         self.dbps = DBPSpotlightInterface(spotlight_url)
         self.dbpi = DBPInterface()
 
+        self.weight = config.getfloat("mi_weights", "SP")
+
     def get_loc(self, message):
         if not message:
             return []
 
         # setup db connection
-        self.gadmpoly = GADMPolyInterface(self.polydb_url)
+        gadmpoly = GADMPolyInterface(self.polydb_url)
 
         j = json.loads(self.dbps.req(message))
 
@@ -33,7 +35,7 @@ class MessageIndicator(Indicator):
                 datareq = self.dbpi.req(name)
                 # TODO: check if http://dbpedia.org/ontology/wikiPageRedirects exists
 
-                polys = self.gadmpoly.get_polys(name.replace('_', ' '))
+                polys = gadmpoly.get_polys(name.replace('_', ' '), self)
 
                 if not len(polys) == 0:
                     polygons += polys
@@ -42,10 +44,10 @@ class MessageIndicator(Indicator):
                     try:
                         lon, lat = datareq['http://www.georss.org/georss/point'][0]['value'].split(" ")
                         pos = (float(lat), float(lon))
-                        polygons.append(self.point_to_poly(pos))
+                        polygons.append(self.point_to_poly(pos, self))
                         statstr += '.'
                     except:
-                        logging.warning ("No georss field on 'place': %s" % (name))
+                        logging.warning("No georss field on 'place': %s" % (name))
                         statstr += '!'
                         # TODO: try latd or longd
             else:
@@ -54,6 +56,6 @@ class MessageIndicator(Indicator):
         pargs = (MessageIndicator.__name__[:-9], len(j['Resources']), statstr)
         logging.info ("%10s =  %i resources [%s]" % pargs)
 
-        self.gadmpoly.destroy()
+        gadmpoly.destroy()
 
         return polygons
