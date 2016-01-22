@@ -1,35 +1,27 @@
 import numpy as np
-import logging
 from Polygon import Polygon
 from Polygon.Utils import pointList
 from PIL import Image, ImageDraw
 
+show = False
 scale = 4
 width = 360 * scale
 height = 180 * scale
 
 
 def infer_location(polys):
-    logging.info("Stacking polygons...")
     for i in polys:
-        poly_mask = None
+        img = Image.new('1' if show else 'L', (width, height), 0)
+        weight = 0
         for poly in i:
-            img = Image.new('L', (width, height), 0)
             polygon = [((p[0] + 180) * scale, (-p[1] + 90) * scale) for p in poly[0]]
             ImageDraw.Draw(img).polygon(polygon, outline=1, fill=1)
-            if poly_mask is None:
-                poly_mask = np.array(img) * poly[1]
-            else:
-                new_mask = np.array(img) * poly[1]
-                poly_mask = np.maximum(poly_mask, new_mask)
+            weight = poly[1]
 
-        if poly_mask is not None:
-            try:
-                mask += poly_mask
-            except NameError:
-                mask = poly_mask
-
-    logging.info("Polygons stacked.")
+        try:
+            mask += np.array(img) * weight
+        except NameError:
+            mask = np.array(img) * weight
 
     if np.count_nonzero(mask) == 0:
         return []
