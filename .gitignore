@@ -67,3 +67,4 @@ $RECYCLE.BIN/
 *.time
 /settings.ini
 .idea/*
+implementation/logs/locinf.log
