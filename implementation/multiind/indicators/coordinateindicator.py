@@ -1,5 +1,6 @@
 import re
-from multiind.indicator import Indicator
+
+from multiind.indicators import Indicator
 
 
 class CoordinateIndicator(Indicator):

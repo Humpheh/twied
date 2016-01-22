@@ -1,6 +1,7 @@
-from multiind.dbinterfaces import TZPolyInterface
-from multiind.indicator import Indicator
 import re
+
+from multiind.indicators import Indicator
+from multiind.interfaces import TZPolyInterface
 
 
 class TZIndicator(Indicator):

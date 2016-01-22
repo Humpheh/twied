@@ -1,8 +1,7 @@
 import logging
 
-from multiind.webinterfaces import GeonamesInterface
-from multiind.dbinterfaces import GADMPolyInterface, CountryPolyInterface
-from multiind.indicator import Indicator
+from multiind.indicators import Indicator
+from multiind.interfaces import GeonamesInterface, GADMPolyInterface, CountryPolyInterface
 
 
 class LocFieldIndicator(Indicator):

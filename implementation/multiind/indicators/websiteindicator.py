@@ -1,8 +1,8 @@
 import csv
 import re
 
-from multiind.dbinterfaces import CountryPolyInterface
-from multiind.indicator import Indicator
+from multiind.indicators import Indicator
+from multiind.interfaces import CountryPolyInterface
 
 
 class WebsiteIndicator(Indicator):

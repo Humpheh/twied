@@ -1,27 +1,24 @@
 import logging
+import time
 from multiprocessing.dummy import Pool as ThreadPool
 
 from pymongo import MongoClient
 
-from multiind import (
-    messageindicator, tzindicator, tzoffindicator,
-    locfieldindicator, coordinateindicator, websiteindicator
-)
-import twieds
 import polyplotter
-import polyunion3
-import time
+import twieds
+import multiind.indicators as indicators
+from multiind import polystacker
 
 config = twieds.setup("logs/locinf.log", "settings/locinf.ini")
 
 # setup the indicators
 logging.info("Setting up indicators...")
-ms_ind = messageindicator.MessageIndicator(config)
-tz_ind = tzindicator.TZIndicator(config)
-to_ind = tzoffindicator.TZOffsetIndicator(config)
-lf_ind = locfieldindicator.LocFieldIndicator(config)
-co_ind = coordinateindicator.CoordinateIndicator(config)
-ws_ind = websiteindicator.WebsiteIndicator(config)
+ms_ind = indicators.MessageIndicator(config)
+tz_ind = indicators.TZIndicator(config)
+to_ind = indicators.TZOffsetIndicator(config)
+lf_ind = indicators.LocFieldIndicator(config)
+co_ind = indicators.CoordinateIndicator(config)
+ws_ind = indicators.WebsiteIndicator(config)
 logging.info("Setup indicators.")
 
 # connect to the mongodb
@@ -71,7 +68,7 @@ for doc in cursor:
     pprint ([type(p) for p in polys])
 
     logging.info('Intersecting polygons...')
-    new_polys = polyunion3.infer_location(polys)
+    new_polys = polystacker.infer_location(polys)
     logging.info('Polygon intersection complete. X highest areas')
     polyplotter.polyplot(polygons=new_polys, points=[])
 
