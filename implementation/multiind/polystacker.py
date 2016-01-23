@@ -76,7 +76,7 @@ def generate_polygon(coords, scale):
     :return: Polygon of area representing the set of points
     """
     out_poly = Polygon()
-    h_step = 0.5/scale
+    h_step = 0.51/scale
     for pos in coords:
         # sum up each polygon
         out_poly.addContour([
@@ -95,7 +95,7 @@ def find_bounds(coords, border):
     Finds the top left and bottom right coordinates of the grid which contains the set of points.
     :param coords: Set of coordinates to find the area around
     :param border: Padding (in degrees) around the bounding area to return
-    :return: Top left coordinate, bottom right coordinate tuple
+    :return: Top left coordinate, bottom right coordinate, coordinate area tuple
     """
     c_min = [180, -90]
     c_max = [-180, 90]
@@ -106,7 +106,10 @@ def find_bounds(coords, border):
     # add padding to the area
     c_min = (c_min[0] - border, c_min[1] + border)
     c_max = (c_max[0] + border, c_max[1] - border)
-    return c_min, c_max
+
+    area = (c_max[0] - c_min[0]) * (c_min[1] - c_max[1])
+
+    return c_min, c_max, area
 
 
 def get_highest(mask, scale, offset):
@@ -149,11 +152,15 @@ def infer_location(polys):
 
     # find the area around the highest area to generate higher resolution grid for
     border = 2
-    c_min, c_max = find_bounds(top_positions, border)
+    c_min, c_max, area = find_bounds(top_positions, border)
     logging.info("Zoom area: %s %s" % (c_min, c_max))
 
+    # calculate the scale to be focusing at
+    focus_scale = int(np.ceil((360 * 180) / area) ** (1./2.5))
+    logging.info("Focus scale: %i", focus_scale)
+
     # create a finer area around the polygon
-    mask2, scale2, offset2 = plot_area(polys, 2, c_min, c_max)
+    mask2, scale2, offset2 = plot_area(polys, focus_scale, c_min, c_max)
     plt.matshow(mask2, fignum=100)
     plt.show()
 
