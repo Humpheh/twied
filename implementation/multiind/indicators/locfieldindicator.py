@@ -5,7 +5,10 @@ from multiind.interfaces import GeonamesInterface, GADMPolyInterface, CountryPol
 
 
 class LocFieldIndicator(Indicator):
-    # place types which need polygon instead of points
+    """
+    Indicator which finds toponyms in the location field and maps them to a area or point using
+    the geonames gazetteer.
+    """
 
     def __init__(self, config):
         geo_url = config.get("geonames", "url")
@@ -22,8 +25,8 @@ class LocFieldIndicator(Indicator):
             return []
 
         # setup db
-        self.countrypoly = CountryPolyInterface(self.polydb_url)
-        self.gadmpoly = GADMPolyInterface(self.polydb_url)
+        countrypoly = CountryPolyInterface(self.polydb_url)
+        gadmpoly = GADMPolyInterface(self.polydb_url)
 
         res = self.geonames.req(location)
 
@@ -39,8 +42,11 @@ class LocFieldIndicator(Indicator):
         for g in res['geonames']:
             userpoint = True
 
+            # belief in coordinate decreases by 0.1 the lower down the list from 1 to 0.5
+            belief = 1 - (count / self.geolimit / 2)
+
             if 'country' in g['fclName']:
-                polys = self.countrypoly.get_polys(g['name'], self)
+                polys = countrypoly.get_polys(g['name'], self.get_weight(belief))
                 if len(polys) > 0:
                     polygons += polys
                     userpoint = False
@@ -48,14 +54,14 @@ class LocFieldIndicator(Indicator):
 
             if userpoint and any(p in g['fclName'] for p in ['state', 'region']):
                 # getpolygon for the place
-                polys = self.gadmpoly.get_polys(g['name'], self)
+                polys = gadmpoly.get_polys(g['name'], self.get_weight(belief))
                 if len(polys) > 0:
                     polygons += polys
                     userpoint = False
                     statstr += "="
 
             if userpoint:
-                polypoint = self.point_to_poly((float(g['lng']), float(g['lat'])))
+                polypoint = self.point_to_poly((float(g['lng']), float(g['lat'])), belief)
                 polygons.append(polypoint)
                 statstr += "."
 
@@ -66,7 +72,7 @@ class LocFieldIndicator(Indicator):
         pargs = (LocFieldIndicator.__name__[:-9], len(res['geonames']), statstr)
         logging.info("%10s =  %i geonames [%s]" % pargs)
 
-        self.countrypoly.destroy()
-        self.gadmpoly.destroy()
+        countrypoly.destroy()
+        gadmpoly.destroy()
 
         return polygons

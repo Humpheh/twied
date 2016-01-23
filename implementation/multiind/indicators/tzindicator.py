@@ -5,6 +5,10 @@ from multiind.interfaces import TZPolyInterface
 
 
 class TZIndicator(Indicator):
+    """
+    Indicator which gets an area for the timezone the user is in.
+    """
+
     def __init__(self, config):
         self.polydb_url = config.get("multiindicator", "gadm_polydb_path")
         self.weight = config.getfloat("mi_weights", "TZ")
@@ -14,20 +18,20 @@ class TZIndicator(Indicator):
             return []
 
         # setup db connection
-        self.tzpoly = TZPolyInterface(self.polydb_url)
+        tzpoly = TZPolyInterface(self.polydb_url)
 
         # Check if falls in america
         if 'Pacific Time (US & Canada)' in tz:
-            return self.tzpoly.get_polys_america('PST', self)
+            return tzpoly.get_polys_america('PST', self.get_weight(1))
         elif 'Eastern Time (US & Canada)' in tz:
-            return self.tzpoly.get_polys_america('EST', self)
+            return tzpoly.get_polys_america('EST', self.get_weight(1))
         elif 'Central Time (US & Canada)' in tz:
-            return self.tzpoly.get_polys_america('CST', self)
+            return tzpoly.get_polys_america('CST', self.get_weight(1))
 
         # Format timezone a little better
         tz = re.sub(r'\([^)]*\)', '', tz).strip().replace(' ', '_')
 
-        result = self.tzpoly.get_polys(tz, self)
+        result = tzpoly.get_polys(tz, self.get_weight(1))
 
-        self.tzpoly.destroy()
+        tzpoly.destroy()
         return result

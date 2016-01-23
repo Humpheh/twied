@@ -3,6 +3,10 @@ from multiind.interfaces import TZPolyInterface
 
 
 class TZOffsetIndicator(Indicator):
+    """
+    Indicator which gets an area for the UTC offset the user is in.
+    """
+
     def __init__(self, config):
         self.polydb_url = config.get("multiindicator", "gadm_polydb_path")
         self.weight = config.getfloat("mi_weights", "TZ")
@@ -12,9 +16,9 @@ class TZOffsetIndicator(Indicator):
             return []
 
         # setup db connection
-        self.tzpoly = TZPolyInterface(self.polydb_url)
+        tzpoly = TZPolyInterface(self.polydb_url)
 
-        result = self.tzpoly.get_polys_offset(offset, self)
+        result = tzpoly.get_polys_offset(offset, self.get_weight(1))
 
-        self.tzpoly.destroy()
+        tzpoly.destroy()
         return result

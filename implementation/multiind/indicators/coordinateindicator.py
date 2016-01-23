@@ -4,6 +4,9 @@ from multiind.indicators import Indicator
 
 
 class CoordinateIndicator(Indicator):
+    """
+    Indicator for users with coordinates in their location field.
+    """
 
     regex = r"^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?)[\s,]+[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d)‌​)(\.\d+)?)$"
 
@@ -17,6 +20,6 @@ class CoordinateIndicator(Indicator):
 
         if self.prog.match(string):
             split = re.split('[\s,]+', string)
-            poly = self.point_to_poly((float(split[0]), float(split[1])))
+            poly = self.point_to_poly((float(split[0]), float(split[1])), 1) # 1 belief
             return [poly]
         return []

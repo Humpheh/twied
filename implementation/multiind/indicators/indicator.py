@@ -3,10 +3,16 @@ from Polygon.Utils import pointList
 
 
 class Indicator:
+    """
+    Base class for an indicator.
+    """
+
     def __init__(self):
         pass
 
-    def point_to_poly(self, point):
+    def get_weight(self, belief):
+        return self.weight * belief
+
+    def point_to_poly(self, point, belief):
         circle = Circle(0.25, point)
-        print (point)
-        return pointList(circle), self.weight
+        return pointList(circle), self.get_weight(belief)

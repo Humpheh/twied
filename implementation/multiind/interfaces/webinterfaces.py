@@ -4,7 +4,11 @@ import pycurl
 from io import BytesIO
 from urllib.parse import urlencode
 
+
 class DBPSpotlightInterface:
+    """
+    Interface to access the DBpedia spotlight API.
+    """
     def __init__(self, url):
         self.c = pycurl.Curl()
         self.c.setopt(self.c.URL, url + "/annotate")
