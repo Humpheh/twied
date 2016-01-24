@@ -118,17 +118,21 @@ def get_highest(mask, scale, offset):
     :param mask: A numpy matrix of the weight for each grid point
     :param scale: Scaling used to generate the grid
     :param offset: Offset used to generate the grid
-    :return: Array of points of the highest weight
+    :return: Array of points of the highest weight, maximum value in the grid
     """
-    top_positions = np.argwhere(mask == np.amax(mask)).squeeze()
-    return [grid2coord(p, scale, offset) for p in top_positions]
+    maxval = np.amax(mask)
+    top_positions = np.argwhere(mask == maxval).squeeze()
+    if top_positions.shape == (2,):
+        top_positions = [top_positions]
+    return [grid2coord(p, scale, offset) for p in top_positions], maxval
 
 
-def infer_location(polys):
+def infer_location(polys, demo=False):
     """
     Stacks a list of weighted polygons and returns the area with the highest weight in the form of
     a polygon. This polygon may contain multiple contours.
     :param polys: Array of indicators with each having an array of (polygon coords, list)
+    :param demo: Wether to plot diagrams (default=False)
     :return: Polygon of the highest stacked area from the polygons
     """
     logging.info("Intersecting and finding area...")
@@ -143,12 +147,13 @@ def infer_location(polys):
         logging.info("No location found.")
         return []
 
-    # show diagram
-    plt.matshow(mask, fignum=100)
-    plt.show()
+    if demo:
+        # show diagrampy
+        plt.matshow(mask, fignum=100)
+        plt.show()
 
     # find the coordinates of the highest places
-    top_positions = get_highest(mask, scale, offset)
+    top_positions, mv1 = get_highest(mask, scale, offset)
 
     # find the area around the highest area to generate higher resolution grid for
     border = 2
@@ -161,13 +166,16 @@ def infer_location(polys):
 
     # create a finer area around the polygon
     mask2, scale2, offset2 = plot_area(polys, focus_scale, c_min, c_max)
-    plt.matshow(mask2, fignum=100)
-    plt.show()
+
+    if demo:
+        # show zoomed in diagram
+        plt.matshow(mask2, fignum=100)
+        plt.show()
 
     # get the highest positions for the zoomed in area
-    top_positions_foc = get_highest(mask2, scale2, offset2)
+    top_positions_foc, maxval = get_highest(mask2, scale2, offset2)
 
     # generate a polygon around the points
     out_poly = generate_polygon(top_positions_foc, scale2)
 
-    return out_poly
+    return out_poly, maxval

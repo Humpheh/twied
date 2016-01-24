@@ -12,10 +12,9 @@ class MessageIndicator(Indicator):
     """
 
     def __init__(self, config):
-        spotlight_url = config.get("multiindicator", "dbpedia_spotlight_url")
         self.polydb_url = config.get("multiindicator", "gadm_polydb_path")
 
-        self.dbps = DBPSpotlightInterface(spotlight_url)
+        self.dbps = DBPSpotlightInterface(config)
         self.dbpi = DBPInterface()
 
         self.weight = config.getfloat("mi_weights", "SP")
@@ -27,39 +26,43 @@ class MessageIndicator(Indicator):
         # setup db connection
         gadmpoly = GADMPolyInterface(self.polydb_url)
 
-        j = json.loads(self.dbps.req(message))
+        j = self.dbps.req(message)
 
         statstr = ""
         polygons = []
 
-        for resource in j['Resources']:
-            if 'Schema:Place' in resource['@types']:
-                r_url = resource['@URI']
-                name = self.dbpi.extract_name(r_url)
-                datareq = self.dbpi.req(name)
-                # TODO: check if http://dbpedia.org/ontology/wikiPageRedirects exists
+        if 'Resources' in j:
+            for resource in j['Resources']:
+                if 'Schema:Place' in resource['@types']:
+                    r_url = resource['@URI']
+                    name = self.dbpi.extract_name(r_url)
+                    datareq = self.dbpi.req(name)
+                    # TODO: check if http://dbpedia.org/ontology/wikiPageRedirects exists
 
-                similarity = float(resource['@similarityScore'])
-                polys = gadmpoly.get_polys(name.replace('_', ' '), self.get_weight(similarity))
+                    similarity = float(resource['@similarityScore'])
+                    polys = gadmpoly.get_polys(name.replace('_', ' '), self.get_weight(similarity))
 
-                if not len(polys) == 0:
-                    polygons += polys
-                    statstr += '#'
+                    if not len(polys) == 0:
+                        polygons += polys
+                        statstr += '#'
+                    else:
+                        try:
+                            lon, lat = datareq['http://www.georss.org/georss/point'][0]['value'].split(" ")
+                            pos = (float(lat), float(lon))
+                            polygons.append(self.point_to_poly(pos, similarity))
+                            statstr += '.'
+                        except:
+                            logging.warning("No georss field on 'place': %s" % name)
+                            statstr += '!'
+                            # TODO: try latd or longd
                 else:
-                    try:
-                        lon, lat = datareq['http://www.georss.org/georss/point'][0]['value'].split(" ")
-                        pos = (float(lat), float(lon))
-                        polygons.append(self.point_to_poly(pos, similarity))
-                        statstr += '.'
-                    except:
-                        logging.warning("No georss field on 'place': %s" % name)
-                        statstr += '!'
-                        # TODO: try latd or longd
-            else:
-                statstr += ' '
+                    statstr += ' '
 
-        pargs = (MessageIndicator.__name__[:-9], len(j['Resources']), statstr)
-        logging.info("%10s =  %i resources [%s]" % pargs)
+            pargs = (MessageIndicator.__name__[:-9], len(j['Resources']), statstr)
+            logging.info("%10s =  %i resources [%s]" % pargs)
+        else:
+            pargs = (MessageIndicator.__name__[:-9])
+            logging.warning("%10s =  0 resources - no JSON" % pargs)
 
         gadmpoly.destroy()
 

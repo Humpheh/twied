@@ -2,6 +2,15 @@ import logging
 
 from multiind.indicators import Indicator
 from multiind.interfaces import GeonamesInterface, GADMPolyInterface, CountryPolyInterface
+from multiind.indicators.messageindicator import MessageIndicator
+
+
+class GeonamesException(Exception):
+    def __init__(self, value):
+        self.value = value
+
+    def __str__(self):
+        return repr(self.value)
 
 
 class LocFieldIndicator(Indicator):
@@ -11,14 +20,15 @@ class LocFieldIndicator(Indicator):
     """
 
     def __init__(self, config):
-        geo_url = config.get("geonames", "url")
-        geo_user = config.get("geonames", "user")
         self.polydb_url = config.get("multiindicator", "gadm_polydb_path")
 
-        self.geonames = GeonamesInterface(geo_url, geo_user)
+        self.geonames = GeonamesInterface(config)
 
         self.geolimit = config.getint("geonames", "limit")
         self.weight = config.getfloat("mi_weights", "GN")
+
+        self.messageindicator = MessageIndicator(config)
+        self.messageindicator.weight = config.getfloat("mi_weights", "GN_3")
 
     def get_loc(self, location):
         if location is None:
@@ -28,11 +38,13 @@ class LocFieldIndicator(Indicator):
         countrypoly = CountryPolyInterface(self.polydb_url)
         gadmpoly = GADMPolyInterface(self.polydb_url)
 
+        # TODO: edit the location to conform to standards
+
         res = self.geonames.req(location)
 
-        # TODO: check if failed...
-        # TODO: edit the location to conform to standards
-        # TODO: limit used
+        # check if failed, if have then raise an exception
+        if 'geonames' not in res:
+            raise GeonamesException("Geonames not present in result - rate limit reached?")
 
         statstr = ""
         polygons = []
@@ -68,6 +80,10 @@ class LocFieldIndicator(Indicator):
             count += 1
             if count >= self.geolimit:
                 break
+
+        # if geonames couldn't find anything - try running it through the backup message indicator
+        if len(polygons) == 0:
+            polygons += self.messageindicator.get_loc(location)
 
         pargs = (LocFieldIndicator.__name__[:-9], len(res['geonames']), statstr)
         logging.info("%10s =  %i geonames [%s]" % pargs)

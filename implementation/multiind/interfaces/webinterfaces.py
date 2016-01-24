@@ -1,34 +1,36 @@
 import json
-import pycurl
-
-from io import BytesIO
-from urllib.parse import urlencode
+import urllib3
+import logging
 
 
 class DBPSpotlightInterface:
     """
     Interface to access the DBpedia spotlight API.
     """
-    def __init__(self, url):
-        self.c = pycurl.Curl()
-        self.c.setopt(self.c.URL, url + "/annotate")
-        self.c.setopt(pycurl.HTTPHEADER, ['accept: application/json'])
+    def __init__(self, config):
+
+        url = config.get("multiindicator", "dbpedia_spotlight_url")
+        port = config.getint("multiindicator", "dbpedia_spotlight_port")
+        self.page = config.get("multiindicator", "dbpedia_spotlight_page")
 
         self.post_data = {
-            'text' : '',
-            'confidence' : 0.2,
-            'support' : 20
+            'text': '',
+            'confidence': 0.2,
+            'support': 20
         }
+
+        self.pool = urllib3.HTTPConnectionPool(host=url, port=port, maxsize=25, headers={'accept': 'application/json'})
 
     def req(self, text):
         self.post_data['text'] = text
-        postfields = urlencode(self.post_data)
-        self.c.setopt(self.c.POSTFIELDS, postfields)
 
-        buffer = BytesIO()
-        self.c.setopt(self.c.WRITEDATA, buffer)
-        self.c.perform()
-        return buffer.getvalue().decode('cp437')
+        r = self.pool.request('GET', self.page, fields=self.post_data)
+
+        try:
+            return json.loads(r.data.decode('utf8'))
+        except ValueError:
+            logging.error("Unable to decode JSON data returned from DBPSpotlightInterface")
+            return {}
 
     def destroy(self):
         self.c.close()
@@ -36,47 +38,38 @@ class DBPSpotlightInterface:
 
 class DBPInterface:
     def __init__(self):
-        self.c = pycurl.Curl()
-        self.c.setopt(pycurl.HTTPHEADER, ['accept: application/json'])
+        self.pool = urllib3.HTTPConnectionPool(host="dbpedia.org", maxsize=25, headers={'accept': 'application/json'})
 
     def extract_name(self, text):
         return text.rpartition('/')[-1]
 
     def req(self, name):
-        self.c.setopt(self.c.URL, "http://dbpedia.org/data/" + name + ".json")
-
-        buffer = BytesIO()
-        self.c.setopt(self.c.WRITEDATA, buffer)
-        self.c.perform()
-        return json.loads(buffer.getvalue().decode('cp437'))['http://dbpedia.org/resource/' + name]
+        r = self.pool.request('GET', "/data/" + name + ".json")
+        return json.loads(r.data.decode('utf8'))['http://dbpedia.org/resource/' + name]
 
     def destroy(self):
         self.c.close()
 
 
 class GeonamesInterface:
-    def __init__(self, url, username, fuzzy = 0.8):
-        self.c = pycurl.Curl()
-        self.c.setopt(pycurl.HTTPHEADER, ['accept: application/json'])
-        self.c.setopt(self.c.URL, url + "/search")
+    def __init__(self, config):
+        url = config.get("geonames", "url")
+        username = config.get("geonames", "user")
+        fuzzy = config.get("geonames", "fuzzy")
 
         self.post_data = {
             'q': '',
-            'username' : username,
-            'type' : 'json',
-            'fuzzy' : fuzzy,
-            'orderBy' : 'relevance'
+            'username': username,
+            'type': 'json',
+            'fuzzy': fuzzy,
+            'orderBy': 'relevance'
         }
+        self.pool = urllib3.HTTPConnectionPool(host=url, maxsize=25, headers={'accept': 'application/json'})
 
     def req(self, query):
         self.post_data['q'] = query
-        postfields = urlencode(self.post_data)
-        self.c.setopt(self.c.POSTFIELDS, postfields)
-
-        buffer = BytesIO()
-        self.c.setopt(self.c.WRITEDATA, buffer)
-        self.c.perform()
-        return json.loads(buffer.getvalue().decode('cp437'))
+        r = self.pool.request('GET', "/search", fields=self.post_data)
+        return json.loads(r.data.decode('utf8'))
 
     def destroy(self):
         self.c.close()
