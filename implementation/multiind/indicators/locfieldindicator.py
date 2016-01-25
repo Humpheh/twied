@@ -73,6 +73,7 @@ class LocFieldIndicator(Indicator):
                     statstr += "="
 
             if userpoint:
+                # cannot get any polys, just plot the point
                 polypoint = self.point_to_poly((float(g['lng']), float(g['lat'])), belief)
                 polygons.append(polypoint)
                 statstr += "."

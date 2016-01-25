@@ -36,9 +36,11 @@ class WebsiteIndicator(Indicator):
         if website is None:
             return []
 
+        # search the field for all websites
         tlds = self.tldre.findall(website)
         polys = []
         for t in tlds:
+            # find the polys from the prebuilt dictionary
             td = t.strip()
             logging.info("TLD found: %s exists = %s" % (td, (td in self.codes)))
             if td in self.codes:

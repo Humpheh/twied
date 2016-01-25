@@ -33,12 +33,14 @@ class MessageIndicator(Indicator):
 
         if 'Resources' in j:
             for resource in j['Resources']:
+                # check that it is a place and not something useless
                 if 'Schema:Place' in resource['@types']:
                     r_url = resource['@URI']
                     name = self.dbpi.extract_name(r_url)
                     datareq = self.dbpi.req(name)
                     # TODO: check if http://dbpedia.org/ontology/wikiPageRedirects exists
 
+                    # get the polygons and weigh them
                     similarity = float(resource['@similarityScore'])
                     polys = gadmpoly.get_polys(name.replace('_', ' '), self.get_weight(similarity))
 

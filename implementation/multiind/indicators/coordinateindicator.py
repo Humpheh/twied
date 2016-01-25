@@ -18,6 +18,7 @@ class CoordinateIndicator(Indicator):
         if not string:
             return []
 
+        # see if the string matches the coordinate
         if self.prog.match(string):
             split = re.split('[\s,]+', string)
             poly = self.point_to_poly((float(split[0]), float(split[1])), 1) # 1 belief

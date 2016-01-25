@@ -17,8 +17,7 @@ class TZOffsetIndicator(Indicator):
 
         # setup db connection
         tzpoly = TZPolyInterface(self.polydb_url)
-
         result = tzpoly.get_polys_offset(offset, self.get_weight(1))
-
         tzpoly.destroy()
+
         return result
