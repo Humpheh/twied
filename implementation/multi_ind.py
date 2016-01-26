@@ -1,8 +1,10 @@
 import logging
 import time
+import sys
+
 from multiprocessing.dummy import Pool as ThreadPool
 from multiprocessing.context import TimeoutError
-from multiprocessing import Pool
+from configparser import NoOptionError
 
 from pymongo import MongoClient
 
@@ -27,25 +29,23 @@ def add_ind(task):
     return result
 
 
-def process_tweet(tweet, indis):
-    #tweet, indis = data
-
-    logging.info("Processing tweet %s", tweet['_id'])
+def process_tweet(twt, indis):
+    logging.info("Processing tweet %s", twt['_id'])
 
     app_inds = [
-        (indis['ms'], tweet['text']),
-        (indis['lf'], tweet['user']['location']),
-        (indis['ws'], tweet['user']['url']),
-        (indis['co'], tweet['user']['location']),
-        (indis['tz'], tweet['user']['time_zone']),
-        (indis['to'], tweet['user']['utc_offset'])
+        (indis['ms'], twt['text']),
+        (indis['lf'], twt['user']['location']),
+        (indis['ws'], twt['user']['url']),
+        (indis['co'], twt['user']['location']),
+        (indis['tz'], twt['user']['time_zone']),
+        (indis['to'], twt['user']['utc_offset'])
     ]
 
     pool = ThreadPool(6)
     polys = pool.map(add_ind, app_inds)
 
     logging.info('Intersecting polygons...')
-    new_polys, maxval = polystacker.infer_location(polys)
+    new_polys, max_val = polystacker.infer_location(polys)
     logging.info('Polygon intersection complete.')
 
     # polyplotter.polyplot(polygons=new_polys, points=[])
@@ -53,7 +53,7 @@ def process_tweet(tweet, indis):
     pool.close()
     pool.join()
 
-    return new_polys, maxval, tweet
+    return new_polys, max_val, tweet
 
 
 # must run this as a script
@@ -77,10 +77,23 @@ if __name__ == "__main__":
     db = client.twitter
     logging.info("Connected to database.")
 
+    # connect to the MongoDB
+    logging.info("Connecting to MongoDB...")
+    client = MongoClient(config.get("mongo", "address"), config.getint("mongo", "port"))
+    logging.info("Connected to MongoDB")
+
+    # select the database and collection based off config
+    try:
+        db = client[config.get("mongo", "database")]
+        col = db[config.get("mongo", "collection")]
+    except NoOptionError:
+        logging.critical("Cannot connect to MongoDB database and collection. Config incorrect?")
+        sys.exit()
+
     # get the tweet cursor
     cursor = db.tweets.find()
 
-    worker_count = 1
+    worker_count = config.getint("multiindicator", "workers")
     workers = ThreadPool(processes=worker_count)
 
     waiting = []
