@@ -71,12 +71,6 @@ if __name__ == "__main__":
     inds['ws'] = indicators.WebsiteIndicator(config)
     logging.info("Setup indicators.")
 
-    # connect to the mongodb
-    logging.info("Connecting to database...")
-    client = MongoClient()
-    db = client.twitter
-    logging.info("Connected to database.")
-
     # connect to the MongoDB
     logging.info("Connecting to MongoDB...")
     client = MongoClient(config.get("mongo", "address"), config.getint("mongo", "port"))
