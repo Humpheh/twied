@@ -9,9 +9,9 @@ class DBPSpotlightInterface:
     """
     def __init__(self, config):
 
-        url = config.get("multiindicator", "dbpedia_spotlight_url")
-        port = config.getint("multiindicator", "dbpedia_spotlight_port")
-        self.page = config.get("multiindicator", "dbpedia_spotlight_page")
+        url = config.get("dbpedia", "spotlight_url")
+        port = config.getint("dbpedia", "spotlight_port")
+        self.page = config.get("dbpedia", "spotlight_page")
 
         self.post_data = {
             'text': '',
