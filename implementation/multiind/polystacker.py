@@ -69,7 +69,7 @@ def plot_area(polys, scale=1, p1=(-180, 90), p2=(180, -90)):
 
 def generate_polygon(coords, scale):
     """
-    Generate a polygon that ecompasses a set of grid coordinates.
+    Generate a polygon that encompasses a set of grid coordinates.
     :param coords: List of coordinates to draw polygon around
     :param scale: Area around each grid square (1/scale in degrees is area of each point)
     :return: Polygon of area representing the set of points
