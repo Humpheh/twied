@@ -46,8 +46,13 @@ def process_tweet(twt, indis):
     polys = pool.map(add_ind, app_inds)
 
     logging.info('Intersecting polygons...')
-    new_polys, max_val = polystacker.infer_location(polys)
+    new_polys, max_val = polystacker.infer_location(polys, demo=True)
     logging.info('Polygon intersection complete.')
+
+    pointarr = []
+    for c in new_polys:
+        pointarr.append(c)
+    polyplotter.polyplot(pointarr, [])
 
     pool.close()
     pool.join()
@@ -87,35 +92,19 @@ if __name__ == "__main__":
     # get the tweet cursor
     cursor = db.tweets.find()
 
-    worker_count = config.getint("multiindicator", "workers")
-    workers = ThreadPool(processes=worker_count)
-
     waiting = []
     for doc in cursor:
-        while len(waiting) > worker_count:
-            for i in waiting:
-                try:
-                    result, maxval, tweet = i.get(timeout=0.02)
-                    waiting.remove(i)
+        result, maxval, tweet = process_tweet(doc, inds)
+        if input("Next? > ") == 'q':
+            sys.exit()
 
-                    # process the data
-                    pointarr = []
-                    for c in result:
-                        pointarr.append(c)
+        """# process the data
 
-                    # store the polygon in the database
-                    db.tweets.update_one({'_id': tweet['_id']}, {
-                        '$set': {
-                            'locinf.mi.poly': str(pointarr),
-                            'locinf.mi.weight': maxval
-                        }
-                    })
-                except TimeoutError:
-                    pass
-            time.sleep(0.1)
-
-        logging.info("Adding new process...")
-        res = workers.apply_async(process_tweet, (doc, inds))
-
-        waiting.append(res)
+        # store the polygon in the database
+        db.tweets.update_one({'_id': tweet['_id']}, {
+            '$set': {
+                'locinf.mi.poly': str(pointarr),
+                'locinf.mi.weight': maxval
+            }
+        })"""
 
