@@ -147,11 +147,6 @@ def infer_location(polys, demo=False):
         logging.info("No location found.")
         return []
 
-    if demo:
-        # show diagrampy
-        plt.matshow(mask, fignum=100)
-        plt.show()
-
     # find the coordinates of the highest places
     top_positions, mv1 = get_highest(mask, scale, offset)
 
@@ -168,8 +163,15 @@ def infer_location(polys, demo=False):
     mask2, scale2, offset2 = plot_area(polys, focus_scale, c_min, c_max)
 
     if demo:
+        # show diagrampy
+        plt.subplot(2, 1, 1)
+        plt.imshow(mask)
+        plt.colorbar(orientation='vertical')
+
         # show zoomed in diagram
-        plt.matshow(mask2, fignum=100)
+        plt.subplot(2, 1, 2)
+        plt.imshow(mask2)
+        plt.colorbar(orientation='vertical')
         plt.show()
 
     # get the highest positions for the zoomed in area
