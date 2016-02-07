@@ -12,13 +12,18 @@ class SLNetwork:
 
 
 class InferSL:
-    def __init__(self, config, dbcollection):
+    def __init__(self, config, dbcollection, verbose=False):
         # setup Twitter API interface
         api_settings = config._sections['twitter']
         self.twitter = Twython(**api_settings)
         self.db = dbcollection
 
         self.minconnections = 4
+        self.verbose = verbose
+
+    def log(self, message):
+        if self.verbose:
+            logging.info(message)
 
     def infer_location(self, user_id):
         network = SLNetwork()
@@ -41,7 +46,7 @@ class InferSL:
         max_id = None
         for i in range(2):
             try:
-                print("Downloading...")
+                self.log("Downloading new Twitter profile: %s %i/%i" % (user_id, i, 2))
                 usr_tweets = self.twitter.get_user_timeline(user_id=user_id, count=200, include_rts=False, max_id=max_id)
             except TwythonAuthError:
                 self.db.insert_one({
@@ -81,7 +86,7 @@ class InferSL:
         if user is None:
             return
 
-        print("Processing", user['user']['id'], user['user']['screen_name'])
+        self.log("Processing %s (%s)" % (user['user']['screen_name'], user['user']['id']))
 
         # if recursive depth has been met, return
         if depth >= 3 or not cont:
@@ -95,14 +100,14 @@ class InferSL:
             if count < self.minconnections:
                 continue
 
-            # get the mentioend user
+            # get the mentioned user
             user2 = self.get_user(uid)
 
             # if cannot find the user, continue
             if user2 is None:
                 continue
 
-            print("Processing", uid, user2['user']['screen_name'])
+            self.log("Inner processing %s (%s)" % (user2['user']['screen_name'], uid))
 
             if str(user['user']['id']) in user2['mentions']:
                 # if the other user has not mentioned the main subject enough, skip
@@ -110,7 +115,7 @@ class InferSL:
                     continue
 
                 network.connections.append((str(user['user']['id']), str(user2['user']['id'])))
-                print("Found connecting user:", user['user']['screen_name'], "-", user2['user']['screen_name'])
+                self.log("Found connecting user: %s - %s" % (user['user']['screen_name'], user2['user']['screen_name']))
 
                 if str(uid) not in network.users:
                     # recursively get the connections of the next user

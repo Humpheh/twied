@@ -12,6 +12,7 @@ from configparser import NoOptionError
 import twieds
 from labelprop.inference import InferSL
 from labelprop.distance import geometric_mean
+import polyplotter
 
 
 visited_users = {}
@@ -36,9 +37,9 @@ if __name__ == "__main__":
         logging.critical("Cannot connect to MongoDB database and collection. Config incorrect?")
         sys.exit()
 
-    user_test = 15808177 #97034991#
+    user_test = 838509024#15808177 #97034991#
 
-    infersl = InferSL(config, collection)
+    infersl = InferSL(config, collection, verbose=True)
     netw = infersl.infer_location(user_test)
 
     net_users, net_connections = netw.users, netw.connections
@@ -65,8 +66,13 @@ if __name__ == "__main__":
     for i in range(max_iterations):
         plt.figure(1)
         values = [float(colors.get(node, max_iterations)) / float(max_iterations+2) for node in G.nodes()]
-        nx.draw_networkx(G, cmap=plt.get_cmap('cool'), node_color=values)
+        nodes = nx.draw_networkx(G, cmap=plt.get_cmap('jet'), node_color=values, vmin=0, vmax=1)
         plt.show()
+
+        # check if all users have been located
+        if len(ground_truth) >= len(net_users):
+            print("Located all users.")
+            break
 
         new_gt = {}
 
@@ -80,7 +86,14 @@ if __name__ == "__main__":
                 print("Located", u['user']['screen_name'], new_gt[id])
                 colors[str(u['user']['screen_name'])] = i + 1
 
+        print(len(new_gt))
+        if len(new_gt) == 0:
+            print("Could not locate anymore users.")
+            break
+
         ground_truth.update(new_gt)
+
+    polyplotter.polyplot([], [(i[0][1], i[0][0]) for i in ground_truth.values()])
 
 
     print (colors)
