@@ -37,10 +37,15 @@ if __name__ == "__main__":
         logging.critical("Cannot connect to MongoDB database and collection. Config incorrect?")
         sys.exit()
 
-    user_test = 838509024#15808177 #97034991#
+    user_test = 434500083#15808177# 838509024# #97034991#
 
     infersl = InferSL(config, collection, verbose=True)
-    netw = infersl.infer_location(user_test)
+
+
+    input(infersl.infer(user_test))
+
+
+    netw = infersl.get_network(user_test)
 
     net_users, net_connections = netw.users, netw.connections
 
@@ -50,15 +55,16 @@ if __name__ == "__main__":
         if len(u.get('locations', [])) > 0:
             locc = [p['coordinates'] for p in u.get('locations')]
             ground_truth[str(u['user']['id'])] = geometric_mean(locc)
+            print("GT", ground_truth[str(u['user']['id'])])
             colors[str(u['user']['screen_name'])] = 0
 
     print(ground_truth)
 
     G = nx.Graph()
-    ego = defaultdict(list)
+    ego = defaultdict(dict)
     for c in net_connections:
-        ego[c[0]].append(c[1])
-        ego[c[1]].append(c[0])
+        ego[c[0]][c[1]] = True
+        ego[c[1]][c[0]] = True
         G.add_edge(net_users[str(c[0])]['user']['screen_name'], net_users[str(c[1])]['user']['screen_name'])
 
     max_iterations = 4
@@ -79,9 +85,11 @@ if __name__ == "__main__":
         for id, u in net_users.items():
             if id in ground_truth:
                 continue
-            egon = ego.get(str(id))
+            egon = ego.get(str(id)).keys()
             print([str(eg) in ground_truth for eg in egon])
             if any([eg in ground_truth for eg in egon]):
+                print(egon)
+                print([ground_truth[eg][0] for eg in egon if eg in ground_truth])
                 new_gt[id] = geometric_mean([ground_truth[eg][0] for eg in egon if eg in ground_truth])
                 print("Located", u['user']['screen_name'], new_gt[id])
                 colors[str(u['user']['screen_name'])] = i + 1
