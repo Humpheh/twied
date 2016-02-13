@@ -87,7 +87,7 @@ class LocFieldIndicator(Indicator):
             polygons += self.messageindicator.get_loc(location)
 
         pargs = (LocFieldIndicator.__name__[:-9], len(res['geonames']), statstr)
-        logging.info("%10s =  %i geonames [%s]" % pargs)
+        logging.debug("%10s =  %i geonames [%s]" % pargs)
 
         countrypoly.destroy()
         gadmpoly.destroy()

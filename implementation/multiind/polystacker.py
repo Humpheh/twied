@@ -135,17 +135,17 @@ def infer_location(polys, demo=False):
     :param demo: Wether to plot diagrams (default=False)
     :return: Polygon of the highest stacked area from the polygons
     """
-    logging.info("Intersecting and finding area...")
+    logging.debug("Intersecting and finding area...")
 
     # generate rough outline
     mask, scale, offset = plot_area(polys, 1)
 
-    logging.info("Intersected polygons.")
+    logging.debug("Intersected polygons.")
 
     # if grid is all zeros, there is no valid point to infer
     if np.count_nonzero(mask) == 0:
         logging.info("No location found.")
-        return []
+        return [], None
 
     # find the coordinates of the highest places
     top_positions, mv1 = get_highest(mask, scale, offset)
@@ -153,11 +153,11 @@ def infer_location(polys, demo=False):
     # find the area around the highest area to generate higher resolution grid for
     border = 2
     c_min, c_max, area = find_bounds(top_positions, border)
-    logging.info("Zoom area: %s %s" % (c_min, c_max))
+    logging.debug("Zoom area: %s %s" % (c_min, c_max))
 
     # calculate the scale to be focusing at
     focus_scale = int(np.ceil((360 * 180) / area) ** (1./2.5))
-    logging.info("Focus scale: %i", focus_scale)
+    logging.debug("Focus scale: %i", focus_scale)
 
     # create a finer area around the polygon
     mask2, scale2, offset2 = plot_area(polys, focus_scale, c_min, c_max)

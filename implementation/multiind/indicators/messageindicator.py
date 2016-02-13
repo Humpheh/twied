@@ -61,7 +61,7 @@ class MessageIndicator(Indicator):
                     statstr += ' '
 
             pargs = (MessageIndicator.__name__[:-9], len(j['Resources']), statstr)
-            logging.info("%10s =  %i resources [%s]" % pargs)
+            logging.debug("%10s =  %i resources [%s]" % pargs)
         else:
             pargs = (MessageIndicator.__name__[:-9])
             logging.warning("%10s =  0 resources - no JSON" % pargs)

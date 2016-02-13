@@ -16,20 +16,22 @@ def setup_logger(filename):
                      default = collector.log, false for no file output
     """
     # setup the logger
-    logformatstr = "%(asctime)s [%(threadName)s] %(levelname)s - %(message)s"
+    logformatstr = "%(asctime)s [%(threadName)-11s] %(levelname)-7s - %(message)s"
     logformat = logging.Formatter(logformatstr)
     root_logger = logging.getLogger()
-    root_logger.setLevel(logging.INFO)
+    root_logger.setLevel(logging.DEBUG)
 
     # output the logging to the stdout
     stream_handler = logging.StreamHandler()
     stream_handler.setFormatter(logformat)
+    stream_handler.setLevel(logging.INFO)
     root_logger.addHandler(stream_handler)
 
     # output the logging to a file
     if not filename == False:
         file_handler = logging.FileHandler(filename)
         file_handler.setFormatter(logformat)
+        file_handler.setLevel(logging.DEBUG)
         root_logger.addHandler(file_handler)
 
     logging.info("-----------")

@@ -42,7 +42,7 @@ class WebsiteIndicator(Indicator):
         for t in tlds:
             # find the polys from the prebuilt dictionary
             td = t.strip()
-            logging.info("TLD found: %s exists = %s" % (td, (td in self.codes)))
+            logging.debug("TLD found: %s exists = %s" % (td, (td in self.codes)))
             if td in self.codes:
                 polys += self.codes[td][1]
 
