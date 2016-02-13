@@ -16,6 +16,7 @@ class SLNetwork:
         self.connections = []
         self.key_user = None
         self.limdepth = 100
+        self.testing = False
 
 
 class InferSL:
@@ -37,9 +38,10 @@ class InferSL:
 
         self.verbose = verbose
 
-        self.minconnections = config.getint("slinf", "min_connections")
+        self.min_mentions = config.getint("slinf", "min_mentions")
         self.req_locs = config.getint("slinf", "req_locations")
         self.max_iter = config.getint("slinf", "max_iterations")
+        self.max_depth = config.getint("slinf", "max_depth")
         self.timelines = config.getint("slinf", "num_timelines")
 
     def log(self, message):
@@ -50,13 +52,14 @@ class InferSL:
         if self.verbose:
             logging.info(message)
 
-    def infer(self, user_id):
+    def infer(self, user_id, test=False):
         """
         Infers a location for a user with an ID.
         :param user_id: The Twitter ID of the user.
         :return: [coordinate, geodis] tuple
         """
         network = self.get_network(user_id)
+        network.testing = test
         return self.get_location(network)
 
     def get_network(self, user_id):
@@ -151,14 +154,14 @@ class InferSL:
         self.log("Processing %s (%s)" % (user['user']['screen_name'], user['user']['id']))
 
         # if recursive depth has been met, return
-        if depth >= 3 or depth > network.limdepth:
+        if depth >= self.max_depth or depth > network.limdepth:
             return False
 
         next_connections = []
 
         for uid, count in user['mentions'].items():
             # if the number of mentions is less than a threshold, pass it
-            if count < self.minconnections:
+            if count < self.min_mentions:
                 continue
 
             # get the mentioned user
@@ -172,7 +175,7 @@ class InferSL:
 
             if str(user['user']['id']) in user2['mentions']:
                 # if the other user has not mentioned the main subject enough, skip
-                if user2['mentions'][str(user['user']['id'])] < self.minconnections:
+                if user2['mentions'][str(user['user']['id'])] < self.min_mentions:
                     continue
 
                 network.connections.append((str(user['user']['id']), str(user2['user']['id'])))
@@ -184,7 +187,7 @@ class InferSL:
 
                     if len(user2['locations']) > 3:
                         network.limdepth = depth
-                        self.log("Found candidate user %s at %i depth." % (user2['user']['screen_name'], self.limdepth))
+                        self.log("Found candidate user %s at %i depth." % (user2['user']['screen_name'], network.limdepth))
 
         # continue for next users
         for usr_i in next_connections:
@@ -202,6 +205,10 @@ class InferSL:
         for _, u in netw.users.items():
             # if there are more than the required number of locations
             if len(u.get('locations', [])) >= self.req_locs:
+                # if in testing and the user is key, ignore him
+                if netw.testing and str(u['user']['id']) == str(netw.key_user):
+                    continue
+
                 locc = [p['coordinates'] for p in u.get('locations')]
                 ground_truth[str(u['user']['id'])] = geometric_mean(locc)
 
@@ -223,7 +230,7 @@ class InferSL:
             new_gt = {}
 
             for uid, u in netw.users.items():
-                if uid in ground_truth:
+                if uid in ground_truth or str(uid) not in ego:
                     continue
                 egon = ego.get(str(uid)).keys()
 
