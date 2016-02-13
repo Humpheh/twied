@@ -1,6 +1,8 @@
 import json
 import urllib3
 import logging
+import time
+import urllib.parse
 
 
 class DBPSpotlightInterface:
@@ -21,16 +23,18 @@ class DBPSpotlightInterface:
 
         self.pool = urllib3.HTTPConnectionPool(host=url, port=port, maxsize=25, headers={'accept': 'application/json'})
 
-    def req(self, text):
-        self.post_data['text'] = text
+    def req(self, text, delay=0.5):
+        self.post_data['text'] = urllib.parse.quote(text)
 
         r = self.pool.request('GET', self.page, fields=self.post_data)
 
         try:
             return json.loads(r.data.decode('utf8'))
         except ValueError:
-            logging.error("Unable to decode JSON data returned from DBPSpotlightInterface")
-            return {}
+            logging.error("Unable to decode JSON data returned from DBPSpotlightInterface, trying again in " + str(delay))
+            time.sleep(delay)
+            delay = delay + 0.5 if delay + 0.5 < 5 else delay
+            return self.req(text, delay)
 
     def destroy(self):
         self.c.close()
@@ -67,7 +71,7 @@ class GeonamesInterface:
         self.pool = urllib3.HTTPConnectionPool(host=url, maxsize=25, headers={'accept': 'application/json'})
 
     def req(self, query):
-        self.post_data['q'] = query
+        self.post_data['q'] = urllib.parse.quote(query)
         r = self.pool.request('GET', "/search", fields=self.post_data)
         return json.loads(r.data.decode('utf8'))
 
