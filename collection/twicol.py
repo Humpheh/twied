@@ -3,6 +3,8 @@ import time
 
 from pymongo import MongoClient
 from twicol import *
+from threads import *
+from tweet import *
 
 config = setup("twicol.log", "settings.ini")
 
