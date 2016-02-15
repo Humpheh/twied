@@ -4,7 +4,7 @@ import time
 from pymongo import MongoClient
 from twicol import *
 
-setup_logger("twicol.log")
+config = setup("twicol.log", "settings.ini")
 
 # if running as a script
 if __name__ == "__main__":
