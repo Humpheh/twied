@@ -24,7 +24,7 @@ def setup_logger(filename):
     # output the logging to the stdout
     stream_handler = logging.StreamHandler()
     stream_handler.setFormatter(logformat)
-    stream_handler.setLevel(logging.DEBUG)
+    stream_handler.setLevel(logging.INFO)
     root_logger.addHandler(stream_handler)
 
     # output the logging to a file
