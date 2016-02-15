@@ -7,6 +7,7 @@ from multiprocessing.context import TimeoutError
 from configparser import NoOptionError
 
 from pymongo import MongoClient
+from pymongo.errors import CursorNotFound
 
 import polyplotter
 import twieds
@@ -87,42 +88,48 @@ if __name__ == "__main__":
     # id of the test
     testid = 1
 
-    # get the tweet cursor
-    cursor = db.tweets.find({'geo': {'$ne': None}, 'locinf.mi.test.id': {'$ne': testid}})
-
     worker_count = config.getint("multiindicator", "workers")
     workers = ThreadPool(processes=worker_count)
 
     counter = 0
     waiting = []
-    for doc in cursor:
-        while len(waiting) > worker_count:
-            for i in waiting:
-                try:
-                    result, maxval, tweet = i.get(timeout=0.02)
-                    waiting.remove(i)
+    while True:
+        # get the tweet cursor
+        cursor = db.tweets.find({'geo': {'$ne': None}, 'locinf.mi.test.id': {'$ne': testid}})
 
-                    # process the data
-                    pointarr = []
-                    for c in result:
-                        pointarr.append(c)
+        try:
+            for doc in cursor:
+                while len(waiting) > worker_count:
+                    for i in waiting:
+                        try:
+                            result, maxval, tweet = i.get(timeout=0.02)
+                            waiting.remove(i)
 
-                    # store the polygon in the database
-                    db.tweets.update_one({'_id': tweet['_id']}, {
-                        '$set': {
-                            'locinf.mi.test.poly': str(pointarr),
-                            'locinf.mi.test.weight': maxval,
-                            'locinf.mi.test.id': testid
-                        }
-                    })
-                    counter += 1
-                    logging.info("=== Tweets processed: %5i ===" % counter)
-                except TimeoutError:
-                    pass
-            time.sleep(0.1)
+                            # process the data
+                            pointarr = []
+                            for c in result:
+                                pointarr.append(c)
 
-        logging.info("Adding new process...")
-        res = workers.apply_async(process_tweet, (doc, inds))
+                            # store the polygon in the database
+                            db.tweets.update_one({'_id': tweet['_id']}, {
+                                '$set': {
+                                    'locinf.mi.test.poly': str(pointarr),
+                                    'locinf.mi.test.weight': maxval,
+                                    'locinf.mi.test.id': testid
+                                }
+                            })
+                            counter += 1
+                            logging.info("=== Tweets processed: %5i ===" % counter)
+                        except TimeoutError:
+                            pass
+                    time.sleep(0.1)
 
-        waiting.append(res)
+                logging.info("Adding new process...")
+                res = workers.apply_async(process_tweet, (doc, inds))
+
+                waiting.append(res)
+            break
+        except CursorNotFound:
+            logging.error("Cursor not found, retrying...")
+            continue
 

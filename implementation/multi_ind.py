@@ -1,12 +1,14 @@
 import logging
 import time
 import sys
+import datetime
 
 from multiprocessing.dummy import Pool as ThreadPool
 from multiprocessing.context import TimeoutError
 from configparser import NoOptionError
 
 from pymongo import MongoClient
+from pymongo.errors import CursorNotFound
 
 import polyplotter
 import twieds
@@ -21,16 +23,16 @@ def add_ind(task):
     f_field = field[:50].encode('utf8') if isinstance(field, str) else field
 
     start = time.clock()
-    logging.info("%10s <- Value: %-50s" % (type(ind).__name__[:-9], f_field))
+    logging.debug("%10s <- Value: %-50s" % (type(ind).__name__[:-9], f_field))
     result = ind.get_loc(field)
-    logging.info("%10s -> Took %.2f seconds. (%i polys)" % (
+    logging.debug("%10s -> Took %.2f seconds. (%i polys)" % (
         type(ind).__name__[:-9], (time.clock() - start), len(result))
     )
     return result
 
 
 def process_tweet(twt, indis):
-    logging.info("Processing tweet %s", twt['_id'])
+    logging.info("%s: Starting inference...", twt['_id'])
 
     app_inds = [
         (indis['ms'], twt['text']),
@@ -45,9 +47,9 @@ def process_tweet(twt, indis):
     pool = ThreadPool(6)
     polys = pool.map(add_ind, app_inds)
 
-    logging.info('Intersecting polygons...')
+    logging.info("%s: Intersecting polygons for tweet...", twt['_id'])
     new_polys, max_val = polystacker.infer_location(polys)
-    logging.info('Polygon intersection complete.')
+    logging.info("%s: Polygon intersection complete.", twt['_id'])
 
     pool.close()
     pool.join()
@@ -74,7 +76,7 @@ if __name__ == "__main__":
     # connect to the MongoDB
     logging.info("Connecting to MongoDB...")
     client = MongoClient(config.get("mongo", "address"), config.getint("mongo", "port"))
-    logging.info("Connected to MongoDB")
+    logging.info("Connected to MongoDB.")
 
     # select the database and collection based off config
     try:
@@ -84,38 +86,51 @@ if __name__ == "__main__":
         logging.critical("Cannot connect to MongoDB database and collection. Config incorrect?")
         sys.exit()
 
-    # get the tweet cursor
-    cursor = db.tweets.find()
+    # id of the test
+    testid = 1
 
     worker_count = config.getint("multiindicator", "workers")
     workers = ThreadPool(processes=worker_count)
 
+    counter = 0
     waiting = []
-    for doc in cursor:
-        while len(waiting) > worker_count:
-            for i in waiting:
-                try:
-                    result, maxval, tweet = i.get(timeout=0.02)
-                    waiting.remove(i)
+    while True:
+        # get the tweet cursor
+        cursor = db.tweets.find({'locinf.mi': {'$ne': None}})
 
-                    # process the data
-                    pointarr = []
-                    for c in result:
-                        pointarr.append(c)
+        try:
+            for doc in cursor:
+                while len(waiting) > worker_count:
+                    for i in waiting:
+                        try:
+                            result, maxval, tweet = i.get(timeout=0.02)
+                            waiting.remove(i)
 
-                    # store the polygon in the database
-                    db.tweets.update_one({'_id': tweet['_id']}, {
-                        '$set': {
-                            'locinf.mi.poly': str(pointarr),
-                            'locinf.mi.weight': maxval
-                        }
-                    })
-                except TimeoutError:
-                    pass
-            time.sleep(0.1)
+                            # process the data
+                            pointarr = []
+                            for c in result:
+                                pointarr.append(c)
 
-        logging.info("Adding new process...")
-        res = workers.apply_async(process_tweet, (doc, inds))
+                            # store the polygon in the database
+                            db.tweets.update_one({'_id': tweet['_id']}, {
+                                '$set': {
+                                    'locinf.mi.poly': str(pointarr),
+                                    'locinf.mi.weight': maxval,
+                                    'locinf.mi.time': datetime.datetime.utcnow()
+                                }
+                            })
+                            counter += 1
+                            logging.info("=== Tweets processed: %5i ===" % counter)
+                        except TimeoutError:
+                            pass
+                    time.sleep(0.1)
 
-        waiting.append(res)
+                logging.info("Adding new process...")
+                res = workers.apply_async(process_tweet, (doc, inds))
+
+                waiting.append(res)
+            break
+        except CursorNotFound:
+            logging.error("Cursor not found, retrying...")
+            continue
 
