@@ -45,9 +45,10 @@ def process_tweet(twt, indis):
     pool = ThreadPool(6)
     polys = pool.map(add_ind, app_inds)
 
+    start = time.clock()
     logging.info('Intersecting polygons...')
     new_polys, max_val = polystacker.infer_location(polys, demo=True)
-    logging.info('Polygon intersection complete.')
+    logging.info('Polygon intersection complete. Took %.2f seconds.' % (time.clock() - start))
 
     pointarr = []
     for c in new_polys:

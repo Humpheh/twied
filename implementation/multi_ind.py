@@ -33,6 +33,7 @@ def add_ind(task):
 
 def process_tweet(twt, indis):
     logging.info("%s: Starting inference...", twt['_id'])
+    start = time.clock()
 
     app_inds = [
         (indis['ms'], twt['text']),
@@ -54,7 +55,7 @@ def process_tweet(twt, indis):
     pool.close()
     pool.join()
 
-    return new_polys, max_val, twt
+    return new_polys, max_val, twt, start
 
 
 # must run this as a script
@@ -103,7 +104,7 @@ if __name__ == "__main__":
                 while len(waiting) > worker_count:
                     for i in waiting:
                         try:
-                            result, maxval, tweet = i.get(timeout=0.02)
+                            result, maxval, tweet, start = i.get(timeout=0.02)
                             waiting.remove(i)
 
                             # process the data
@@ -120,10 +121,12 @@ if __name__ == "__main__":
                                 }
                             })
                             counter += 1
-                            logging.info("=== Tweets processed: %5i ===" % counter)
+                            inftime = (time.clock() - start)
+                            logging.info("===== Tweets processed: %5i ===== (took %.2fsecs)" % (counter, inftime))
+                            break
                         except TimeoutError:
                             pass
-                    time.sleep(0.1)
+                    time.sleep(0.02)
 
                 logging.info("Adding new process...")
                 res = workers.apply_async(process_tweet, (doc, inds))

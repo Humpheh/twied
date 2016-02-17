@@ -14,5 +14,5 @@ class Indicator:
         return self.weight * belief
 
     def point_to_poly(self, point, belief):
-        circle = Circle(0.25, point)
+        circle = Circle(0.1, point)
         return pointList(circle), self.get_weight(belief)

@@ -80,22 +80,30 @@ if __name__ == "__main__":
     # select the database and collection based off config
     try:
         db = client[config.get("mongo", "database")]
-        col = db[config.get("mongo", "collection")]
+        col = db["geotweets"]  # config.get("mongo", "collection")]
     except NoOptionError:
         logging.critical("Cannot connect to MongoDB database and collection. Config incorrect?")
         sys.exit()
 
     # id of the test
-    testid = 1
+    testid = 2
 
     worker_count = config.getint("multiindicator", "workers")
     workers = ThreadPool(processes=worker_count)
+
+    try:
+        vals = eval(sys.argv[1])
+        if not all(isinstance(item, int) for item in vals):
+            raise
+    except:
+        logging.critical("Need allocation arguments as list")
+        sys.exit()
 
     counter = 0
     waiting = []
     while True:
         # get the tweet cursor
-        cursor = db.tweets.find({'geo': {'$ne': None}, 'locinf.mi.test.id': {'$ne': testid}})
+        cursor = col.find({'geo': {'$ne': None}, 'locinf.mi.test.id': {'$ne': testid}, 'locinf.mi.test.alloc': {'$in': vals}})
 
         try:
             for doc in cursor:
@@ -111,7 +119,7 @@ if __name__ == "__main__":
                                 pointarr.append(c)
 
                             # store the polygon in the database
-                            db.tweets.update_one({'_id': tweet['_id']}, {
+                            col.update_one({'_id': tweet['_id']}, {
                                 '$set': {
                                     'locinf.mi.test.poly': str(pointarr),
                                     'locinf.mi.test.weight': maxval,
