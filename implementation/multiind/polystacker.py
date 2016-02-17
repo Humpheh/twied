@@ -138,7 +138,7 @@ def infer_location(polys, demo=False):
     logging.debug("Intersecting and finding area...")
 
     # generate rough outline
-    mask, scale, offset = plot_area(polys, 1)
+    mask, scale, offset = plot_area(polys, 0.5)
 
     logging.debug("Intersected polygons.")
 
