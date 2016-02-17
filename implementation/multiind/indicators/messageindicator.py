@@ -64,7 +64,7 @@ class MessageIndicator(Indicator):
             logging.debug("%10s =  %i resources [%s]" % pargs)
         else:
             pargs = (MessageIndicator.__name__[:-9])
-            logging.warning("%10s =  0 resources - no JSON" % pargs)
+            logging.warning("%10s =  0 resources in response" % pargs)
 
         gadmpoly.destroy()
 
