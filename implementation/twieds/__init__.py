@@ -1,6 +1,7 @@
 import configparser
 import logging
-import __main__
+import os
+import sys
 
 def setup(logfile, settingsfile):
     setup_logger(logfile)
@@ -35,5 +36,5 @@ def setup_logger(filename):
         root_logger.addHandler(file_handler)
 
     logging.info("-----------")
-    logging.info("Initialised logging for: {0}".format(__main__.__file__))
+    logging.info("Initialised logging for: {0} {1}".format(sys.argv[0], os.getpid()))
     logging.info("-----------")
