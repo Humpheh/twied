@@ -3,14 +3,16 @@ import logging
 import os
 import sys
 
-def setup(logfile, settingsfile):
-    setup_logger(logfile)
+
+def setup(logfile, settingsfile, printlevel=logging.INFO):
+    setup_logger(logfile, printlevel)
 
     config = configparser.ConfigParser()
     config.read(settingsfile)
     return config
 
-def setup_logger(filename):
+
+def setup_logger(filename, printlevel=logging.INFO):
     """
     Function to setup a logger to console and file.
     :param filename: (optional) the filename to output to
@@ -25,7 +27,7 @@ def setup_logger(filename):
     # output the logging to the stdout
     stream_handler = logging.StreamHandler()
     stream_handler.setFormatter(logformat)
-    stream_handler.setLevel(logging.INFO)
+    stream_handler.setLevel(printlevel)
     root_logger.addHandler(stream_handler)
 
     # output the logging to a file
