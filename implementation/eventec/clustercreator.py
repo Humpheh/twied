@@ -12,7 +12,7 @@ class ClusterCreator:
 
         candidates = []
         for t in self.unclustered:
-            dist = vincenty(coord, self.clsman.get_coordinate(t)).km
+            dist = vincenty(coord.rev(), self.clsman.get_coordinate(t).rev()).km
             time = abs(tweet['timestamp_obj'] - t['timestamp_obj'])
 
             # TODO: UNCOMMENT THIS

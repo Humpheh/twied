@@ -26,7 +26,7 @@ class ClusterUpdater:
                 logging.debug("Checking clusters %s %s" % (id(c1), id(c2)))
                 centres = product(c1.centres, c2.centres)
                 for x, y in centres:
-                    if vincenty(x, y).km < self.clsman.radius:
+                    if vincenty(x.rev(), y.rev()).km < self.clsman.radius:
                         self.clsman.merge_clusters(c1, c2)
                         changed = True
                         break

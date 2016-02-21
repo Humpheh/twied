@@ -22,8 +22,6 @@ def geometric_mean(points):
             distances = [row]
         ad.append(row)
 
-    print (ad)
-
     if len(distances) == 0:
         return None
 
