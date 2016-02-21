@@ -7,12 +7,14 @@ from geopy.distance import vincenty
 class ClusterManager:
     def __init__(self, field):
         self.clusters = []
+        self.unclustered = []
         self.geofield = field
         self.geofieldspl = field.split(".")
 
         self.radius = 100  # km
         self.mincount = 5  # tweets
         self.timediff = datetime.timedelta(minutes=30)
+        self.maxage = datetime.timedelta(hours=1)
 
     def __iter__(self):
         return iter(self.clusters)
@@ -39,10 +41,21 @@ class ClusterManager:
         self.clusters.append(newcls)
         return newcls
 
+    def remove_cluster(self, cluster):
+        try:
+            self.clusters.remove(cluster)
+            return True
+        except ValueError:
+            return False
+
     def merge_clusters(self, c1, c2):
         logging.debug("Merging clusters %s + %s" % (id(c1), id(c2)))
         c1.merge(c2)
         self.clusters.remove(c2)
+
+    def add_unclustered(self, tweet):
+        self.unclustered.append(tweet)
+        logging.debug("Appended to unclustered (%i)" % len(self.unclustered))
 
 
 class Coordinate:
@@ -63,13 +76,16 @@ class Coordinate:
 
 class TweetCluster:
     def __init__(self, tweets, centre, clsman):
-        self.tweets = tweets
+        self._tweets = sorted(tweets, key=lambda x: x['timestamp_obj'])
         self.centres = [clsman.get_coordinate(centre)]
         self.clsman = clsman
+        print([x['timestamp_obj'] for x in self._tweets])
+        self.oldest = self._tweets[-1]['timestamp_obj']
 
     def merge(self, cluster):
-        self.tweets += cluster.tweets
+        self._tweets += cluster._tweets
         self.centres += cluster.centres
+        self.oldest = max([self.oldest, cluster.oldest])
 
     def in_cluster(self, tweet):
         for c in self.centres:
@@ -78,7 +94,8 @@ class TweetCluster:
         return False
 
     def add_tweet(self, tweet):
-        self.tweets.append(tweet)
+        self._tweets.append(tweet)
+        self.oldest = max([self.oldest, tweet['timestamp_obj']])
 
     def get_points(self):
-        return [self.clsman.get_coordinate(x) for x in self.tweets]
+        return [self.clsman.get_coordinate(x) for x in self._tweets]

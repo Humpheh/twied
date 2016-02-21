@@ -17,7 +17,7 @@ class ClusterUpdater:
                 return True
         return False
 
-    def update_clusters(self):
+    def update_clusters(self, tweet):
         # check if any clusters are overlapping
         changed = True
         while changed:
@@ -33,6 +33,15 @@ class ClusterUpdater:
                 if changed:
                     break
 
+    def update_oldclusters(self, tweet):
         # remove any that are moth an 48hrs old
+        old = []
         for cluster in self.clsman:
-            pass
+            age = tweet['timestamp_obj'] - cluster.oldest
+            logging.debug("%s" % age)
+            if age > self.clsman.maxage:
+                old.append(cluster)
+
+        for cluster in old:
+            logging.debug("Removing cluster %s (last tweet at %s)" % (id(cluster), cluster.oldest))
+            self.clsman.remove_cluster(cluster)

@@ -1,17 +1,17 @@
 import logging
+
 from geopy.distance import vincenty
 
 
 class ClusterCreator:
     def __init__(self, clsman):
-        self.unclustered = []
         self.clsman = clsman
 
     def process_tweet(self, tweet):
         coord = self.clsman.get_coordinate(tweet)
 
         candidates = []
-        for t in self.unclustered:
+        for t in self.clsman.unclustered:
             dist = vincenty(coord.rev(), self.clsman.get_coordinate(t).rev()).km
             time = abs(tweet['timestamp_obj'] - t['timestamp_obj'])
 
@@ -24,7 +24,7 @@ class ClusterCreator:
         if len(candidates) >= self.clsman.mincount - 1:
             # remove candidates from unclustered
             for x in candidates:
-                self.unclustered.remove(x)
+                self.clsman.unclustered.remove(x)
 
             candidates.append(tweet)
 
@@ -34,7 +34,3 @@ class ClusterCreator:
         else:
             logging.debug("Not enough candidates to create cluster (%i)" % len(candidates))
             return False
-
-    def add_unclustered(self, tweet):
-        self.unclustered.append(tweet)
-        logging.debug("Appended to unclustered (%i)" % len(self.unclustered))
