@@ -1,8 +1,32 @@
 import json
 import urllib3
 import logging
+import re
 import time
-import urllib.parse
+
+
+try:
+    # UCS-4
+    highpoints = re.compile(u'([\U00002600-\U000027BF])|([\U0001f300-\U0001f64F])|([\U0001f680-\U0001f6FF])')
+except re.error:
+    # UCS-2
+    highpoints = re.compile(u'([\u2600-\u27BF])|([\uD83C][\uDF00-\uDFFF])|([\uD83D][\uDC00-\uDE4F])|([\uD83D][\uDE80-\uDEFF])')
+
+
+def filter_emoji(text):
+    return highpoints.sub(u'\u25FD', text)
+
+
+def req_using_pool(pool, page, data):
+    return pool.request('GET', page, data)
+
+
+class DBPSpotlightException(Exception):
+    def __init__(self, value):
+        self.value = value
+
+    def __str__(self):
+        return repr(self.value)
 
 
 class DBPSpotlightInterface:
@@ -24,20 +48,23 @@ class DBPSpotlightInterface:
         self.pool = urllib3.HTTPConnectionPool(host=url, port=port, maxsize=25, headers={'accept': 'application/json'})
 
     def req(self, text, delay=0.5):
-        self.post_data['text'] = urllib.parse.quote(text)
-
-        r = self.pool.request('GET', self.page, fields=self.post_data)
+        self.post_data['text'] = filter_emoji(text)
+        r = req_using_pool(self.pool, self.page, self.post_data)
 
         try:
             return json.loads(r.data.decode('utf8'))
         except ValueError:
             logging.error("Unable to decode JSON data returned from DBPSpotlightInterface, trying again in " + str(delay))
             time.sleep(delay)
-            delay = delay + 0.5 if delay + 0.5 < 5 else delay
+            delay = delay * 2
+
+            if delay > 30:
+                raise DBPSpotlightException("Max number of retries for DBPSpotlightInterface reached.")
+
             return self.req(text, delay)
 
     def destroy(self):
-        self.c.close()
+        self.pool.close()
 
 
 class DBPInterface:
@@ -48,11 +75,11 @@ class DBPInterface:
         return text.rpartition('/')[-1]
 
     def req(self, name):
-        r = self.pool.request('GET', "/data/" + name + ".json")
+        r = req_using_pool(self.pool, "/data/" + name + ".json", {})
         return json.loads(r.data.decode('utf8'))['http://dbpedia.org/resource/' + name]
 
     def destroy(self):
-        self.c.close()
+        self.pool.close()
 
 
 class GeonamesInterface:
@@ -60,20 +87,43 @@ class GeonamesInterface:
         url = config.get("geonames", "url")
         username = config.get("geonames", "user")
         fuzzy = config.get("geonames", "fuzzy")
+        geolimit = config.getint("geonames", "limit")
 
         self.post_data = {
             'q': '',
             'username': username,
             'type': 'json',
             'fuzzy': fuzzy,
-            'orderBy': 'relevance'
+            'orderBy': 'relevance',
+            'style': 'FULL',
+            'maxRows': geolimit
         }
         self.pool = urllib3.HTTPConnectionPool(host=url, maxsize=25, headers={'accept': 'application/json'})
 
     def req(self, query):
-        self.post_data['q'] = urllib.parse.quote(query)
-        r = self.pool.request('GET', "/search", fields=self.post_data)
+        self.post_data['q'] = query
+        r = req_using_pool(self.pool, "/search", self.post_data)
         return json.loads(r.data.decode('utf8'))
 
     def destroy(self):
-        self.c.close()
+        self.pool.close()
+
+
+class GisgraphyInterface:
+    def __init__(self, config):
+        url = "localhost"
+
+        self.post_data = {
+            'q': '',
+            'format': 'json',
+            'suggest': 'true'
+        }
+        self.pool = urllib3.HTTPConnectionPool(host=url, port=8080, maxsize=25, headers={'accept': 'application/json'})
+
+    def req(self, query):
+        self.post_data['q'] = query
+        r = req_using_pool(self.pool, "/fulltext", self.post_data)
+        return json.loads(r.data.decode('utf8'))
+
+    def destroy(self):
+        self.pool.close()

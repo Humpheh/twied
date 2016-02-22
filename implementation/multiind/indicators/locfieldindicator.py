@@ -24,7 +24,6 @@ class LocFieldIndicator(Indicator):
 
         self.geonames = GeonamesInterface(config)
 
-        self.geolimit = config.getint("geonames", "limit")
         self.weight = config.getfloat("mi_weights", "GN")
 
         self.messageindicator = MessageIndicator(config)
@@ -49,13 +48,14 @@ class LocFieldIndicator(Indicator):
         statstr = ""
         polygons = []
 
-        count = 0
+        maxscore = None
 
         for g in res['geonames']:
             userpoint = True
 
-            # belief in coordinate decreases by 0.1 the lower down the list from 1 to 0.5
-            belief = 1 - (count / self.geolimit / 2)
+            if maxscore is None:
+                maxscore = g['score']
+            belief = g['score'] / maxscore
 
             if 'country' in g['fclName']:
                 polys = countrypoly.get_polys(g['name'], self.get_weight(belief))
@@ -77,10 +77,6 @@ class LocFieldIndicator(Indicator):
                 polypoint = self.point_to_poly((float(g['lng']), float(g['lat'])), belief)
                 polygons.append(polypoint)
                 statstr += "."
-
-            count += 1
-            if count >= self.geolimit:
-                break
 
         # if geonames couldn't find anything - try running it through the backup message indicator
         if len(polygons) == 0:

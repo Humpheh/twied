@@ -88,6 +88,9 @@ def equi(m, centerlon, centerlat, radius, *args, **kwargs):
     X,Y = m(X,Y)
     plt.plot(X,Y,**kwargs)
 
+    poly = Polygon(list(zip(X, Y)), facecolor='black', alpha=0.2)
+    plt.gca().add_patch(poly)
+
 
 def add_poly(coords, m):
     xy = []

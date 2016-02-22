@@ -6,3 +6,4 @@ from multiind.indicators.tzindicator import *
 from multiind.indicators.tzoffindicator import *
 from multiind.indicators.websiteindicator import *
 from multiind.indicators.geotagindicator import *
+from multiind.indicators.gislocfieldindicator import *
