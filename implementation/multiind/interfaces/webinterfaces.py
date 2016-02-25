@@ -14,7 +14,7 @@ except re.error:
 
 
 def filter_emoji(text):
-    return highpoints.sub(u'\u25FD', text)
+    return highpoints.sub('', test)  #u'\u25FD', text)
 
 
 def req_using_pool(pool, page, data):
@@ -101,7 +101,7 @@ class GeonamesInterface:
         self.pool = urllib3.HTTPConnectionPool(host=url, maxsize=25, headers={'accept': 'application/json'})
 
     def req(self, query):
-        self.post_data['q'] = query
+        self.post_data['q'] = filter_emoji(query)
         r = req_using_pool(self.pool, "/search", self.post_data)
         return json.loads(r.data.decode('utf8'))
 

@@ -11,7 +11,7 @@ from multiprocessing import Process
 
 
 # must run this as a script
-def inf_thread(testid, vals):
+def inf_thread(testid, vals, geonames=None):
     config = twieds.setup("logs/mi_test.log", "settings/locinf.ini")
 
     # connect to the MongoDB
@@ -24,6 +24,10 @@ def inf_thread(testid, vals):
     except NoOptionError:
         logging.critical("Cannot connect to MongoDB database and collection. Config incorrect?")
         sys.exit()
+
+    if geonames is not None:
+        config.set("geonames", "user", geonames)
+    logging.info("Using Geonames user %s." % config.get("geonames", "user"))
 
     field = 'locinf.mi.test'
 
@@ -40,7 +44,7 @@ def inf_thread(testid, vals):
 if __name__ == "__main__":
     # id of the test
     tid = 2
-    tasks = [(tid, [0, 1]), (tid, [2, 3])]
+    tasks = [(tid, [0, 1], "humph"), (tid, [2, 3], "humpheh")]
 
     procs = []
     for i in tasks:

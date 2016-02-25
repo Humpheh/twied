@@ -23,7 +23,6 @@ class ClusterUpdater:
         while changed:
             changed = False
             for c1, c2 in permutations(self.clsman, 2):
-                logging.debug("Checking clusters %s %s" % (id(c1), id(c2)))
                 centres = product(c1.centres, c2.centres)
                 for x, y in centres:
                     if vincenty(x.rev(), y.rev()).km < self.clsman.radius:
