@@ -14,7 +14,7 @@ except re.error:
 
 
 def filter_emoji(text):
-    return highpoints.sub('', test)  #u'\u25FD', text)
+    return highpoints.sub('', text)  #u'\u25FD', text)
 
 
 def req_using_pool(pool, page, data):

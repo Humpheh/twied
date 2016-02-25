@@ -25,23 +25,13 @@ class LocFieldIndicator(Indicator):
         self.geonames = GeonamesInterface(config)
 
         self.weight = config.getfloat("mi_weights", "GN")
+        self.weight_pp = config.getfloat("mi_weights", "GN_1")
+        self.weight_sym = config.getfloat("mi_weights", "GN_2")
 
         self.messageindicator = MessageIndicator(config)
         self.messageindicator.weight = config.getfloat("mi_weights", "GN_3")
 
-    def get_loc(self, location):
-        if location is None:
-            return []
-
-        # setup db
-        countrypoly = CountryPolyInterface(self.polydb_url)
-        gadmpoly = GADMPolyInterface(self.polydb_url)
-
-        # TODO: edit the location to conform to standards
-
-        res = self.geonames.req(location)
-
-        # check if failed, if have then raise an exception
+    def _get_polys(self, res, countrypoly, gadmpoly, weight):
         if 'geonames' not in res:
             raise GeonamesException("Geonames not present in result - rate limit reached?")
 
@@ -58,7 +48,7 @@ class LocFieldIndicator(Indicator):
             belief = g['score'] / maxscore
 
             if 'country' in g['fclName']:
-                polys = countrypoly.get_polys(g['name'], self.get_weight(belief))
+                polys = countrypoly.get_polys(g['name'], self.get_weight(belief, weight))
                 if len(polys) > 0:
                     polygons += polys
                     userpoint = False
@@ -66,7 +56,7 @@ class LocFieldIndicator(Indicator):
 
             if userpoint and any(p in g['fclName'] for p in ['state', 'region']):
                 # getpolygon for the place
-                polys = gadmpoly.get_polys(g['name'], self.get_weight(belief))
+                polys = gadmpoly.get_polys(g['name'], self.get_weight(belief, weight))
                 if len(polys) > 0:
                     polygons += polys
                     userpoint = False
@@ -74,16 +64,51 @@ class LocFieldIndicator(Indicator):
 
             if userpoint:
                 # cannot get any polys, just plot the point
-                polypoint = self.point_to_poly((float(g['lng']), float(g['lat'])), belief)
+                polypoint = self.point_to_poly((float(g['lng']), float(g['lat'])), belief, weight)
                 polygons.append(polypoint)
                 statstr += "."
+
+        pargs = (LocFieldIndicator.__name__[:-9], len(res['geonames']), statstr)
+        logging.debug("%10s =  %i geonames [%s]" % pargs)
+
+        return polygons
+
+    def _try_split(self, location, symbol, countrypoly, gadmpoly, weight):
+        polygons = []
+        linesplit = location.split(symbol)
+        linesplit = [x.strip() for x in linesplit if x.strip() != '']
+        if len(linesplit) > 1:
+            for x in linesplit:
+                res = self.geonames.req(x)
+                polygons += self._get_polys(res, countrypoly, gadmpoly, weight)
+        return polygons
+
+    def get_loc(self, location):
+        if location is None:
+            return []
+
+        # setup db
+        countrypoly = CountryPolyInterface(self.polydb_url)
+        gadmpoly = GADMPolyInterface(self.polydb_url)
+
+        # TODO: edit the location to conform to standards
+
+        res = self.geonames.req(location)
+
+        # check if failed, if have then raise an exception
+        polygons = self._get_polys(res, countrypoly, gadmpoly, self.weight)
+
+        if len(polygons) == 0:
+            logging.debug("Trying locationfield slashes...")
+            polygons += self._try_split(location, "/", countrypoly, gadmpoly, self.weight_pp)
+
+        if len(polygons) == 0:
+            logging.debug("Trying locationfield dashes...")
+            polygons += self._try_split(location, "-", countrypoly, gadmpoly, self.weight_sym)
 
         # if geonames couldn't find anything - try running it through the backup message indicator
         if len(polygons) == 0:
             polygons += self.messageindicator.get_loc(location)
-
-        pargs = (LocFieldIndicator.__name__[:-9], len(res['geonames']), statstr)
-        logging.debug("%10s =  %i geonames [%s]" % pargs)
 
         countrypoly.destroy()
         gadmpoly.destroy()
