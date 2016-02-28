@@ -11,10 +11,12 @@ class ClusterManager:
         self.geofield = field
         self.geofieldspl = field.split(".")
 
-        self.radius = 100  # km
+        self.radius = 10  # km
         self.mincount = 5  # tweets
-        self.timediff = datetime.timedelta(minutes=30)
-        self.maxage = datetime.timedelta(hours=1)
+        self.timediff = datetime.timedelta(minutes=60)
+        self.maxage = datetime.timedelta(hours=24)
+
+        self.lasttime = datetime.datetime.utcnow()
 
     def __iter__(self):
         return iter(self.clusters)

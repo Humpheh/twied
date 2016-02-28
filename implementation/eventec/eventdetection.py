@@ -10,6 +10,7 @@ class EventDetection:
         self.c_updater = ClusterUpdater(self.c_manager)
 
     def process_tweet(self, tweet):
+        self.c_manager.lasttime = tweet['timestamp_obj']
         # attempt to create new cluster
         created = self.c_creator.process_tweet(tweet)
 

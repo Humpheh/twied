@@ -18,7 +18,7 @@ logging.info("Connected to MongoDB")
 # select the database and collection based off config
 try:
     db = client[config.get("mongo", "database")]
-    col = db[config.get("mongo", "collection")]
+    col = db["geotweets"]#config.get("mongo", "collection")]
 except NoOptionError:
     logging.critical("Cannot connect to MongoDB database and collection. Config incorrect?")
     sys.exit()
@@ -27,12 +27,19 @@ except NoOptionError:
 logging.info("Getting tweets...")
 cursor = db.tweets.find({'locinf.mi.test': {'$ne': None}})
 
+count = 0
 tf = EventDetection('geo.coordinates')
+ani = plotevents(tf)
 for doc in cursor:
     print("Proc tweet by", doc['user']['screen_name'])
     tf.process_tweet(doc)
-    a = input(">")
 
-    if a == "p":
-        plotevents(tf.get_clusters(), tf.get_unclustered_points())
+    if count % 10 == 0:
+        next(ani)
+
+    #a = "p" if count % 1000 == 0 else ""# input(">")
+    count += 1
+
+    #if a == "p":
+    #    plotevents(tf)
 

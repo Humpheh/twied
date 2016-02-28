@@ -58,7 +58,7 @@ class InferThread:
                     while len(waiting) > self.worker_count:
                         for i in waiting:
                             try:
-                                result, maxval, tweet = i.get(timeout=0.02)
+                                result, li, lp, maxval, tweet = i.get(timeout=0.02)
                                 waiting.remove(i)
 
                                 # process the data
@@ -71,7 +71,9 @@ class InferThread:
                                     '$set': {
                                         field + '.poly': str(pointarr),
                                         field + '.weight': maxval,
-                                        field + '.id': self.inf_id
+                                        field + '.id': self.inf_id,
+                                        field + '.len.inds': li,
+                                        field + '.len.polys': lp
                                     }
                                 })
                                 counter += 1
@@ -120,6 +122,10 @@ class InferThread:
         pool = ThreadPool(6)
         polys = pool.map(self.add_ind, app_inds)
 
+        # count inds and polys
+        leninds = sum([p != [] for p in polys])
+        lenpolys = len(polys)
+
         logging.info("%s: Intersecting polygons for tweet...", twt['_id'])
         new_polys, max_val = polystacker.infer_location(polys)
         logging.info("%s: Polygon intersection complete.", twt['_id'])
@@ -127,4 +133,4 @@ class InferThread:
         pool.close()
         pool.join()
 
-        return new_polys, max_val, twt
+        return new_polys, leninds, lenpolys, max_val, twt

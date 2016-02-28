@@ -13,6 +13,8 @@ except re.error:
     highpoints = re.compile(u'([\u2600-\u27BF])|([\uD83C][\uDF00-\uDFFF])|([\uD83D][\uDC00-\uDE4F])|([\uD83D][\uDE80-\uDEFF])')
 
 
+"1F300-1F64F  1F680-1F6FF   2600-27BF"
+
 def filter_emoji(text):
     return highpoints.sub('', text)  #u'\u25FD', text)
 
@@ -54,14 +56,14 @@ class DBPSpotlightInterface:
         try:
             return json.loads(r.data.decode('utf8'))
         except ValueError:
-            logging.error("Unable to decode JSON data returned from DBPSpotlightInterface, trying again in " + str(delay))
-            time.sleep(delay)
-            delay = delay * 2
+            logging.error("Unable to decode JSON data for %s returned from DBPSpotlightInterface, NOT trying again in %i" % (text.encode('utf8'), delay))
+            #time.sleep(delay)
+            #delay = delay * 2
 
-            if delay > 30:
-                raise DBPSpotlightException("Max number of retries for DBPSpotlightInterface reached.")
-
-            return self.req(text, delay)
+            #if delay > 30:
+            #    raise DBPSpotlightException("Max number of retries for DBPSpotlightInterface reached.")
+            #return self.req(text, delay)
+            return None
 
     def destroy(self):
         self.pool.close()
@@ -76,7 +78,12 @@ class DBPInterface:
 
     def req(self, name):
         r = req_using_pool(self.pool, "/data/" + name + ".json", {})
-        return json.loads(r.data.decode('utf8'))['http://dbpedia.org/resource/' + name]
+        try:
+            js = json.loads(r.data.decode('utf8'))
+            return js['http://dbpedia.org/resource/' + name]
+        except ValueError:
+            #logging.warning("ValueError thrown while loading dbpedia resource on %s." % name)
+            return None
 
     def destroy(self):
         self.pool.close()

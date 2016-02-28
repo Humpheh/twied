@@ -1,12 +1,15 @@
 import logging
 import sys
+import time
 
 from configparser import NoOptionError
+from urllib3.exceptions import MaxRetryError
 
 from pymongo import MongoClient
 
 import twieds
 from multiind.inference import InferThread
+from multiind.indicators.locfieldindicator import GeonamesException
 from multiprocessing import Process
 
 
@@ -42,15 +45,26 @@ def inf_thread(testid, vals, geonames=None):
 
 
 if __name__ == "__main__":
-    # id of the test
-    tid = 2
-    tasks = [(tid, [0, 1], "humph"), (tid, [2, 3], "humpheh")]
+    while True:
+        # id of the test
+        tid = 20160225
+        tasks = [(tid, [0, 1], "humph"), (tid, [2, 3], "humpheh")]
 
-    procs = []
-    for i in tasks:
-        p = Process(target=inf_thread, args=i)
-        p.start()
-        procs.append(p)
+        try:
+            procs = []
+            for i in tasks:
+                p = Process(target=inf_thread, args=i)
+                p.start()
+                procs.append(p)
 
-    for p in procs:
-        p.join()
+            for p in procs:
+                p.join()
+
+            # break if everything went correctly
+            break
+        except MaxRetryError:
+            logging.warning("Got a MaxRetryError - sleeping for 2 mins...")
+            time.sleep(2 * 60)  # sleep for 5 mins
+        except GeonamesException:
+            logging.warning("Got a GeonamesException - sleeping for 10 mins...")
+            time.sleep(10 * 60)  # sleep for 10 mins

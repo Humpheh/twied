@@ -28,6 +28,9 @@ class MessageIndicator(Indicator):
 
         j = self.dbps.req(message)
 
+        if j is None:
+            return []
+
         statstr = ""
         polygons = []
 
@@ -38,6 +41,9 @@ class MessageIndicator(Indicator):
                     r_url = resource['@URI']
                     name = self.dbpi.extract_name(r_url)
                     datareq = self.dbpi.req(name)
+
+                    if datareq is None:
+                        continue
                     # TODO: check if http://dbpedia.org/ontology/wikiPageRedirects exists
 
                     # get the polygons and weigh them

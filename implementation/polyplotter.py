@@ -1,6 +1,8 @@
 from mpl_toolkits.basemap import Basemap
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.animation as animation
+import logging
 from matplotlib.patches import Polygon, Circle
 
 def shoot(lon, lat, azimuth, maxdist=None):
@@ -86,10 +88,11 @@ def equi(m, centerlon, centerlat, radius, *args, **kwargs):
 
     #m.plot(X,Y,**kwargs) #Should work, but doesn't...
     X,Y = m(X,Y)
-    plt.plot(X,Y,**kwargs)
 
     poly = Polygon(list(zip(X, Y)), facecolor='black', alpha=0.2)
-    plt.gca().add_patch(poly)
+    pt = plt.gca().add_patch(poly)
+    pt2, = plt.plot(X,Y,**kwargs)
+    return pt2, pt
 
 
 def add_poly(coords, m):
@@ -120,30 +123,62 @@ def polyplot(polygons, points):
     plt.show()
 
 
-def plotevents(clusters, unclustered):
-    m = Basemap(projection='robin', lon_0=0)
+def plotevents(ed):
+    # Set up formatting for the movie files
+    Writer = animation.writers['ffmpeg']
+    writer = Writer(fps=15, metadata=dict(artist='Me'), bitrate=1800)
+
+    #m = Basemap(projection='robin', lon_0=59, lat_0=-12, lon_1=50, lat_1=4.2)
+    m = Basemap(projection='merc', lat_0=53.458736, lon_0=-2.2,
+        resolution='l', area_thresh = 1000.0,
+        urcrnrlat=58.869587, urcrnrlon=4.186178,
+        llcrnrlat=48.949979, llcrnrlon=-12.359231) # lat, lon
     m.drawcoastlines()
     m.drawmapboundary()
 
-    for c in clusters:
-        for p in c.get_points():
-            print('Clustered:', p)
+    torem = []
+
+    ims = []
+    for framid in range(350):
+        yield
+        logging.info("Drawing frame %i" % framid)
+
+        #for x in torem:
+       #     x.remove()
+        torem = []
+
+        clusters, unclustered, radius = ed.get_clusters(), ed.get_unclustered_points(), ed.c_manager.radius
+        for c in clusters:
+            for p in c.get_points():
+                x, y = m(p[0], p[1])
+                b, = m.plot(x, y, 'b.')
+                torem.append(b)
+
+            for x in c.centres:
+                # point = Circle(xy2, radius=2000, facecolor='red', alpha=0.4)
+                # plt.gca().add_patch(point)
+                b = equi(m, x[0], x[1], radius, color='red', alpha=0.4)
+                torem += b
+                xy2 = m(x[0], x[1])
+                b, = m.plot(xy2[0], xy2[1], 'g.')
+                torem.append(b)
+
+        for p in unclustered:
             x, y = m(p[0], p[1])
-            m.plot(x, y, 'bo')
+            b, = m.plot(x, y, 'r.')
+            torem.append(b)
 
-        for x in c.centres:
-            print('Centre:', x)
-            # point = Circle(xy2, radius=2000, facecolor='red', alpha=0.4)
-            # plt.gca().add_patch(point)
-            equi(m, x[0], x[1], 100, color='red', alpha=0.4)
-            xy2 = m(x[0], x[1])
-            m.plot(xy2[0], xy2[1], 'go')
+        txt = plt.text(-1, 0.2, "%i - %s" % (framid, ed.c_manager.lasttime), fontsize=10)
+        torem.append(txt)
 
-    for p in unclustered:
-        print('Unclustered:', p)
-        x, y = m(p[0], p[1])
-        m.plot(x, y, 'ro')
+        #totimg = torem[0]
+        #for x in range(1, len(torem)):
+        #    totimg += torem[x]
+        ims.append(torem)
 
+
+    im_ani = animation.ArtistAnimation(plt.gcf(), ims, interval=50, repeat_delay=3000, blit=True)
+    im_ani.save('im.mp4', writer=writer, dpi=200)
     plt.show()
 
 
