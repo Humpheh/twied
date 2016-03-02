@@ -9,6 +9,7 @@ class GeotagIndicator(Indicator):
     """
 
     def __init__(self, config):
+        super().__init__()
         self.weight = config.getfloat("mi_weights", "TAG")
 
     def get_loc(self, geofield):

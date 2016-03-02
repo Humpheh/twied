@@ -15,6 +15,7 @@ class WebsiteIndicator(Indicator):
     tld_regex = r"[^\s\/](?:\.([a-z]{2,3}))?(?:\s|\/|$)"
 
     def __init__(self, config):
+        super().__init__()
         csv_loc = config.get("multiindicator", "tld_csv")
         polydb_url = config.get("multiindicator", "gadm_polydb_path")
 

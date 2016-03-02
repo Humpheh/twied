@@ -11,6 +11,7 @@ class CoordinateIndicator(Indicator):
     regex = r"(-?\d{1,2}\.\d{6})\s?,\s?(-?\d{1,2}\.\d{6})"
 
     def __init__(self, config):
+        super().__init__()
         self.prog = re.compile(CoordinateIndicator.regex)
         self.weight = config.getfloat("mi_weights", "COD")
 

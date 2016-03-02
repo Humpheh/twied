@@ -20,6 +20,7 @@ class GISLocFieldIndicator(Indicator):
     """
 
     def __init__(self, config):
+        super().__init__()
         self.polydb_url = config.get("multiindicator", "gadm_polydb_path")
 
         self.geonames = GisgraphyInterface(config)
