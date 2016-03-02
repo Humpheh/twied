@@ -1,18 +1,31 @@
 import twieds
 import logging
 import sys
+import time
 
 from pymongo import MongoClient
 from configparser import NoOptionError
+from urllib3.exceptions import MaxRetryError
 
 from multiind.inference import InferThread
+from multiind.indicators.locfieldindicator import GeonamesException
 
 if __name__ == "__main__":
     # setup argpase, configparse and logger
     config, args = twieds.setup_mi_args("settings/locinf.ini")
     twieds.setup_logger(args.logfile)
 
-    print(args)
+    # print out the arguments to the logging file
+    for arg in vars(args):
+        logging.info("[arg] %-8s: %s" % (arg, getattr(args, arg)))
+
+    logging.info("Waiting 10 seconds. Are these correct? (ctrl+c to stop)")
+    try:
+        time.sleep(10)
+    except KeyboardInterrupt:
+        logging.info("Inference cancelled.")
+        sys.exit()
+    logging.info("Continuing with inference...")
 
     # connect to the MongoDB
     logging.info("Connecting to MongoDB...")
@@ -38,9 +51,20 @@ if __name__ == "__main__":
 
     query = {
         'geo': {'$ne': None},
-        field + '.id': {'$ne': args.testid},
+        field + '.id': {'$ne': args.infid},
         field + '.alloc': {'$in': args.alc}
     }
 
-    inf = InferThread(col, config, test=True, inf_id=args.testid)
-    inf.infer(query, field=field)
+    inf = InferThread(col, config, test=args.test, inf_id=args.infid)
+    while True:
+        logging.info("Starting inference...")
+        try:
+            inf.infer(query, field=field)
+            logging.info("Inference finished successfully.")
+            break
+        except MaxRetryError:
+            logging.warning("Got a MaxRetryError - sleeping for 2 mins...")
+            time.sleep(2 * 60)  # sleep for 5 mins
+        except GeonamesException:
+            logging.warning("Got a GeonamesException - sleeping for 10 mins...")
+            time.sleep(10 * 60)  # sleep for 10 mins

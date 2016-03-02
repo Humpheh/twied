@@ -16,8 +16,7 @@ def setup(logfile, settingsfile, printlevel=logging.INFO):
 def setup_logger(filename, printlevel=logging.INFO):
     """
     Function to setup a logger to console and file.
-    :param filename: (optional) the filename to output to
-                     default = collector.log, false for no file output
+    :param filename: the filename to output to, false for no file output
     """
     # setup the logger
     logformatstr = "%(asctime)s [%(threadName)-11s] %(levelname)-7s - %(message)s"
@@ -39,7 +38,7 @@ def setup_logger(filename, printlevel=logging.INFO):
         root_logger.addHandler(file_handler)
 
     logging.info("-----------")
-    logging.info("Initialised logging for: {0} {1}".format(sys.argv[0], os.getpid()))
+    logging.info("Initialised logging for: {0} {1} {2}".format(filename, sys.argv[0], os.getpid()))
     logging.info("-----------")
 
 
@@ -50,12 +49,16 @@ def setup_mi_args(settingsfile):
     parser = argparse.ArgumentParser(description="Run a Multi-Indicator location inference thread")
 
     parser.add_argument(
-        '-testid', help='the id of the test to store with the inferred location',
+        '-infid', help='the id of the inference to store with the inferred location',
         required=True
     )
     parser.add_argument(
         '-field', help='the fieldname to store the inferred location in',
         required=True
+    )
+    parser.add_argument(
+        '-test', type=bool, nargs='?', help='if true, will ignore the geotag on the tweet object',
+        default=False
     )
     parser.add_argument(
         '-logfile', help='the logfile to output to',
