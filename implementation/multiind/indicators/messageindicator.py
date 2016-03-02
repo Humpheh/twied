@@ -59,14 +59,14 @@ class MessageIndicator(Indicator):
                             pos = (float(lon), float(lat))
                             polygons.append(self.point_to_poly(pos, similarity))
                             statstr += '.'
-                        except:
+                        except KeyError:
                             try:
                                 lat = datareq['http://dbpedia.org/property/sourceLatD'][0]['value']
                                 lon = datareq['http://dbpedia.org/property/sourceLongD'][0]['value']
                                 pos = (float(lon), float(lat))
                                 polygons.append(self.point_to_poly(pos, similarity))
                                 statstr += '.'
-                            except:
+                            except KeyError:
                                 logging.warning("No georss/sourceD field on 'place': %s" % name)
                                 statstr += '!'
                                 # TODO: try latd or longd

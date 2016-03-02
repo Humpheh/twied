@@ -2,6 +2,7 @@ import configparser
 import logging
 import os
 import sys
+import argparse
 
 
 def setup(logfile, settingsfile, printlevel=logging.INFO):
@@ -40,3 +41,56 @@ def setup_logger(filename, printlevel=logging.INFO):
     logging.info("-----------")
     logging.info("Initialised logging for: {0} {1}".format(sys.argv[0], os.getpid()))
     logging.info("-----------")
+
+
+def setup_mi_args(settingsfile):
+    config = configparser.ConfigParser()
+    config.read(settingsfile)
+
+    parser = argparse.ArgumentParser(description="Run a Multi-Indicator location inference thread")
+
+    parser.add_argument(
+        '-testid', help='the id of the test to store with the inferred location',
+        required=True
+    )
+    parser.add_argument(
+        '-field', help='the fieldname to store the inferred location in',
+        required=True
+    )
+    parser.add_argument(
+        '-logfile', help='the logfile to output to',
+        default="logs/mi_test.log"
+    )
+    parser.add_argument(
+        '-geo', help='geonames username to use for inference',
+        default=config.get('geonames', 'user')
+    )
+    parser.add_argument(
+        '-alc', nargs='+', type=int, help='the allocation ids to infer for'
+    )
+    parser.add_argument(
+        '-db', help='address of the database',
+        default=config.get('mongo', 'address')
+    )
+    parser.add_argument(
+        '-port', type=int, help='port of the database',
+        default=config.get('mongo', 'port')
+    )
+    parser.add_argument(
+        '-coll', help='database and collection name seperated by a dot (eg, twitter.tweets)',
+        default=config.get('mongo', 'database') + "." + config.get('mongo', 'collection')
+    )
+    parser.add_argument(
+        '-workers', help='the number of simulatenous threads to run',
+        default=config.get('multiindicator', 'workers')
+    )
+    parser.add_argument(
+        '-gadmdb', help='the gadm polydb path',
+        default=config.get('multiindicator', 'gadm_polydb_path')
+    )
+    parser.add_argument(
+        '-tldcsv', help='the tld csv file',
+        default=config.get('multiindicator', 'tld_csv')
+    )
+
+    return config, parser.parse_args()
