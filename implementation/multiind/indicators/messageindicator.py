@@ -55,14 +55,21 @@ class MessageIndicator(Indicator):
                         statstr += '#'
                     else:
                         try:
-                            lon, lat = datareq['http://www.georss.org/georss/point'][0]['value'].split(" ")
-                            pos = (float(lat), float(lon))
+                            lat, lon = datareq['http://www.georss.org/georss/point'][0]['value'].split(" ")
+                            pos = (float(lon), float(lat))
                             polygons.append(self.point_to_poly(pos, similarity))
                             statstr += '.'
                         except:
-                            logging.warning("No georss field on 'place': %s" % name)
-                            statstr += '!'
-                            # TODO: try latd or longd
+                            try:
+                                lat = datareq['http://dbpedia.org/property/sourceLatD'][0]['value']
+                                lon = datareq['http://dbpedia.org/property/sourceLongD'][0]['value']
+                                pos = (float(lon), float(lat))
+                                polygons.append(self.point_to_poly(pos, similarity))
+                                statstr += '.'
+                            except:
+                                logging.warning("No georss/sourceD field on 'place': %s" % name)
+                                statstr += '!'
+                                # TODO: try latd or longd
                 else:
                     statstr += ' '
 
