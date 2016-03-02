@@ -124,7 +124,7 @@ class InferThread:
 
         # count inds and polys
         leninds = sum([p != [] for p in polys])
-        lenpolys = len(polys)
+        lenpolys = sum([len(polys) for p in polys])
 
         logging.info("%s: Intersecting polygons for tweet...", twt['_id'])
         new_polys, max_val = polystacker.infer_location(polys)
