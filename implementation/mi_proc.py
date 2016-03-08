@@ -52,7 +52,6 @@ if __name__ == "__main__":
     field = args.field  # 'locinf.mi.test'
 
     query = {
-        'geo': {'$ne': None},
         field + '.id': {'$ne': args.infid},
         field + '.alloc': {'$in': args.alc}
     }
