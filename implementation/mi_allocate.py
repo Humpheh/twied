@@ -49,7 +49,8 @@ for doc in cursor:
         }
     })
     allocid = (allocid + 1) % args.num
-    if count % 100 == 0:
+    if count % 1000 == 0:
         logging.info("Allocated %i" % count)
+    count += 1
 
 logging.info("Allocation complete.")
