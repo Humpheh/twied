@@ -182,6 +182,65 @@ def plotevents(ed):
     plt.show()
 
 
+def plotevents(ed):
+    # Set up formatting for the movie files
+    Writer = animation.writers['ffmpeg']
+    writer = Writer(fps=15, metadata=dict(artist='Me'), bitrate=1800)
+
+    #m = Basemap(projection='robin', lon_0=59, lat_0=-12, lon_1=50, lat_1=4.2)
+    m = Basemap(projection='merc', lat_0=53.458736, lon_0=-2.2,
+        resolution='l', area_thresh = 1000.0,
+        urcrnrlat=58.869587, urcrnrlon=4.186178,
+        llcrnrlat=48.949979, llcrnrlon=-12.359231) # lat, lon
+    m.drawcoastlines()
+    m.drawmapboundary()
+
+    torem = []
+
+    ims = []
+    for framid in range(350):
+        yield
+        logging.info("Drawing frame %i" % framid)
+
+        #for x in torem:
+       #     x.remove()
+        torem = []
+
+        clusters, unclustered, radius = ed.get_clusters(), ed.get_unclustered_points(), ed.c_manager.radius
+        for c in clusters:
+            for p in c.get_points():
+                x, y = m(p[0], p[1])
+                b, = m.plot(x, y, 'b.')
+                torem.append(b)
+
+            for x in c.centres:
+                # point = Circle(xy2, radius=2000, facecolor='red', alpha=0.4)
+                # plt.gca().add_patch(point)
+                b = equi(m, x[0], x[1], radius, color='red', alpha=0.4)
+                torem += b
+                xy2 = m(x[0], x[1])
+                b, = m.plot(xy2[0], xy2[1], 'g.')
+                torem.append(b)
+
+        for p in unclustered:
+            x, y = m(p[0], p[1])
+            b, = m.plot(x, y, 'r.')
+            torem.append(b)
+
+        txt = plt.text(-1, 0.2, "%i - %s" % (framid, ed.c_manager.lasttime), fontsize=10)
+        torem.append(txt)
+
+        #totimg = torem[0]
+        #for x in range(1, len(torem)):
+        #    totimg += torem[x]
+        ims.append(torem)
+
+
+    im_ani = animation.ArtistAnimation(plt.gcf(), ims, interval=50, repeat_delay=3000, blit=True)
+    im_ani.save('im.mp4', writer=writer, dpi=200)
+    plt.show()
+
+
 def d_polyplot(polyold, polynew):
     fig = plt.figure()
     ax = fig.add_subplot(211)

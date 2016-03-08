@@ -6,8 +6,7 @@ from pymongo import MongoClient
 
 import twieds
 from eventec.eventdetection import EventDetection
-#from polyplotter import plotevents
-from polyani import plotevents
+from polyani import plotevents_count
 
 config = twieds.setup("logs/ed_test.log", "settings/locinf.ini", logging.DEBUG)
 
@@ -29,18 +28,17 @@ logging.info("Getting tweets...")
 cursor = db.tweets.find({'locinf.mi.test': {'$ne': None}})
 
 count = 0
-tf = EventDetection('geo.coordinates')
-ani = plotevents(tf)
+polys = {'twts': []}
+ani = plotevents_count(polys)
 for doc in cursor:
-    print("Proc tweet by", doc['user']['screen_name'])
-    tf.process_tweet(doc)
-
-    if count % 50 == 0:
+    print("%3s," % doc['user']['screen_name'],)
+    if count % 10 == 0:
+        print("Drawing..")
         next(ani)
 
-    #a = "p" if count % 1000 == 0 else ""# input(">")
+    polys['twts'].append(doc)
+    if len(polys['twts']) > 10:
+        polys['twts'] = polys['twts'][1:]
     count += 1
 
-    #if a == "p":
-    #    plotevents(tf)
 
