@@ -4,8 +4,6 @@ import logging
 import re
 import time
 import sys
-from .. import GeonamesException
-
 
 try:
     # UCS-4
@@ -23,6 +21,14 @@ def filter_emoji(text):
 
 def req_using_pool(pool, page, data):
     return pool.request('GET', page, data)
+
+
+class GeonamesDecodeException(Exception):
+    def __init__(self, value):
+        self.value = value
+
+    def __str__(self):
+        return repr(self.value)
 
 
 class DBPSpotlightException(Exception):
@@ -118,7 +124,7 @@ class GeonamesInterface:
             except ValueError:
                 logging.error("Value error in getting Geonames request. (Sleeping for %i second...)" % i)
                 time.sleep(i)
-        raise GeonamesException("Unable to decode geonames request after 5 attempts.")
+        raise GeonamesDecodeException("Unable to decode geonames request after 5 attempts.")
 
     def destroy(self):
         self.pool.close()
