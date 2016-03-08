@@ -2,10 +2,12 @@ import twieds
 import logging
 import sys
 import time
+import datetime
 
 from pymongo import MongoClient
 from configparser import NoOptionError
 from urllib3.exceptions import MaxRetryError
+from twython import Twython
 
 from multiind.inference import InferThread
 from multiind.indicators.locfieldindicator import GeonamesException
@@ -55,12 +57,25 @@ if __name__ == "__main__":
         field + '.alloc': {'$in': args.alc}
     }
 
-    inf = InferThread(col, config, test=args.test, inf_id=args.infid)
+    api_settings = config._sections['twitter']
+    twitter = Twython(**api_settings)
+
+    def tweetstr(string):
+        global twitter
+        logging.info("Attemting to send tweet: {0}".format(string))
+        twitter.update_status(status=string)
+        logging.info("Tweet sent.")
+
+
+    tweetstr("%s (%s)\nInference started\n%s" % (args.infid, args.pid, datetime.datetime.utcnow()))
+
+    inf = InferThread(col, config, test=args.test, inf_id=args.infid, tweetfunc=tweetstr, tweetint=10000, proc_id=args.pid)
     while True:
         logging.info("Starting inference...")
         try:
             inf.infer(query, field=field)
             logging.info("Inference finished successfully.")
+            tweetstr("@Humpheh %s - finished successfully." % args.pid)
             break
         except MaxRetryError:
             logging.warning("Got a MaxRetryError - sleeping for 2 mins...")
@@ -68,3 +83,7 @@ if __name__ == "__main__":
         except GeonamesException:
             logging.warning("Got a GeonamesException - sleeping for 10 mins...")
             time.sleep(10 * 60)  # sleep for 10 mins
+        except Exception as e:
+            logging.error("Exception caught")
+            tweetstr("@Humpheh %s - exited due to a %s." % (args.pid, type(e).__name__))
+            raise

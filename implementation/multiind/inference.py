@@ -20,7 +20,7 @@ class Indicators(Enum):
 
 
 class InferThread:
-    def __init__(self, dbcol, config, inf_id=None, proc_id="default", test=False):
+    def __init__(self, dbcol, config, inf_id=None, proc_id="default", test=False, tweetfunc=None, tweetint=1000):
         # setup the indicators
         logging.info("Setting up indicators...")
         self.inds = dict()
@@ -43,6 +43,8 @@ class InferThread:
         self.dbcol = dbcol
         self.inf_id = inf_id
         self.proc_id = proc_id
+        self.tweetint = tweetint
+        self.tweetfunc = tweetfunc
 
         # setup the workers
         self.worker_count = config.getint("multiindicator", "workers")
@@ -82,6 +84,11 @@ class InferThread:
                                 })
                                 counter += 1
                                 logging.info("=== Tweets processed: %5i ===" % counter)
+
+                                if counter % self.tweetint == 0 and self.tweetfunc is not None:
+                                    tstr = "Infer process %s (%s)\n%i processed." % (self.inf_id, self.proc_id, counter)
+                                    self.tweetfunc(tstr)
+
                             except TimeoutError:
                                 pass
                         time.sleep(0.1)

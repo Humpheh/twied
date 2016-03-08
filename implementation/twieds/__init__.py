@@ -76,6 +76,9 @@ def setup_mi_args(settingsfile):
         default=config.get('mongo', 'address')
     )
     parser.add_argument(
+        '-pid', help='name of the process', required=True
+    )
+    parser.add_argument(
         '-port', type=int, help='port of the database',
         default=config.get('mongo', 'port')
     )
