@@ -1,1 +1,0 @@
-past_users = 
