@@ -30,7 +30,7 @@ except NoOptionError:
     logging.critical("Cannot connect to MongoDB database and collection. Config incorrect?")
     sys.exit()
 
-cursor = col.find({'geo': {'$ne': None}})
+cursor = col.find()#{'geo': {'$ne': None}})
 
 if args.num < 0:
     logging.error("Number range must be >= 0.")
