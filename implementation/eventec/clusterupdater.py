@@ -33,7 +33,7 @@ class ClusterUpdater:
                     break
 
     def update_oldclusters(self, tweet):
-        # remove any that are moth an 48hrs old
+        # remove any that are more than a maxage
         old = []
         for cluster in self.clsman:
             age = tweet['timestamp_obj'] - cluster.oldest

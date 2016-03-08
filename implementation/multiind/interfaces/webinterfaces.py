@@ -3,6 +3,8 @@ import urllib3
 import logging
 import re
 import time
+import sys
+from .. import GeonamesException
 
 
 try:
@@ -109,8 +111,14 @@ class GeonamesInterface:
 
     def req(self, query):
         self.post_data['q'] = filter_emoji(query)
-        r = req_using_pool(self.pool, "/search", self.post_data)
-        return json.loads(r.data.decode('utf8'))
+        for i in range(5):
+            try:
+                r = req_using_pool(self.pool, "/search", self.post_data)
+                return json.loads(r.data.decode('utf8'))
+            except ValueError:
+                logging.error("Value error in getting Geonames request. (Sleeping for %i second...)" % i)
+                time.sleep(i)
+        raise GeonamesException("Unable to decode geonames request after 5 attempts.")
 
     def destroy(self):
         self.pool.close()

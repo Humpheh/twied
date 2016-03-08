@@ -7,6 +7,7 @@ from geopy.distance import vincenty
 class ClusterManager:
     def __init__(self, field):
         self.clusters = []
+        self.oldclusters = []
         self.unclustered = []
         self.geofield = field
         self.geofieldspl = field.split(".")
@@ -46,6 +47,7 @@ class ClusterManager:
     def remove_cluster(self, cluster):
         try:
             self.clusters.remove(cluster)
+            self.oldclusters.append(cluster)
             return True
         except ValueError:
             return False
