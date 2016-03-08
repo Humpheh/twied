@@ -12,17 +12,20 @@ config = twieds.setup("logs/mi_alloc.log", "settings/locinf.ini")
 parser = argparse.ArgumentParser(description="Allocates each tweet in a collection with a number in specified range.")
 parser.add_argument('-field', help='the fieldname to store the inferred location in', required=True)
 parser.add_argument('-num', type=int, help='the range [0, X] of id\'s to allocate', required=True)
+parser.add_argument('-db', help='address of the database', default=config.get('mongo', 'address'))
+parser.add_argument('-port', type=int, help='port of the database', default=config.get('mongo', 'port'))
+parser.add_argument('-coll', help='database and collection name seperated by a dot (eg, twitter.tweets)', required=True)
 args = parser.parse_args()
 
 # connect to the MongoDB
 logging.info("Connecting to MongoDB...")
-client = MongoClient(config.get("mongo", "address"), config.getint("mongo", "port"))
+client = MongoClient(args.db, args.port)
 logging.info("Connected to MongoDB.")
 
 # select the database and collection based off config
 try:
-    db = client[config.get("mongo", "database")]
-    col = db["geotweets"]  # config.get("mongo", "collection")]
+    db_n, col_n = args.coll.split(".")
+    col = client[db_n][col_n]
 except NoOptionError:
     logging.critical("Cannot connect to MongoDB database and collection. Config incorrect?")
     sys.exit()
