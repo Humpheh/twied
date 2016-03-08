@@ -19,9 +19,9 @@ if __name__ == "__main__":
     for arg in vars(args):
         logging.info("[arg] %-8s: %s" % (arg, getattr(args, arg)))
 
-    logging.info("Waiting 10 seconds. Are these correct? (ctrl+c to stop)")
+    logging.info("Are these correct? (Any input to continue)")
     try:
-        time.sleep(10)
+        input(">")
     except KeyboardInterrupt:
         logging.info("Inference cancelled.")
         sys.exit()

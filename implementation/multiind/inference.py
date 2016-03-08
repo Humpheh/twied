@@ -4,6 +4,7 @@ from multiind import polystacker
 from multiprocessing.dummy import Pool as ThreadPool
 from multiprocessing.context import TimeoutError
 import logging
+import datetime
 import time
 from pymongo.errors import CursorNotFound
 
@@ -19,7 +20,7 @@ class Indicators(Enum):
 
 
 class InferThread:
-    def __init__(self, dbcol, config, inf_id=None, test=False):
+    def __init__(self, dbcol, config, inf_id=None, proc_id="default", test=False):
         # setup the indicators
         logging.info("Setting up indicators...")
         self.inds = dict()
@@ -41,6 +42,7 @@ class InferThread:
         self.config = config
         self.dbcol = dbcol
         self.inf_id = inf_id
+        self.proc_id = proc_id
 
         # setup the workers
         self.worker_count = config.getint("multiindicator", "workers")
@@ -72,8 +74,10 @@ class InferThread:
                                         field + '.poly': str(pointarr),
                                         field + '.weight': maxval,
                                         field + '.id': self.inf_id,
+                                        field + '.pid': self.proc_id,
                                         field + '.len.inds': li,
-                                        field + '.len.polys': lp
+                                        field + '.len.polys': lp,
+                                        field + '.date': datetime.datetime.utcnow()
                                     }
                                 })
                                 counter += 1
