@@ -61,6 +61,9 @@ class ClusterManager:
         self.unclustered.append(tweet)
         logging.debug("Appended to unclustered (%i)" % len(self.unclustered))
 
+    def get_all_clusters(self):
+        return self.oldclusters + self.clusters
+
 
 class Coordinate:
     def __init__(self, lat, lon):
@@ -74,6 +77,9 @@ class Coordinate:
     def __getitem__(self, item):
         return [self.lat, self.lon][item]
 
+    def get(self):
+        return [self.lat, self.lon]
+
     def rev(self):
         return [self.lon, self.lat]
 
@@ -83,7 +89,6 @@ class TweetCluster:
         self._tweets = sorted(tweets, key=lambda x: x['timestamp_obj'])
         self.centres = [clsman.get_coordinate(centre)]
         self.clsman = clsman
-        print([x['timestamp_obj'] for x in self._tweets])
         self.oldest = self._tweets[-1]['timestamp_obj']
 
     def merge(self, cluster):
@@ -103,3 +108,18 @@ class TweetCluster:
 
     def get_points(self):
         return [self.clsman.get_coordinate(x) for x in self._tweets]
+
+    def as_dict(self):
+        return {
+            'tweets': [{
+                    'id': t['id_str'],
+                    'time': t['timestamp_obj'],
+                    'coordinate': self.clsman.get_coordinate(t).get()
+                } for t in self._tweets
+            ],
+            'centres': [s.get() for s in self.centres],
+            'times': {
+                'start': min([t['timestamp_obj'] for t in self._tweets]),
+                'finish': max([t['timestamp_obj'] for t in self._tweets])
+            }
+        }

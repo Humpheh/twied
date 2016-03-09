@@ -35,3 +35,6 @@ class EventDetection:
 
     def get_unclustered_points(self):
         return [self.c_manager.get_coordinate(x) for x in self.get_unclustered()]
+
+    def get_all_clusters(self):
+        return self.c_manager.get_all_clusters()
