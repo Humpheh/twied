@@ -14,13 +14,19 @@ def plotevents_count(tweets):
     p1 = (-12, 63)
     p2 = (5, 47)
 
-    ims = []
     lastx = None
-    for framid in range(500):#350):
+    m = 0
+    size = None
+    frames = []
+    framid = 0
+    while True: #350):
         yield
-        logging.info("Drawing frame %i" % framid)
 
-        torem = []
+        if tweets['done']:
+            break
+
+        logging.info("Drawing frame %i" % framid)
+        framid += 1
 
         polys = []
         for t in tweets['twts']:
@@ -33,12 +39,25 @@ def plotevents_count(tweets):
 
         lastx = x
 
-        torem.append(plt.imshow(x, interpolation='none'))
+        if x is not None:
+            m = max([m, x.max()])
+            if size is None:
+                size = x.shape
+        frames.append([x, tweets['nexttime']])
 
-        txt = plt.text(-1, -3, "%i" % framid, fontsize=10)
-        torem.append(txt)
+    ims = []
+    for i in frames:
+        mat = i[0]
+        if i is None:
+            mat = np.zeros(size)
+        mat[0, 0] = m
+
+        torem = list()
+        torem.append(plt.imshow(mat, interpolation='none'))
+        torem.append(plt.text(-1, -3, i[1], fontsize=10))
         ims.append(torem)
 
+    plt.gca().set_autoscale_on(False)
     im_ani = animation.ArtistAnimation(plt.gcf(), ims, interval=50, repeat_delay=3000, blit=True)
     im_ani.save('im2.mp4', writer=writer, dpi=200)
     plt.show()

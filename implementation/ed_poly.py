@@ -7,6 +7,7 @@ from pymongo import MongoClient
 import twieds
 from eventec.eventdetection import EventDetection
 from polyani import plotevents_count
+from datetime import datetime, timedelta
 
 config = twieds.setup("logs/ed_test.log", "settings/locinf.ini", logging.DEBUG)
 
@@ -28,17 +29,22 @@ logging.info("Getting tweets...")
 cursor = db.tweets.find({'locinf.mi.test': {'$ne': None}})
 
 count = 0
-polys = {'twts': []}
+polys = {'twts': [], 'nexttime': None, 'done': False}
 ani = plotevents_count(polys)
 for doc in cursor:
-    print("%3s," % doc['user']['screen_name'],)
-    if count % 10 == 0:
-        print("Drawing..")
-        next(ani)
+    if polys['nexttime'] is None:
+        polys['nexttime'] = doc['timestamp_obj'] + timedelta(hours=1)
+    else:
+        while doc['timestamp_obj'] > polys['nexttime']:
+            print("Drawing", polys['nexttime'])
+            next(ani)
 
+            polys['nexttime'] = polys['nexttime'] + timedelta(hours=1)
+            polys['twts'] = []
+
+    print("%3s," % doc['user']['screen_name'],)
     polys['twts'].append(doc)
-    if len(polys['twts']) > 10:
-        polys['twts'] = polys['twts'][1:]
     count += 1
 
-
+polys['done'] = True
+next(ani)
