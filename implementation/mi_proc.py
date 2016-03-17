@@ -11,6 +11,7 @@ from twython import Twython
 
 from multiind.inference import InferThread
 from multiind.indicators.locfieldindicator import GeonamesException
+from multiind.interfaces.webinterfaces import GeonamesDecodeException
 
 if __name__ == "__main__":
     # setup argpase, configparse and logger
@@ -68,7 +69,7 @@ if __name__ == "__main__":
 
     tweetstr("%s (%s)\nInference started\n%s" % (args.infid, args.pid, datetime.datetime.utcnow()))
 
-    inf = InferThread(col, config, test=args.test, inf_id=args.infid, tweetfunc=tweetstr, tweetint=10000, proc_id=args.pid)
+    inf = InferThread(col, config, test=args.test, inf_id=args.infid, tweetfunc=tweetstr, tweetint=5000, proc_id=args.pid)
     while True:
         logging.info("Starting inference...")
         try:
@@ -82,6 +83,9 @@ if __name__ == "__main__":
         except GeonamesException:
             logging.warning("Got a GeonamesException - sleeping for 10 mins...")
             time.sleep(10 * 60)  # sleep for 10 mins
+        except GeonamesDecodeException:
+            logging.warning("Got a GeonamesDecodeException - sleeping for 2 mins...")
+            time.sleep(2 * 60)  # sleep for 2 mins
         except Exception as e:
             logging.error("Exception caught")
             tweetstr("@Humpheh %s - exited due to a %s." % (args.pid, type(e).__name__))
