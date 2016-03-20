@@ -14,7 +14,7 @@ class ClusterCreator:
         candidates = []
         for t in self.clsman.unclustered:
             dist = vincenty(coord.rev(), self.clsman.get_coordinate(t).rev()).km
-            time = abs(tweet['timestamp_obj'] - t['timestamp_obj'])
+            time = abs(tweet[self.clsman.tsfield] - t[self.clsman.tsfield])
 
             if dist < self.clsman.radius and time < self.clsman.timediff:
                 logging.debug("Candidate tweet %.2f km apart" % dist)

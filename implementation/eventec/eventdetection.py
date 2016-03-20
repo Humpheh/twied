@@ -4,13 +4,21 @@ from .clusterupdater import ClusterUpdater
 
 
 class EventDetection:
-    def __init__(self, field='geo.coordinate'):
-        self.c_manager = ClusterManager(field=field)
+    def __init__(self, field='geo.coordinate', tsfield='timestamp_obj'):
+        self.tsfield = tsfield
+
+        self.c_manager = ClusterManager(field=field, tsfield=tsfield)
         self.c_creator = ClusterCreator(self.c_manager)
         self.c_updater = ClusterUpdater(self.c_manager)
 
     def process_tweet(self, tweet):
-        self.c_manager.lasttime = tweet['timestamp_obj']
+        # try to get the coordinate, if fails - pass
+        try:
+            self.c_manager.get_coordinate(tweet)
+        except (KeyError, TypeError):
+            return
+
+        self.c_manager.lasttime = tweet[self.tsfield]
         # attempt to create new cluster
         created = self.c_creator.process_tweet(tweet)
 
@@ -38,3 +46,6 @@ class EventDetection:
 
     def get_all_clusters(self):
         return self.c_manager.get_all_clusters()
+
+    def __str__(self):
+        return str(self.c_manager) + " " + str(self.c_creator) + " " + str(self.c_updater)

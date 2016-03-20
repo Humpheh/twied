@@ -5,17 +5,23 @@ from geopy.distance import vincenty
 
 
 class ClusterManager:
-    def __init__(self, field):
+    def __init__(self, field, tsfield):
         self.clusters = []
         self.oldclusters = []
         self.unclustered = []
         self.geofield = field
         self.geofieldspl = field.split(".")
+        self.tsfield = tsfield
+
+        #self.radius = 10  # km
+        #self.mincount = 15  # tweets #5
+        #self.timediff = datetime.timedelta(minutes=60)
+        #self.maxage = datetime.timedelta(hours=1)#24)
 
         self.radius = 10  # km
-        self.mincount = 5  # tweets
-        self.timediff = datetime.timedelta(minutes=60)
-        self.maxage = datetime.timedelta(hours=24)
+        self.mincount = 15  # tweets #5
+        self.timediff = datetime.timedelta(minutes=30)
+        self.maxage = datetime.timedelta(minutes=30)#24)
 
         self.lasttime = datetime.datetime.utcnow()
 
@@ -23,7 +29,7 @@ class ClusterManager:
         return iter(self.clusters)
 
     def __str__(self):
-        return "ClusterManager: %i clusters" % len(self.clusters)
+        return "<ClusterManager: %i clusters>" % len(self.clusters)
 
     def get_coordinate(self, tweet):
         cur_dict = tweet
@@ -64,6 +70,10 @@ class ClusterManager:
     def get_all_clusters(self):
         return self.oldclusters + self.clusters
 
+    def __str__(self):
+        return "<ClusterManager: %i clusters, %i old clusters, %i unclustered>" %\
+               (len(self.clusters), len(self.oldclusters), len(self.unclustered))
+
 
 class Coordinate:
     def __init__(self, lat, lon):
@@ -86,10 +96,10 @@ class Coordinate:
 
 class TweetCluster:
     def __init__(self, tweets, centre, clsman):
-        self._tweets = sorted(tweets, key=lambda x: x['timestamp_obj'])
+        self._tweets = sorted(tweets, key=lambda x: x[clsman.tsfield])
         self.centres = [clsman.get_coordinate(centre)]
         self.clsman = clsman
-        self.oldest = self._tweets[-1]['timestamp_obj']
+        self.oldest = self._tweets[-1][clsman.tsfield]
 
     def merge(self, cluster):
         self._tweets += cluster._tweets
@@ -104,7 +114,7 @@ class TweetCluster:
 
     def add_tweet(self, tweet):
         self._tweets.append(tweet)
-        self.oldest = max([self.oldest, tweet['timestamp_obj']])
+        self.oldest = max([self.oldest, tweet[self.clsman.tsfield]])
 
     def get_points(self):
         return [self.clsman.get_coordinate(x) for x in self._tweets]
@@ -112,14 +122,14 @@ class TweetCluster:
     def as_dict(self):
         return {
             'tweets': [{
-                    'id': t['id_str'],
-                    'time': t['timestamp_obj'],
+                    'id': t['tweetid'],#'id_str'],
+                    'time': t[self.clsman.tsfield],
                     'coordinate': self.clsman.get_coordinate(t).get()
                 } for t in self._tweets
             ],
             'centres': [s.get() for s in self.centres],
             'times': {
-                'start': min([t['timestamp_obj'] for t in self._tweets]),
-                'finish': max([t['timestamp_obj'] for t in self._tweets])
+                'start': min([t[self.clsman.tsfield] for t in self._tweets]),
+                'finish': max([t[self.clsman.tsfield] for t in self._tweets])
             }
         }

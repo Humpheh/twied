@@ -36,7 +36,7 @@ class ClusterUpdater:
         # remove any that are more than a maxage
         old = []
         for cluster in self.clsman:
-            age = tweet['timestamp_obj'] - cluster.oldest
+            age = tweet[self.clsman.tsfield] - cluster.oldest
             logging.debug("%s" % age)
             if age > self.clsman.maxage:
                 old.append(cluster)
@@ -44,3 +44,6 @@ class ClusterUpdater:
         for cluster in old:
             logging.debug("Removing cluster %s (last tweet at %s)" % (id(cluster), cluster.oldest))
             self.clsman.remove_cluster(cluster)
+
+    def __str__(self):
+        return "<ClusterUpdater>"
