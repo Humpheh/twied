@@ -8,7 +8,6 @@ class ClusterManager:
     def __init__(self, field, tsfield):
         self.clusters = []
         self.oldclusters = []
-        self.unclustered = []
         self.geofield = field
         self.geofieldspl = field.split(".")
         self.tsfield = tsfield
@@ -63,16 +62,11 @@ class ClusterManager:
         c1.merge(c2)
         self.clusters.remove(c2)
 
-    def add_unclustered(self, tweet):
-        self.unclustered.append(tweet)
-        logging.debug("Appended to unclustered (%i)" % len(self.unclustered))
-
     def get_all_clusters(self):
         return self.oldclusters + self.clusters
 
     def __str__(self):
-        return "<ClusterManager: %i clusters, %i old clusters, %i unclustered>" %\
-               (len(self.clusters), len(self.oldclusters), len(self.unclustered))
+        return "<ClusterManager: %i clusters, %i old clusters>" % (len(self.clusters), len(self.oldclusters))
 
 
 class Coordinate:
@@ -97,7 +91,7 @@ class Coordinate:
 class TweetCluster:
     def __init__(self, tweets, centre, clsman):
         self._tweets = sorted(tweets, key=lambda x: x[clsman.tsfield])
-        self.centres = [clsman.get_coordinate(centre)]
+        self.centres = [centre['_coord']]
         self.clsman = clsman
         self.oldest = self._tweets[-1][clsman.tsfield]
 
@@ -108,7 +102,7 @@ class TweetCluster:
 
     def in_cluster(self, tweet):
         for c in self.centres:
-            if vincenty(self.clsman.get_coordinate(tweet).rev(), c.rev()).km < self.clsman.radius:
+            if vincenty(tweet['_coord'].rev(), c.rev()).km < self.clsman.radius:
                 return True
         return False
 
@@ -117,14 +111,14 @@ class TweetCluster:
         self.oldest = max([self.oldest, tweet[self.clsman.tsfield]])
 
     def get_points(self):
-        return [self.clsman.get_coordinate(x) for x in self._tweets]
+        return [x['_coord'] for x in self._tweets]
 
     def as_dict(self):
         return {
             'tweets': [{
                     'id': t['tweetid'],#'id_str'],
                     'time': t[self.clsman.tsfield],
-                    'coordinate': self.clsman.get_coordinate(t).get()
+                    'coordinate': t['_coord'].get()
                 } for t in self._tweets
             ],
             'centres': [s.get() for s in self.centres],

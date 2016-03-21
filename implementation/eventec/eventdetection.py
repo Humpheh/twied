@@ -1,5 +1,5 @@
 from .clustermanager import ClusterManager
-from .clustercreator import ClusterCreator
+from .clustercreatorqtree import ClusterCreator
 from .clusterupdater import ClusterUpdater
 
 
@@ -14,7 +14,7 @@ class EventDetection:
     def process_tweet(self, tweet):
         # try to get the coordinate, if fails - pass
         try:
-            self.c_manager.get_coordinate(tweet)
+            tweet['_coord'] = self.c_manager.get_coordinate(tweet)
         except (KeyError, TypeError):
             return
 
@@ -28,7 +28,7 @@ class EventDetection:
             updated = self.c_updater.process_tweet(tweet)
 
         if not updated and not created:
-            self.c_manager.add_unclustered(tweet)
+            self.c_creator.add_unclustered(tweet)
 
         # update and merge clusters
         if updated or created:
@@ -39,7 +39,7 @@ class EventDetection:
         return self.c_manager.clusters
 
     def get_unclustered(self):
-        return self.c_manager.unclustered
+        return self.c_creator.unclustered
 
     def get_unclustered_points(self):
         return [self.c_manager.get_coordinate(x) for x in self.get_unclustered()]
