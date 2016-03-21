@@ -9,7 +9,7 @@ import matplotlib.animation as animation
 def plotevents_count(tweets):
     # Set up formatting for the movie files
     Writer = animation.writers['ffmpeg']
-    writer = Writer(fps=15, metadata=dict(artist='Me'), bitrate=1800)
+    writer = Writer(fps=15, metadata=dict(artist='Humphrey Shotton'), bitrate=1800)
 
     p1 = (-12, 63)
     p2 = (5, 47)
@@ -30,7 +30,7 @@ def plotevents_count(tweets):
 
         polys = []
         for t in tweets['twts']:
-            p = eval(t['locinf']['mi']['test']['poly'])
+            p = eval(t['locinf']['mi']['poly'])
             polys.append([(x, 1) for x in p])
         x, _, _ = plot_area(polys, 10, p1, p2)
 
@@ -85,7 +85,7 @@ def plotevents(ed):
 
         polys = []
         for t in tweets:
-            p = eval(t['locinf']['mi']['test']['poly'])
+            p = eval(t['locinf']['mi']['poly'])
             polys.append([(x, 1) for x in p])
         x, _, _ = plot_area(polys, 10, p1, p2)
         torem.append(plt.imshow(x, interpolation='none'))
@@ -130,7 +130,7 @@ def plotevents2(ed):
 
             polys = []
             for t in tweets:
-                p = eval(t['locinf']['mi']['test']['poly'])
+                p = eval(t['locinf']['mi']['poly'])
                 polys.append([(x, 1) for x in p])
             x, _, _ = plot_area(polys, 10, p1, p2)
             im.set_array(x)

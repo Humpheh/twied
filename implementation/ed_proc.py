@@ -23,25 +23,39 @@ logging.info("Connected to MongoDB")
 # select the database and collection based off config
 try:
     db = client[config.get("mongo", "database")]
-    col = db["geotweets"]#config.get("mongo", "collection")]
+    col = db["ptweets"] #["geotweets"]#config.get("mongo", "collection")]
 except NoOptionError:
     logging.critical("Cannot connect to MongoDB database and collection. Config incorrect?")
     sys.exit()
 
 # get the tweet cursor
 logging.info("Getting tweets...")
-cursor = db.tweets.find({'locinf.mi.test': {'$ne': None}})
+cursor = col.find(no_cursor_timeout=True).sort('timestamp', 1)#{'locinf.mi.test': {'$ne': None}})
 
 count = 0
-tf = EventDetection('geo.coordinates')
-for doc in cursor:
-    logging.info("Proc tweet %i by %s" % (count, doc['user']['screen_name']))
-    tf.process_tweet(doc)
-    count += 1
+tf = EventDetection('centre', 'timestamp')#'geo.coordinates')
+try:
+    for doc in cursor:
+        tf.process_tweet(doc)
+        count += 1
 
+        if count % 100 == 0:
+            logging.info("Proc tweet %i by %s" % (count, doc['timestamp']))#doc['user']['screen_name']))
+
+        if count % 100 == 0:
+            logging.info(tf)
+
+        if count > 100000:
+            break
+except:
+    pass
+
+print("Saving clusters...")
 allc = tf.get_all_clusters()
 carr = [c.as_dict() for c in allc]
 
 pkl_file = open(args.output, 'wb')
 pickle.dump(carr, pkl_file)
 pkl_file.close()
+
+cursor.close()

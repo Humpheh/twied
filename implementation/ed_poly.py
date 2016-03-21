@@ -19,19 +19,25 @@ logging.info("Connected to MongoDB")
 # select the database and collection based off config
 try:
     db = client[config.get("mongo", "database")]
-    col = db["geotweets"]#config.get("mongo", "collection")]
+    col = db["inftweets"]#config.get("mongo", "collection")]
 except NoOptionError:
     logging.critical("Cannot connect to MongoDB database and collection. Config incorrect?")
     sys.exit()
 
 # get the tweet cursor
 logging.info("Getting tweets...")
-cursor = db.tweets.find({'locinf.mi.test': {'$ne': None}})
+cursor = col.find()
 
 count = 0
 polys = {'twts': [], 'nexttime': None, 'done': False}
 ani = plotevents_count(polys)
 for doc in cursor:
+
+    try:
+        doc['locinf']['mi']['id']
+    except KeyError:
+        continue
+
     if polys['nexttime'] is None:
         polys['nexttime'] = doc['timestamp_obj'] + timedelta(hours=1)
     else:

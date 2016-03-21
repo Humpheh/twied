@@ -1,0 +1,9 @@
+python 3+
+
+== Packages ==
+pymongo
+twython
+numpy
+urllib3
+Pillow
+Polygon3

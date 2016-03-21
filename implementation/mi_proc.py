@@ -7,7 +7,7 @@ import datetime
 from pymongo import MongoClient
 from configparser import NoOptionError
 from urllib3.exceptions import MaxRetryError
-from twython import Twython
+from twython import Twython, TwythonError
 
 from multiind.inference import InferThread
 from multiind.indicators.locfieldindicator import GeonamesException
@@ -62,9 +62,12 @@ if __name__ == "__main__":
 
     def tweetstr(string):
         global twitter
-        logging.info("Attemting to send tweet: {0}".format(string))
-        twitter.update_status(status=string)
-        logging.info("Tweet sent.")
+        try:
+            logging.info("Attemting to send tweet: {0}".format(string))
+            twitter.update_status(status=string)
+            logging.info("Tweet sent.")
+        except:
+            return
 
 
     tweetstr("%s (%s)\nInference started\n%s" % (args.infid, args.pid, datetime.datetime.utcnow()))
@@ -86,6 +89,8 @@ if __name__ == "__main__":
         except GeonamesDecodeException:
             logging.warning("Got a GeonamesDecodeException - sleeping for 2 mins...")
             time.sleep(2 * 60)  # sleep for 2 mins
+        except TwythonError:
+            break
         except Exception as e:
             logging.error("Exception caught")
             tweetstr("@Humpheh %s - exited due to a %s." % (args.pid, type(e).__name__))
