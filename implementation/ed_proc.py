@@ -13,7 +13,7 @@ parser = argparse.ArgumentParser(description="Run the event detection")
 parser.add_argument('output', help='the output file to write to')
 args = parser.parse_args()
 
-config = twieds.setup("logs/ed_test.log", "settings/locinf.ini", logging.INFO)
+config = twieds.setup(None, "settings/locinf.ini", logging.INFO)
 
 # connect to the MongoDB
 logging.info("Connecting to MongoDB...")
@@ -22,8 +22,8 @@ logging.info("Connected to MongoDB")
 
 # select the database and collection based off config
 try:
-    db = client[config.get("mongo", "database")]
-    col = db["ptweets"] #["geotweets"]#config.get("mongo", "collection")]
+    db = client["twitter"]  # config.get("mongo", "database")]
+    col = db["ptweets"]  # ["geotweets"]#config.get("mongo", "collection")]
 except NoOptionError:
     logging.critical("Cannot connect to MongoDB database and collection. Config incorrect?")
     sys.exit()
@@ -45,8 +45,8 @@ try:
         if count % 100 == 0:
             logging.info(tf)
 
-        if count > 100000:
-            break
+        #if count > 500000:
+        #    break
 except:
     pass
 

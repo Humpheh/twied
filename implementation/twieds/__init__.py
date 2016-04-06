@@ -31,7 +31,7 @@ def setup_logger(filename, printlevel=logging.INFO):
     root_logger.addHandler(stream_handler)
 
     # output the logging to a file
-    if not filename == False:
+    if filename is not None:
         file_handler = logging.FileHandler(filename)
         file_handler.setFormatter(logformat)
         file_handler.setLevel(logging.DEBUG)

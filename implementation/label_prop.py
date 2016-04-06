@@ -41,9 +41,7 @@ if __name__ == "__main__":
 
     infersl = InferSL(config, collection, verbose=True)
 
-
     input(infersl.infer(user_test))
-
 
     netw = infersl.get_network(user_test)
 

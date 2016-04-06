@@ -18,9 +18,9 @@ class ClusterManager:
         #self.maxage = datetime.timedelta(hours=1)#24)
 
         self.radius = 10  # km
-        self.mincount = 15  # tweets #5
+        self.mincount = 30  # tweets #5
         self.timediff = datetime.timedelta(minutes=30)
-        self.maxage = datetime.timedelta(minutes=30)#24)
+        self.maxage = datetime.timedelta(hours=6)#24)
 
         self.lasttime = datetime.datetime.utcnow()
 
@@ -42,6 +42,7 @@ class ClusterManager:
         Creates a new cluster and saves it. The first tweet in the list of tweets will be
         used as the center for the cluster.
         :param tweets: The tweets within the cluster.
+        :param: maintweet: The tweet which created the cluster
         :return:
         """
         newcls = TweetCluster(tweets, maintweet, self)
@@ -58,7 +59,7 @@ class ClusterManager:
             return False
 
     def merge_clusters(self, c1, c2):
-        logging.debug("Merging clusters %s + %s" % (id(c1), id(c2)))
+        # logging.debug("Merging clusters %s + %s" % (id(c1), id(c2)))
         c1.merge(c2)
         self.clusters.remove(c2)
 
@@ -73,25 +74,28 @@ class Coordinate:
     def __init__(self, lat, lon):
         self.lat = lat
         self.lon = lon
+        self.arr = [self.lat, self.lon]
+        self.arr_r = [self.lon, self.lat]
 
     def __iter__(self):
-        for elem in [self.lat, self.lon]:
+        for elem in self.arr:
             yield elem
 
     def __getitem__(self, item):
-        return [self.lat, self.lon][item]
+        return self.arr[item]
 
     def get(self):
-        return [self.lat, self.lon]
+        return self.arr
 
     def rev(self):
-        return [self.lon, self.lat]
+        return self.arr_r
 
 
 class TweetCluster:
     def __init__(self, tweets, centre, clsman):
         self._tweets = sorted(tweets, key=lambda x: x[clsman.tsfield])
         self.centres = [centre['_coord']]
+        self.popreq = centre['_popreq']
         self.clsman = clsman
         self.oldest = self._tweets[-1][clsman.tsfield]
 
