@@ -72,5 +72,5 @@ workbooks/GlobalDist-Climate.ipynb
 
 implementation/settings/locinf.ini
 
-workbooks/.ipynb_checkpoints/GlobalDist-Climate-checkpoint.ipynb
+/workbooks/.ipynb_checkpoints/*.ipynb
 *.pkl
