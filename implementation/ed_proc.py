@@ -41,13 +41,12 @@ try:
 
         if count % 100 == 0:
             logging.info("Proc tweet %i by %s" % (count, doc['timestamp']))#doc['user']['screen_name']))
-
-        if count % 100 == 0:
             logging.info(tf)
 
         #if count > 500000:
         #    break
-except:
+except Exception as e:
+    print(e)
     pass
 
 print("Saving clusters...")

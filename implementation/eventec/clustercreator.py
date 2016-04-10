@@ -1,5 +1,3 @@
-import logging
-
 from geopy.distance import vincenty
 
 

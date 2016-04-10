@@ -28,7 +28,7 @@ class ClusterCreator:
             time = abs(tweet[self.clsman.tsfield] - t[self.clsman.tsfield])
 
             if dist < self.clsman.radius and time < self.clsman.timediff:
-                logging.debug("Candidate tweet %.2f km apart" % dist)
+                # logging.debug("Candidate tweet %.2f km apart" % dist)
                 candidates.append(t)
             elif time > self.clsman.timediff:
                 t['inactive'] = True
@@ -45,7 +45,7 @@ class ClusterCreator:
                 if not t['inactive']:
                     self.add_unclustered(t)
 
-        logging.debug("Found %i candidates" % len(candidates))
+        # logging.debug("Found %i candidates" % len(candidates))
         if len(candidates) >= self.clsman.mincount - 1:
             # remove candidates from unclustered
             for x in candidates:
@@ -58,7 +58,7 @@ class ClusterCreator:
             self.clsman.add_cluster(candidates, tweet)
             return True
         else:
-            logging.debug("Not enough candidates to create cluster (%i)" % len(candidates))
+            # logging.debug("Not enough candidates to create cluster (%i)" % len(candidates))
             return False
 
 
@@ -67,7 +67,7 @@ class ClusterCreator:
         tweet['inactive'] = False
         self.unclustered[str(tweet['_id'])] = tweet
         self.spindex.insert(item=str(tweet['_id']), bbox=bbox)
-        logging.debug("Appended to unclustered")
+        # logging.debug("Appended to unclustered")
 
     def __str__(self):
         count = self.spindex.intersect([-180, -90, 180, 90])

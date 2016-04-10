@@ -20,8 +20,10 @@ class EventDetection:
         try:
             coord = self.c_manager.get_coordinate(tweet)
             tweet['_coord'] = coord
-            tweet['_popreq'] = self.popfunc(coord.lon, coord.lat)
-        except (KeyError, TypeError):
+
+            pop = self.popmap.get_population(coord.lon, coord.lat)
+            tweet['_popreq'] = self.popfunc(pop)
+        except:# (KeyError, TypeError):
             return
 
         self.c_manager.lasttime = tweet[self.tsfield]
