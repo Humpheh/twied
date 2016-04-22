@@ -29,7 +29,7 @@ def grid2coord(p, scale, offset):
     return (p[1] / scale) + offset[0], -((p[0] / scale) - offset[1])
 
 
-def plot_area(polys, scale=1, p1=(-180, 90), p2=(180, -90)):
+def plot_area(polys, scale=1.0, p1=(-180, 90), p2=(180, -90)):
     """
     Polt a array of weighted polygons on a grid and return the weighted grid.
     :param polys: Polygons to plot
@@ -164,13 +164,12 @@ def infer_location(polys, demo=False):
 
     if demo:
         # show diagrampy
-        plt.subplot(2, 1, 1)
-        plt.imshow(mask)
+        plt.imshow(mask, interpolation='none')
         plt.colorbar(orientation='vertical')
+        plt.show()
 
         # show zoomed in diagram
-        plt.subplot(2, 1, 2)
-        plt.imshow(mask2)
+        plt.imshow(mask2, interpolation='none')
         plt.colorbar(orientation='vertical')
         plt.show()
 
