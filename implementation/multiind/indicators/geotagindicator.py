@@ -14,5 +14,5 @@ class GeotagIndicator(Indicator):
 
     def get_loc(self, geofield):
         if geofield is not None and geofield["type"] is not None and geofield["type"] == "Point":
-            return [self.point_to_poly(geofield['coordinates'], 1)]
+            return [self.point_to_poly((geofield['coordinates'][1], geofield['coordinates'][0]), 1)]
         return []
