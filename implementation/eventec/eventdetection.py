@@ -5,7 +5,7 @@ from .popcount import PopMap
 
 
 class EventDetection:
-    def __init__(self, field='geo.coordinate', tsfield='timestamp_obj'):
+    def __init__(self, field='geo.coordinate', tsfield='timestamp_obj', mincnt=5, mdcnt=30):
         self.tsfield = tsfield
 
         self.c_manager = ClusterManager(field=field, tsfield=tsfield)
@@ -13,7 +13,7 @@ class EventDetection:
         self.c_updater = ClusterUpdater(self.c_manager)
 
         self.popmap = PopMap('D:\ds\population\glds15ag.asc')
-        self.popfunc = self.popmap.get_reqfunc_uk(30, 5)
+        self.popfunc = self.popmap.get_reqfunc_uk(mdcnt, mincnt)  # (5, 3 for geo)
 
     def process_tweet(self, tweet):
         # try to get the coordinate, if fails - pass

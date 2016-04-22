@@ -28,6 +28,12 @@ class PopMap:
         cellat, cellon = self.get_cell(lon, lat)
         return self.data[cellon, cellat]
 
+    def get_ll(self, clat, clon):
+        lat = (clat * self.settings['cellsize']) + self.settings['xllcorner']
+        lon = ((self.settings['nrows'] - clon) * self.settings['cellsize']) + self.settings['yllcorner']
+
+        return lat, lon
+
     def get_reqfunc_uk(self, mediancount, mincount):
         ukdata = self.data[600:850, 4025:4400]
         ukvals = ukdata[ukdata != self.settings['NODATA_value']]

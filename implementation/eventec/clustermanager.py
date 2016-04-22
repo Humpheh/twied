@@ -12,15 +12,9 @@ class ClusterManager:
         self.geofieldspl = field.split(".")
         self.tsfield = tsfield
 
-        #self.radius = 10  # km
-        #self.mincount = 15  # tweets #5
-        #self.timediff = datetime.timedelta(minutes=60)
-        #self.maxage = datetime.timedelta(hours=1)#24)
-
         self.radius = 10  # km
-        self.mincount = 30  # tweets #5
         self.timediff = datetime.timedelta(minutes=30)
-        self.maxage = datetime.timedelta(hours=6)#24)
+        self.maxage = datetime.timedelta(hours=6)
 
         self.lasttime = datetime.datetime.utcnow()
 
@@ -120,7 +114,7 @@ class TweetCluster:
     def as_dict(self):
         return {
             'tweets': [{
-                    'id': t['tweetid'],#'id_str'],
+                    'id': t['tweetid'],
                     'time': t[self.clsman.tsfield],
                     'coordinate': t['_coord'].get()
                 } for t in self._tweets

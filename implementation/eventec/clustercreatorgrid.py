@@ -7,13 +7,13 @@ class GeoGrid:
     def __init__(self):
         self.areas = {}
         self.tests = [
-            (0.1,  0.1), (0.0,  0.1), (-0.1,  0.1),
-            (0.1,  0.0), (0.0,  0.0), (-0.1,  0.0),
-            (0.1, -0.1), (0.0, -0.1), (-0.1, -0.1)
+            (1,  1), (0,  1), (-1,  1),
+            (1,  0), (0,  0), (-1,  0),
+            (1, -1), (0, -1), (-1, -1)
         ]
 
     def get_str(self, coord):
-        return "%3d,%3d" % (coord[0], coord[1]) #.1
+        return "%.1d,%.1d" % (coord[0], coord[1]) #.1
 
     def add_tweet(self, tweet):
         coord = tweet['_coord']
