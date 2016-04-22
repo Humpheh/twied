@@ -7,6 +7,7 @@ from multiprocessing.context import TimeoutError
 from configparser import NoOptionError
 
 from pymongo import MongoClient
+from bson import objectid
 
 import polyplotter
 import twieds
@@ -90,8 +91,13 @@ if __name__ == "__main__":
         logging.critical("Cannot connect to MongoDB database and collection. Config incorrect?")
         sys.exit()
 
+    tid = input("Specific ID? >")
+
     # get the tweet cursor
-    cursor = db.tweets.find()
+    if tid is None or tid == "":
+        cursor = db.tweets.find()
+    else:
+        cursor = db.geotweets.find({'_id': objectid.ObjectId(tid)})
 
     waiting = []
     for doc in cursor:
