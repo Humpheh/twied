@@ -7,3 +7,5 @@ numpy
 urllib3
 Pillow
 Polygon3
+matplotlib
+basemap

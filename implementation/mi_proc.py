@@ -1,3 +1,7 @@
+"""
+The main Multi-Indicator process which connects to the DB and locates
+all of the tweets in the collection using the MI method.
+"""
 import twieds
 import logging
 import sys

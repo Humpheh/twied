@@ -1,30 +1,8 @@
-"""import shapefile
-
-sf = shapefile.Reader("D:/ds/gadm/gadm28")
-
-for i in sf.iterShapes():
-    print (dir(i))
-
-from osgeo import ogr
-
-daShapefile = r"D:/ds/gadm/gadm28.shp"
-
-dataSource = ogr.Open(daShapefile)
-daLayer = dataSource.GetLayer(0)
-layerDefinition = daLayer.GetLayerDefn()
-
-
-for i in range(layerDefinition.GetFieldCount()):
-    print (layerDefinition.GetFieldDefn(i).GetName())"""
-
 # -*- coding: utf-8 -*-
 
-def str_or_none(st):
-    if st == None:
-        return None
-    return str(st)
-
 import sqlite3
+import fiona
+
 conn = sqlite3.connect('polydb.db')
 
 c = conn.cursor()
@@ -33,8 +11,14 @@ for i in range(1, 6):
     c.execute('CREATE INDEX gadm' + str(i) + ' ON gadm (n' + str(i) + ')')
 conn.commit()
 
-import fiona
 fi = fiona.open(r"D:/ds/gadm/gadm28.shp", 'r')
+
+
+def str_or_none(st):
+    if st is None:
+        return None
+    return str(st)
+
 
 count = 0
 while True:

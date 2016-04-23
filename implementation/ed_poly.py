@@ -1,3 +1,7 @@
+#!/usr/bin/python
+"""
+File to build an animation.
+"""
 import logging
 import sys
 
@@ -5,7 +9,6 @@ from configparser import NoOptionError
 from pymongo import MongoClient
 
 import twieds
-from eventec.eventdetection import EventDetection
 from polyani import plotevents_count
 from datetime import datetime, timedelta
 
@@ -19,7 +22,7 @@ logging.info("Connected to MongoDB")
 # select the database and collection based off config
 try:
     db = client[config.get("mongo", "database")]
-    col = db["inftweets"]#config.get("mongo", "collection")]
+    col = db["inftweets"]
 except NoOptionError:
     logging.critical("Cannot connect to MongoDB database and collection. Config incorrect?")
     sys.exit()

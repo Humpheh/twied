@@ -2,14 +2,14 @@ from geopy.distance import vincenty
 
 from random import randint
 
-"""from mpl_toolkits.basemap import Basemap
-import matplotlib.pyplot as plt
-from matplotlib.patches import Circle
-from operator import itemgetter
-"""
-
 
 def geometric_mean(points):
+    """
+    Function which calculates the geometric mean from a list of points using
+    the vincenty distance.
+    :param points: List of points to find the geometric mean of.
+    :return: The geometric mean of the points.
+    """
     distances = []
     ad = []
     for x in points:
@@ -26,17 +26,3 @@ def geometric_mean(points):
         return None
 
     return distances[randint(0, len(distances)-1)]
-
-"""m = Basemap(projection='robin', lon_0=0)
-m.drawcoastlines()
-m.drawmapboundary()
-for coords in points:
-    xy = m(coords[1], coords[0])
-    point = Circle(xy, radius=5000, facecolor='red', alpha=0.4)
-    plt.gca().add_patch(point)
-
-xy = m(minpoint[1], minpoint[0])
-point = Circle(xy, radius=5000, facecolor='blue', alpha=0.4)
-plt.gca().add_patch(point)
-
-plt.show()"""

@@ -7,6 +7,7 @@ from datetime import datetime
 from twython import TwythonStreamer
 import twicol
 
+
 class TweetStreamer(TwythonStreamer):
     """
     Class which handles callbacks from the twython streamer and stores the

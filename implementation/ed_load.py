@@ -1,3 +1,8 @@
+#!/usr/bin/python
+"""
+Example script on loading the output from the event detection
+back into Python.
+"""
 import pprint
 import pickle
 import argparse

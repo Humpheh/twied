@@ -1,3 +1,6 @@
+"""
+For allocating ID's to each tweet in the database between a number.
+"""
 import sys
 import logging
 import argparse

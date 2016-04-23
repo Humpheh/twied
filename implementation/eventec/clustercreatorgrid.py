@@ -1,5 +1,3 @@
-import logging
-
 from geopy.distance import vincenty
 
 
@@ -13,7 +11,7 @@ class GeoGrid:
         ]
 
     def get_str(self, coord):
-        return "%.1d,%.1d" % (coord[0], coord[1]) #.1
+        return "%.1d,%.1d" % (coord[0], coord[1])
 
     def add_tweet(self, tweet):
         coord = tweet['_coord']
@@ -45,7 +43,6 @@ class GeoGrid:
 class ClusterCreator:
     def __init__(self, clsman):
         self.clsman = clsman
-        #self.unclustered = []
         self.grid = GeoGrid()
 
     def process_tweet(self, tweet):
@@ -60,17 +57,16 @@ class ClusterCreator:
             time = abs(tweet[self.clsman.tsfield] - t[self.clsman.tsfield])
 
             if dist < self.clsman.radius and time < self.clsman.timediff:
-                # logging.debug("Candidate tweet %.2f km apart" % dist)
+                # candidate tweet is close enough
                 candidates.append(t)
             elif time > self.clsman.timediff:
                 toremove.append(t)
 
         if len(toremove) > 0:
-            # logging.debug("Removing %i old candidate tweets." % len(toremove))
+            # remove old candidate tweets
             for x in toremove:
                 self.grid.remove_tweet(x)
 
-        # logging.debug("Found %i candidates" % len(candidates))
         if len(candidates) >= self.clsman.mincount - 1:
             # remove candidates from unclustered
             for x in candidates:
@@ -82,12 +78,12 @@ class ClusterCreator:
             self.clsman.add_cluster(candidates, tweet)
             return True
         else:
-            # logging.debug("Not enough candidates to create cluster (%i)" % len(candidates))
+            # not enough candidates to create cluster
             return False
 
     def add_unclustered(self, tweet):
+        # Appended to unclustered
         self.grid.add_tweet(tweet)
-        # logging.debug("Appended to unclustered ()") # % len(self.unclustered))
 
     def __str__(self):
         return "<ClusterCreator: %i areas>" % len(self.grid.areas)

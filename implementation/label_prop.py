@@ -1,3 +1,6 @@
+"""
+Run the SLP algorithm on a user.
+"""
 import logging
 import sys
 from collections import defaultdict
@@ -37,7 +40,7 @@ if __name__ == "__main__":
         logging.critical("Cannot connect to MongoDB database and collection. Config incorrect?")
         sys.exit()
 
-    user_test = 434500083#15808177# 838509024# #97034991#
+    user_test = int(input("Target user ID (eg 434500083):"))
 
     infersl = InferSL(config, collection, verbose=True)
 

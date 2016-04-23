@@ -53,7 +53,7 @@ class ClusterManager:
             return False
 
     def merge_clusters(self, c1, c2):
-        # logging.debug("Merging clusters %s + %s" % (id(c1), id(c2)))
+        # merging clusters
         c1.merge(c2)
         self.clusters.remove(c2)
 

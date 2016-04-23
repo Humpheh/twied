@@ -1,3 +1,7 @@
+"""
+Script for running the event detection on the processed tweets
+for the UK.
+"""
 import logging
 import sys
 import pickle
@@ -22,8 +26,8 @@ logging.info("Connected to MongoDB")
 
 # select the database and collection based off config
 try:
-    db = client["twitter"]  # config.get("mongo", "database")]
-    col = db["ptweets"]  # ["geotweets"]#config.get("mongo", "collection")]
+    db = client["twitter"]
+    col = db["ptweets"]
 except NoOptionError:
     logging.critical("Cannot connect to MongoDB database and collection. Config incorrect?")
     sys.exit()
@@ -33,10 +37,10 @@ with open('D:/ds/code/workbooks/ukpoly.pkl', 'rb') as file:
 
 # get the tweet cursor
 logging.info("Getting tweets...")
-cursor = col.find(no_cursor_timeout=True).sort('timestamp', 1)#{'locinf.mi.test': {'$ne': None}})
+cursor = col.find(no_cursor_timeout=True).sort('timestamp', 1)
 
 count = 0
-tf = EventDetection('centre', 'timestamp')#'geo.coordinates')
+tf = EventDetection('centre', 'timestamp')
 try:
     for doc in cursor:
         if doc['centre'] is None or not mp.isInside(doc['centre'][0], doc['centre'][1]):
@@ -46,11 +50,9 @@ try:
         count += 1
 
         if count % 100 == 0:
-            logging.info("Proc tweet %i by %s" % (count, doc['timestamp']))#doc['user']['screen_name']))
+            logging.info("Proc tweet %i by %s" % (count, doc['timestamp']))
             logging.info(tf)
 
-        #if count > 500000:
-        #    break
 except Exception as e:
     print(e)
     pass

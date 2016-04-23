@@ -1,3 +1,6 @@
+"""
+Testing the spatial label propagation algorithm.
+"""
 import logging
 import sys
 
@@ -61,9 +64,3 @@ if __name__ == "__main__":
         print("\nGeometric Mean:", geometric_mean([true, inf[0]]))
         input(">")
         polyplotter.polyplot([], [(i[1], i[0]) for i in [true, inf[0]]])"""
-
-
-
-
-    #user_test = 434500083#15808177# 838509024# #97034991#
-

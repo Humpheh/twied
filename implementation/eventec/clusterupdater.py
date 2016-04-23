@@ -24,7 +24,7 @@ class ClusterUpdater:
         # add the tweet to a cluster if it is in one
         for cluster in self.clsman:
             if cluster.in_cluster(tweet):
-                # logging.debug("Tweet within cluster, adding to cluster %s" % id(cluster))
+                # tweet within cluster, adding to cluster
                 cluster.add_tweet(tweet)
                 return True
         return False
@@ -54,12 +54,11 @@ class ClusterUpdater:
         old = []
         for cluster in self.clsman:
             age = tweet[self.clsman.tsfield] - cluster.oldest
-            # logging.debug("%s" % age)
             if age > self.clsman.maxage:
                 old.append(cluster)
 
         for cluster in old:
-            # logging.debug("Removing cluster %s (last tweet at %s)" % (id(cluster), cluster.oldest))
+            # removing cluster
             self.clsman.remove_cluster(cluster)
 
     def __str__(self):

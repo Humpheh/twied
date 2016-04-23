@@ -1,3 +1,7 @@
+#!/usr/bin/python
+"""
+File for running the event detection process.
+"""
 import logging
 import sys
 import pickle
@@ -30,21 +34,19 @@ except NoOptionError:
 
 # get the tweet cursor
 logging.info("Getting tweets...")
-cursor = col.find(no_cursor_timeout=True).sort('timestamp', 1)#{'locinf.mi.test': {'$ne': None}})
+cursor = col.find(no_cursor_timeout=True).sort('timestamp', 1)
 
 count = 0
-tf = EventDetection('centre', 'timestamp')#'geo.coordinates')
+tf = EventDetection('centre', 'timestamp')  # 'geo.coordinates')
 try:
     for doc in cursor:
         tf.process_tweet(doc)
         count += 1
 
         if count % 100 == 0:
-            logging.info("Proc tweet %i by %s" % (count, doc['timestamp']))#doc['user']['screen_name']))
+            logging.info("Proc tweet %i by %s" % (count, doc['timestamp']))  # doc['user']['screen_name']))
             logging.info(tf)
 
-        #if count > 500000:
-        #    break
 except Exception as e:
     print(e)
     pass
