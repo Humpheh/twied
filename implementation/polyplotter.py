@@ -117,8 +117,13 @@ def polyplot(polygons, points):
     for poly in polygons:
         add_poly(poly, m)
 
+    xs, ys = [], []
     for point in points:
-        add_point(point, m)
+        x, y = m(point[1], point[0])
+        xs.append(x)
+        ys.append(y)
+        # add_point(point, m)
+    m.scatter(xs, ys, color='b')
 
     plt.show()
 

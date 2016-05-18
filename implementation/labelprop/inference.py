@@ -62,7 +62,7 @@ class InferSL:
         network.testing = test
         return self.get_location(network)
 
-    def get_network(self, user_id):
+    def get_network(self, user_id, hidegeo=False):
         """
         Gets the network surronding a user.
         :param user_id: The Twitter ID of the user.
@@ -74,6 +74,10 @@ class InferSL:
 
         # gets the users' connections
         user = self.get_user(user_id)
+        # removes the users locations if testing
+        if hidegeo:
+            user['locations_real'] = user['locations']
+            user['locations'] = []
         self.get_connections(user, network, 0)
 
         return network
@@ -151,7 +155,7 @@ class InferSL:
         if user is None:
             return False
 
-        self.log("Processing %s (%s)" % (user['user']['screen_name'], user['user']['id']))
+        self.log("Processing: %-17s (%10s)" % (user['user']['screen_name'], user['user']['id']))
 
         # if recursive depth has been met, return
         if depth >= self.max_depth or depth > network.limdepth:
@@ -171,7 +175,7 @@ class InferSL:
             if user2 is None:
                 continue
 
-            self.log("Inner processing %s (%s)" % (user2['user']['screen_name'], uid))
+            #self.log("Processing connection: %15s (%10s)" % (user2['user']['screen_name'], uid))
 
             if str(user['user']['id']) in user2['mentions']:
                 # if the other user has not mentioned the main subject enough, skip
@@ -179,7 +183,7 @@ class InferSL:
                     continue
 
                 network.connections.append((str(user['user']['id']), str(user2['user']['id'])))
-                self.log("Found connecting user: %s - %s" % (user['user']['screen_name'], user2['user']['screen_name']))
+                self.log("    Connection: %17s - %-17s" % (user['user']['screen_name'], user2['user']['screen_name']))
 
                 if str(uid) not in network.users:
                     # recursively get the connections of the next user
@@ -187,7 +191,12 @@ class InferSL:
 
                     if len(user2['locations']) > 3:
                         network.limdepth = depth
-                        self.log("Found candidate user %s at %i depth." % (user2['user']['screen_name'], network.limdepth))
+                        self.log("    > Found located user %s at %i depth." % (user2['user']['screen_name'], network.limdepth))
+
+        if len(next_connections) == 0:
+            self.log("    > No futher connections to explore.")
+
+        input(">")
 
         # continue for next users
         for usr_i in next_connections:

@@ -75,3 +75,5 @@ implementation/settings/locinf.ini
 /workbooks/.ipynb_checkpoints/*.ipynb
 *.pkl
 .vscode/settings.json
+workbooks/anim/*
+workbooks/anim2/*

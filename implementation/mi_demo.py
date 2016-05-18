@@ -24,7 +24,7 @@ def add_ind(task):
     start = time.clock()
     logging.info("%10s <- Value: %-50s" % (type(ind).__name__[:-9], f_field))
     result = ind.get_loc(field)
-    logging.info("%10s -> Took %.2f seconds. (%i polys)" % (
+    logging.info("%10s -> Took %.2f seconds. (returned: %i polys)" % (
         type(ind).__name__[:-9], (time.clock() - start), len(result))
     )
     return result
@@ -97,7 +97,7 @@ if __name__ == "__main__":
     if tid is None or tid == "":
         cursor = db.tweets.find()
     else:
-        cursor = db.geotweets.find({'_id': objectid.ObjectId(tid)})
+        cursor = db.tweets.find({'_id': objectid.ObjectId(tid)})
 
     waiting = []
     for doc in cursor:
