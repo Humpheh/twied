@@ -120,8 +120,8 @@ def get_highest(mask, scale, offset):
     :param offset: Offset used to generate the grid
     :return: Array of points of the highest weight, maximum value in the grid
     """
-    maxval = np.amax(mask)
-    top_positions = np.argwhere(mask == maxval).squeeze()
+    maxval = np.amax(mask) * 0.75
+    top_positions = np.argwhere(mask >= maxval).squeeze()
     if top_positions.shape == (2,):
         top_positions = [top_positions]
     return [grid2coord(p, scale, offset) for p in top_positions], maxval
