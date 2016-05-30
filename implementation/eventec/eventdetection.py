@@ -5,7 +5,7 @@ from .popcount import PopMap
 
 
 class EventDetection:
-    def __init__(self, field='geo.coordinate', tsfield='timestamp_obj', mincnt=5, mdcnt=30):
+    def __init__(self, field='geo.coordinate', tsfield='timestamp_obj', mincnt=10, mdcnt=30):
         self.tsfield = tsfield
 
         self.c_manager = ClusterManager(field=field, tsfield=tsfield)

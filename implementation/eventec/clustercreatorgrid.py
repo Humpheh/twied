@@ -67,7 +67,7 @@ class ClusterCreator:
             for x in toremove:
                 self.grid.remove_tweet(x)
 
-        if len(candidates) >= self.clsman.mincount - 1:
+        if len(candidates) >= tweet['_popreq'] - 1:
             # remove candidates from unclustered
             for x in candidates:
                 self.grid.remove_tweet(x)
