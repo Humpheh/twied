@@ -37,7 +37,7 @@ logging.info("Getting tweets...")
 cursor = col.find(no_cursor_timeout=True).sort('timestamp', 1)
 
 count = 0
-tf = EventDetection('centre', 'timestamp')  # 'geo.coordinates')
+tf = EventDetection('centre', 'timestamp', popmaploc='D:\ds\population\glds15ag.asc')  # 'geo.coordinates')
 try:
     for doc in cursor:
         tf.process_tweet(doc)
@@ -49,7 +49,7 @@ try:
 
 except Exception as e:
     print(e)
-    pass
+    raise e
 
 print("Saving clusters...")
 allc = tf.get_all_clusters()

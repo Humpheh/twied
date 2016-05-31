@@ -36,7 +36,7 @@ logging.info("Getting tweets...")
 cursor = col.find({'realgeo': {'$ne': None}}, no_cursor_timeout=True).sort('timestamp', 1)
 
 count = 0
-tf = EventDetection('realgeo.coordinates', 'timestamp')
+tf = EventDetection('realgeo.coordinates', 'timestamp', popmaploc='D:\ds\population\glds15ag.asc')
 try:
     for doc in cursor:
         centre = doc['realgeo']['coordinates']

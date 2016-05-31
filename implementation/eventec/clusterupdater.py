@@ -53,7 +53,7 @@ class ClusterUpdater:
         # remove any that are more than a maxage
         old = []
         for cluster in self.clsman:
-            age = tweet[self.clsman.tsfield] - cluster.oldest
+            age = tweet[self.clsman.tsfield] - cluster.latest
             if age > self.clsman.maxage:
                 old.append(cluster)
 

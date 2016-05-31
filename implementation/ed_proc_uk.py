@@ -40,7 +40,7 @@ logging.info("Getting tweets...")
 cursor = col.find(no_cursor_timeout=True).sort('timestamp', 1)
 
 count = 0
-tf = EventDetection('centre', 'timestamp')
+tf = EventDetection('centre', 'timestamp', popmaploc='D:\ds\population\glds15ag.asc')
 try:
     for doc in cursor:
         if doc['centre'] is None or not mp.isInside(doc['centre'][0], doc['centre'][1]):
