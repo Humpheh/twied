@@ -19,15 +19,18 @@ class EventDetection:
     issued geographically close to each other in a given timeframe.
     Three modules manage the clusters:
 
-    * :class:`ClusterCreator` - checks the most recent tweets and creates
+    * :class:`ClusterCreator`
+        checks the most recent tweets and creates
         new clusters where more than a threshold  number of tweets were
         issued within a set time frame and within a set radius.
-    * :class:`ClusterUpdater` - adds new tweets to clusters if they are
+    * :class:`ClusterUpdater`
+        adds new tweets to clusters if they are
         within the area of an existing cluster. This module also merges
         clusters that are overlapping. Clusters are deleted after they
         have reached a maximum amount of time with no new tweets being
         added to them.
-    * :class:`ClusterManager` - manages the clusters.
+    * :class:`ClusterManager`
+        manages the clusters.
 
     This class manages the creation, updation and deletion of event clusters
     by passing the tweets to each of the modules and deciding on what should
