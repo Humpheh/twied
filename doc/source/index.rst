@@ -13,6 +13,7 @@ Contents:
 
    collection
    eventdetection
+   labelprop
 
 
 Indices and tables

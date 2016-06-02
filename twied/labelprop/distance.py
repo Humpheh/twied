@@ -7,6 +7,7 @@ def geometric_mean(points):
     """
     Function which calculates the geometric mean from a list of points using
     the vincenty distance.
+
     :param points: List of points to find the geometric mean of.
     :return: The geometric mean of the points.
     """

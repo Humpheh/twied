@@ -4,7 +4,7 @@ from collections import defaultdict
 from twython import Twython
 from twython.exceptions import TwythonAuthError, TwythonError
 
-from labelprop.distance import geometric_mean
+from .distance import geometric_mean
 
 
 class SLNetwork:
@@ -175,8 +175,6 @@ class InferSL:
             if user2 is None:
                 continue
 
-            #self.log("Processing connection: %15s (%10s)" % (user2['user']['screen_name'], uid))
-
             if str(user['user']['id']) in user2['mentions']:
                 # if the other user has not mentioned the main subject enough, skip
                 if user2['mentions'][str(user['user']['id'])] < self.min_mentions:
@@ -191,7 +189,8 @@ class InferSL:
 
                     if len(user2['locations']) > 3:
                         network.limdepth = depth
-                        self.log("    > Found located user %s at %i depth." % (user2['user']['screen_name'], network.limdepth))
+                        self.log("    > Found located user %s at %i depth." %
+                                 (user2['user']['screen_name'], network.limdepth))
 
         if len(next_connections) == 0:
             self.log("    > No futher connections to explore.")
