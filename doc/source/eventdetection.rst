@@ -1,26 +1,47 @@
+:mod:`twied.eventec` --- Event Detection
+========================================
+
+.. automodule:: twied.eventec
+   :members:
+   :undoc-members:
+
 Event Detection
-===============
+---------------
 
-.. automodule:: eventec.eventdetection
+The evet detection class is the main class which should be used for the event detection.
+This class takes in tweets and manages the other cluster modules.
+
+.. automodule:: twied.eventec.eventdetection
    :members:
    :undoc-members:
 
-.. automodule:: eventec.clustermanager
+Cluster Modules
+---------------
+
+These modules are primarily used by the `EventDetection` class to create and
+alter clusters.
+
+.. automodule:: twied.eventec.clustermanager
    :members:
    :undoc-members:
 
-.. automodule:: eventec.clustercreator
+.. automodule:: twied.eventec.clustercreator
    :members:
    :undoc-members:
 
-.. automodule:: eventec.clustercreatorgrid
+.. automodule:: twied.eventec.clustercreatorgrid
    :members:
    :undoc-members:
 
-.. automodule:: eventec.clusterupdater
+.. automodule:: twied.eventec.clusterupdater
    :members:
    :undoc-members:
 
-.. automodule:: eventec.popcount
+Population Grid
+---------------
+
+This class is used as an interface for the grid of worldwide population.
+
+.. automodule:: twied.eventec.popcount
    :members:
    :undoc-members:
