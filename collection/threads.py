@@ -8,36 +8,6 @@ from twython import TwythonStreamer
 import twicol
 
 
-class TweetStreamer(TwythonStreamer):
-    """
-    Class which handles callbacks from the twython streamer and stores the
-    tweets in the database.
-    """
-    def __init__(self, database, name, counter, **kwargs):
-        super().__init__(**kwargs)
-        self.db = database
-        self.counter = counter
-        self.name = name
-
-    def on_success(self, data):
-        # when a tweet has been successfully recieved
-        if 'text' in data:
-            # save the collection key
-            data['collection'] = self.name
-
-            ts_float = float(data['timestamp_ms'])
-            data['timestamp_obj'] = datetime.utcfromtimestamp(ts_float/1000)
-            
-            self.db.insert_one(data)#.inserted_id
-            self.counter.add_count(self.name)
-        else:
-            logging.warning("Recieved tweet without text")
-
-    def on_error(self, status_code, data):
-        logging.warning("Error recieving tweet: {0}".format(status_code))
-
-    def on_timeout(self):
-        logging.error("Streaming request timed out")
 
 
 class TweetThread(threading.Thread):

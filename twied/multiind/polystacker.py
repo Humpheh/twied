@@ -10,6 +10,7 @@ from PIL import Image, ImageDraw
 def coord2grid(p, scale, offset):
     """
     Translates a (lat, long) coordinate on a point on the grid.
+
     :param p: Point on the grid
     :param scale: Scale of the grid
     :param offset: Offset of the grid
@@ -21,6 +22,7 @@ def coord2grid(p, scale, offset):
 def grid2coord(p, scale, offset):
     """
     Translates a grid point to a (lat, long) coordinate.
+
     :param p: Point on the grid
     :param scale: Scale of the grid
     :param offset: Offset of the grid
@@ -32,6 +34,7 @@ def grid2coord(p, scale, offset):
 def plot_area(polys, scale=1.0, p1=(-180, 90), p2=(180, -90)):
     """
     Polt a array of weighted polygons on a grid and return the weighted grid.
+
     :param polys: Polygons to plot
     :param scale: The resolution of the grid - scale is the number of points per degree
     :param p1: Top left coordinate of the grid to generate
@@ -70,6 +73,7 @@ def plot_area(polys, scale=1.0, p1=(-180, 90), p2=(180, -90)):
 def generate_polygon(coords, scale):
     """
     Generate a polygon that encompasses a set of grid coordinates.
+
     :param coords: List of coordinates to draw polygon around
     :param scale: Area around each grid square (1/scale in degrees is area of each point)
     :return: Polygon of area representing the set of points
@@ -93,6 +97,7 @@ def generate_polygon(coords, scale):
 def find_bounds(coords, border):
     """
     Finds the top left and bottom right coordinates of the grid which contains the set of points.
+
     :param coords: Set of coordinates to find the area around
     :param border: Padding (in degrees) around the bounding area to return
     :return: Top left coordinate, bottom right coordinate, coordinate area tuple
@@ -115,6 +120,7 @@ def find_bounds(coords, border):
 def get_highest(mask, scale, offset):
     """
     Returns a list of coordinates that have the largest weight in a grid.
+
     :param mask: A numpy matrix of the weight for each grid point
     :param scale: Scaling used to generate the grid
     :param offset: Offset used to generate the grid
@@ -131,6 +137,7 @@ def infer_location(polys, demo=False):
     """
     Stacks a list of weighted polygons and returns the area with the highest weight in the form of
     a polygon. This polygon may contain multiple contours.
+
     :param polys: Array of indicators with each having an array of (polygon coords, list)
     :param demo: Wether to plot diagrams (default=False)
     :return: Polygon of the highest stacked area from the polygons

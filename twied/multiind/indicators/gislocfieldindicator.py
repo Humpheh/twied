@@ -1,11 +1,16 @@
 import logging
 
 from multiind.indicators import Indicator
-from multiind.interfaces import GisgraphyInterface, GADMPolyInterface, CountryPolyInterface
+from multiind.interfaces import GisgraphyInterface, GADMPolyInterface
 from multiind.indicators.messageindicator import MessageIndicator
 
 
 class GisgraphyException(Exception):
+    """
+    Exception object thrown when there is an error is getting the location
+    from the Gisgraphy service.
+    """
+
     def __init__(self, value):
         self.value = value
 
@@ -17,9 +22,20 @@ class GISLocFieldIndicator(Indicator):
     """
     Indicator which finds toponyms in the location field and maps them to a area or point using
     the geonames gazetteer.
+
+    This is a reimplementation of the :class:`LocFieldIndicator` class which uses the
+    `Gisgraphy <http://gisgraphy.com/>_` open source gazeteer instead of the
+    `Geonames <http://www.geonames.org/>_` gazeteer. In testing this service was found
+    to have a less useful search feature, however was not API limited as the service
+    could be hosted locally.
     """
 
     def __init__(self, config):
+        """
+        Initialise the indicator.
+
+        :param config: The config object for the MI technique.
+        """
         super().__init__()
         self.polydb_url = config.get("multiindicator", "gadm_polydb_path")
 

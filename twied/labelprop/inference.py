@@ -27,6 +27,7 @@ class InferSL:
     def __init__(self, config, dbcollection, verbose=False):
         """
         Setup a InferSL instance.
+
         :param config: The configuration to be used.
         :param dbcollection: The MongoDB collection to connect with.
         :param verbose: Boolean if to output log.
@@ -47,6 +48,7 @@ class InferSL:
     def log(self, message):
         """
         Logs a message to the console is verbose was true in initialisation.
+
         :param message: The message to log.
         """
         if self.verbose:
@@ -55,6 +57,7 @@ class InferSL:
     def infer(self, user_id, test=False):
         """
         Infers a location for a user with an ID.
+
         :param user_id: The Twitter ID of the user.
         :return: [coordinate, geodis] tuple
         """
@@ -65,6 +68,7 @@ class InferSL:
     def get_network(self, user_id, hidegeo=False):
         """
         Gets the network surronding a user.
+
         :param user_id: The Twitter ID of the user.
         :return: An SLNetwork object with the network information.
         """
@@ -85,6 +89,7 @@ class InferSL:
     def get_user(self, user_id):
         """
         Gets a user profile from the Twitter API and stores their geotag tweets and mentions.
+
         :param user_id: The Twitter ID of the user to find.
         :return: The data for the Twitter user with that ID.
         """
@@ -143,8 +148,9 @@ class InferSL:
     def get_connections(self, user, network, depth=0):
         """
         Recursively gets the connections around a user until at least one with enough geotags has been found.
+
         :param user: The user object to continue inferring from.
-        :param network: An SLNetwork object containing the network.
+        :param network: An :class:`SLNetwork` object containing the network.
         :param depth: The depth of the recursion (default 0)
         :return: Boolean of if the network was attempted to be extended.
         """
@@ -206,8 +212,9 @@ class InferSL:
     def get_location(self, netw):
         """
         Infers the location of a user from a network.
+
         :param netw: An SLNetwork object
-        :return: [coordinate, geodis] tuple
+        :return: `[coordinate, geodis]` tuple
         """
         ground_truth = {}
         for _, u in netw.users.items():
