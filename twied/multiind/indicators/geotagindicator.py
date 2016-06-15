@@ -1,4 +1,4 @@
-from multiind.indicators import Indicator
+from . import Indicator
 
 
 class GeotagIndicator(Indicator):

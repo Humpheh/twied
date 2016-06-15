@@ -1,8 +1,8 @@
 import logging
 
-from multiind.indicators import Indicator
-from multiind.interfaces import GeonamesInterface, GADMPolyInterface, CountryPolyInterface
-from multiind.indicators.messageindicator import MessageIndicator
+from .indicator import Indicator
+from .messageindicator import MessageIndicator
+from ..interfaces import GeonamesInterface, GADMPolyInterface, CountryPolyInterface
 
 
 class GeonamesException(Exception):

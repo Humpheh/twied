@@ -12,6 +12,7 @@ Contents:
    :maxdepth: 2
 
    collection
+   locinf
    eventdetection
    labelprop
 
@@ -22,4 +23,3 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-

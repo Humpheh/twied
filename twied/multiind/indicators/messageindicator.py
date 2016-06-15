@@ -1,8 +1,7 @@
-import json
 import logging
 
-from multiind.interfaces import DBPInterface, DBPSpotlightInterface, GADMPolyInterface
-from multiind.indicators import Indicator
+from ..interfaces import DBPInterface, DBPSpotlightInterface, GADMPolyInterface
+from . import Indicator
 
 
 class MessageIndicator(Indicator):

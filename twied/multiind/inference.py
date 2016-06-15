@@ -1,15 +1,20 @@
-from enum import Enum
-import multiind.indicators as indicators
-from multiind import polystacker
-from multiprocessing.dummy import Pool as ThreadPool
-from multiprocessing.context import TimeoutError
 import logging
 import datetime
 import time
+
+from enum import Enum
+from . import polystacker
+from multiprocessing.dummy import Pool as ThreadPool
+from multiprocessing.context import TimeoutError
 from pymongo.errors import CursorNotFound
+
+from . import indicators as indicators
 
 
 class Indicators(Enum):
+    """
+    Simple enum which stores values for each of the Indicators.
+    """
     Message = 0
     TZ = 1
     TZOffset = 2
@@ -20,8 +25,51 @@ class Indicators(Enum):
 
 
 class InferThread:
+    """
+    This class manages the inference of users by creating and managing multiple threads
+    of indicators. The class will setup a number of threads to simultaneously infer
+    tweets. Each of these threads will in turn setup their own threads to contact each
+    of the indicators.
+
+    This class takes a MongoDB database which the tweets will be retrieved from, a config
+    object which contains all of the configuration for the indicators. The class will setup
+    all of the indicators in the package:
+
+        * :class:`MessageIndicator` - uses message field to find topoynms.
+        * :class:`TZIndicator` - uses the timezone the user is in.
+        * :class:`TZOffsetIndicator` - uses the timezone offset the user is in.
+        * :class:`LocFieldIndicator` - uses topoynms in the users location field.
+        * :class:`CoordinateIndicator` - finds coordinates in the users location field.
+        * :class:`WebsiteIndicator` - uses the TLD of the users website address.
+        * :class:`GeotagIndicator` - uses the geotag on the users tweet.
+
+    Each of these indicators will be contacted to return estimations of the location of the
+    user. These are then 'stacked' to determine an area where the weight is the higest. This
+    class will write the inferred polygon and other information back onto the tweet object
+    in the MongoDB.
+
+    .. note:: This class is not multi-core, which would need to be setup manually or
+        by using multiple processes of this class pointing at different sections of the
+        data.
+    """
+
     def __init__(self, dbcol, config, inf_id=None, proc_id="default", test=False, tweetfunc=None, tweetint=1000):
-        # setup the indicators
+        """
+        Initialise the MI location inference.
+
+        :param dbcol: The MongoDB collection to recover tweets from.
+        :param config: The :class:`configparser` object containing the configuration.
+        :param inf_id: The inference ID. Has no impact on the inference but is stored
+            in the database alongside the inferred location to act as a tag for the
+            inference task which inferred the location.
+        :param proc_id: The process name, also stored alongside the inferred location.
+        :param test: If `True` will not use the :class:`GeotagIndicator`.
+        :type test: bool
+        :param tweetfunc: A function which is called every `tweetint` number of inferred
+            tweets which passes a string of the current inference status.
+        :param tweetint: The number of tweets before each call of the `tweetfunc`.
+        """
+        # Setup the indicators
         logging.info("Setting up indicators...")
         self.inds = dict()
 
@@ -32,12 +80,12 @@ class InferThread:
         self.inds[Indicators.Coordinate] = indicators.CoordinateIndicator(config)
         self.inds[Indicators.Website] = indicators.WebsiteIndicator(config)
 
-        # if testing, dont use geotag inference
+        # If testing, dont use geotag inference
         if not test:
             self.inds[Indicators.Geotag] = indicators.GeotagIndicator(config)
         logging.info("Setup indicators.")
 
-        # store variables
+        # Store variables
         self.test = test
         self.config = config
         self.dbcol = dbcol
@@ -46,15 +94,23 @@ class InferThread:
         self.tweetint = tweetint
         self.tweetfunc = tweetfunc
 
-        # setup the workers
+        # Setup the workers
         self.worker_count = config.getint("multiindicator", "workers")
         self.workers = ThreadPool(processes=self.worker_count)
 
     def infer(self, query, field='locinf.mi'):
+        """
+        Starts the location inference task.
+
+        :param query: The query used to select tweets from the MongoDB.
+        :param field: The name of the field to write the inferred location
+            to. For example with the field 'locinf.mi' (as default), the final
+            polygon would be written to 'locinf.mi.poly'.
+        """
         counter = 0
         waiting = []
         while True:
-            # get the tweet cursor
+            # Get the tweet cursor
             cursor = self.dbcol.find(query)
 
             try:
@@ -65,12 +121,12 @@ class InferThread:
                                 result, li, lp, maxval, tweet = i.get(timeout=0.02)
                                 waiting.remove(i)
 
-                                # process the data
+                                # Process the data
                                 pointarr = []
                                 for c in result:
                                     pointarr.append(c)
 
-                                # store the polygon in the database
+                                # Store the polygon in the database
                                 self.dbcol.update_one({'_id': tweet['_id']}, {
                                     '$set': {
                                         field + '.poly': str(pointarr),
@@ -103,6 +159,13 @@ class InferThread:
                 continue
 
     def add_ind(self, task):
+        """
+        Processes a task. The task takes a tuple of a Indicator and a field. This
+        method is used in parallel.
+
+        :param task: The tuple of the Inidicator and the field.
+        :return: The result of passing the field through the indicator.
+        """
         ind = task[0]
         field = task[1]
 
@@ -117,6 +180,14 @@ class InferThread:
         return result
 
     def process_tweet(self, twt):
+        """
+        Process a single tweet.
+
+        :param twt: The tweet object.
+        :return: Tuple of the inferred polygons, the number of indicators with a result,
+            the number of polygons returned, the maximum 'height' of the stacked polygons,
+            and the tweet object.
+        """
         logging.info("%s: Starting inference...", twt['_id'])
 
         app_inds = [

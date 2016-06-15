@@ -1,8 +1,7 @@
 import logging
 
-from multiind.indicators import Indicator
-from multiind.interfaces import GisgraphyInterface, GADMPolyInterface
-from multiind.indicators.messageindicator import MessageIndicator
+from . import Indicator, MessageIndicator
+from ..interfaces import GisgraphyInterface, GADMPolyInterface
 
 
 class GisgraphyException(Exception):

@@ -1,7 +1,7 @@
 import re
 
-from multiind.indicators import Indicator
-from multiind.interfaces import TZPolyInterface
+from . import Indicator
+from ..interfaces import TZPolyInterface
 
 
 class TZIndicator(Indicator):

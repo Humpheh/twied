@@ -2,8 +2,8 @@ import logging
 import csv
 import re
 
-from multiind.indicators import Indicator
-from multiind.interfaces import CountryPolyInterface
+from . import Indicator
+from ..interfaces import CountryPolyInterface
 
 
 class WebsiteIndicator(Indicator):

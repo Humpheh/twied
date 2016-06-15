@@ -1,5 +1,5 @@
-from multiind.indicators import Indicator
-from multiind.interfaces import TZPolyInterface
+from .indicator import Indicator
+from ..interfaces import TZPolyInterface
 
 
 class TZOffsetIndicator(Indicator):
