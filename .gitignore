@@ -77,3 +77,5 @@ implementation/settings/locinf.ini
 .vscode/settings.json
 workbooks/anim/*
 workbooks/anim2/*
+scripts/processing/out_*.json
+scripts/processing/out.json
