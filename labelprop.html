@@ -1,0 +1,342 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>twied.labelprop — SLP Inference Method &mdash; Twicol 0.2 documentation</title>
+    
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Twicol 0.2 documentation" href="index.html" />
+    <link rel="prev" title="twied.eventec — Event Detection" href="eventdetection.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="eventdetection.html" title="twied.eventec — Event Detection"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Twicol 0.2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="twied-labelprop-slp-inference-method">
+<h1><a class="reference internal" href="#module-twied.labelprop" title="twied.labelprop"><code class="xref py py-mod docutils literal"><span class="pre">twied.labelprop</span></code></a> &#8212; SLP Inference Method<a class="headerlink" href="#twied-labelprop-slp-inference-method" title="Permalink to this headline">¶</a></h1>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">While the method is implemented it is not suggested for use
+without further work.</p>
+</div>
+<p>This is an implementation of the SLP location inference method.</p>
+<span class="target" id="module-twied.labelprop"></span><div class="section" id="geometric-mean">
+<h2>Geometric Mean<a class="headerlink" href="#geometric-mean" title="Permalink to this headline">¶</a></h2>
+<p>This is an implementation of the geometric mean function.</p>
+<span class="target" id="module-twied.labelprop.distance"></span><dl class="function">
+<dt id="twied.labelprop.distance.geometric_mean">
+<code class="descclassname">twied.labelprop.distance.</code><code class="descname">geometric_mean</code><span class="sig-paren">(</span><em>points</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/labelprop/distance.html#geometric_mean"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.labelprop.distance.geometric_mean" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function which calculates the geometric mean from a list of points using
+the vincenty distance.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>points</strong> &#8211; List of points to find the geometric mean of.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The geometric mean of the points.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="slp-inference">
+<h2>SLP Inference<a class="headerlink" href="#slp-inference" title="Permalink to this headline">¶</a></h2>
+<p>This is a class which will infer user location using the SLP method.</p>
+<span class="target" id="module-twied.labelprop.inference"></span><dl class="class">
+<dt id="twied.labelprop.inference.InferSL">
+<em class="property">class </em><code class="descclassname">twied.labelprop.inference.</code><code class="descname">InferSL</code><span class="sig-paren">(</span><em>config</em>, <em>dbcollection</em>, <em>verbose=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/labelprop/inference.html#InferSL"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.labelprop.inference.InferSL" title="Permalink to this definition">¶</a></dt>
+<dd><p>Implementation of the spatial label propagation method for infering the location of Twitter users.
+Generates the network around a specific user in order to locate.</p>
+<p>Setup a InferSL instance.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>config</strong> &#8211; The configuration to be used.</li>
+<li><strong>dbcollection</strong> &#8211; The MongoDB collection to connect with.</li>
+<li><strong>verbose</strong> &#8211; Boolean if to output log.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="twied.labelprop.inference.InferSL.get_connections">
+<code class="descname">get_connections</code><span class="sig-paren">(</span><em>user</em>, <em>network</em>, <em>depth=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/labelprop/inference.html#InferSL.get_connections"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.labelprop.inference.InferSL.get_connections" title="Permalink to this definition">¶</a></dt>
+<dd><p>Recursively gets the connections around a user until at least one with enough geotags has been found.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>user</strong> &#8211; The user object to continue inferring from.</li>
+<li><strong>network</strong> &#8211; An <a class="reference internal" href="#twied.labelprop.inference.SLNetwork" title="twied.labelprop.inference.SLNetwork"><code class="xref py py-class docutils literal"><span class="pre">SLNetwork</span></code></a> object containing the network.</li>
+<li><strong>depth</strong> &#8211; The depth of the recursion (default 0)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Boolean of if the network was attempted to be extended.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="twied.labelprop.inference.InferSL.get_location">
+<code class="descname">get_location</code><span class="sig-paren">(</span><em>netw</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/labelprop/inference.html#InferSL.get_location"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.labelprop.inference.InferSL.get_location" title="Permalink to this definition">¶</a></dt>
+<dd><p>Infers the location of a user from a network.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>netw</strong> &#8211; An SLNetwork object</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><cite>[coordinate, geodis]</cite> tuple</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="twied.labelprop.inference.InferSL.get_network">
+<code class="descname">get_network</code><span class="sig-paren">(</span><em>user_id</em>, <em>hidegeo=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/labelprop/inference.html#InferSL.get_network"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.labelprop.inference.InferSL.get_network" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the network surronding a user.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>user_id</strong> &#8211; The Twitter ID of the user.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">An SLNetwork object with the network information.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="twied.labelprop.inference.InferSL.get_user">
+<code class="descname">get_user</code><span class="sig-paren">(</span><em>user_id</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/labelprop/inference.html#InferSL.get_user"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.labelprop.inference.InferSL.get_user" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets a user profile from the Twitter API and stores their geotag tweets and mentions.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>user_id</strong> &#8211; The Twitter ID of the user to find.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The data for the Twitter user with that ID.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="twied.labelprop.inference.InferSL.infer">
+<code class="descname">infer</code><span class="sig-paren">(</span><em>user_id</em>, <em>test=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/labelprop/inference.html#InferSL.infer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.labelprop.inference.InferSL.infer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Infers a location for a user with an ID.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>user_id</strong> &#8211; The Twitter ID of the user.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">[coordinate, geodis] tuple</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="twied.labelprop.inference.InferSL.log">
+<code class="descname">log</code><span class="sig-paren">(</span><em>message</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/labelprop/inference.html#InferSL.log"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.labelprop.inference.InferSL.log" title="Permalink to this definition">¶</a></dt>
+<dd><p>Logs a message to the console is verbose was true in initialisation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>message</strong> &#8211; The message to log.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="twied.labelprop.inference.SLNetwork">
+<em class="property">class </em><code class="descclassname">twied.labelprop.inference.</code><code class="descname">SLNetwork</code><a class="reference internal" href="_modules/twied/labelprop/inference.html#SLNetwork"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.labelprop.inference.SLNetwork" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stores information about the users and connections in a network.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="example">
+<h2>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h2>
+<p>Below is an example of the slp method.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">This implementation is not complete and will not work outright
+without further work.</p>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Testing the spatial label propagation algorithm.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="kn">import</span> <span class="nn">pymongo</span>
+<span class="kn">from</span> <span class="nn">configparser</span> <span class="kn">import</span> <span class="n">NoOptionError</span>
+
+<span class="kn">import</span> <span class="nn">twieds</span>
+<span class="kn">from</span> <span class="nn">labelprop.inference</span> <span class="kn">import</span> <span class="n">InferSL</span>
+
+<span class="c1"># Must run this as a script</span>
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="n">twieds</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="s2">&quot;logs/labelprop.log&quot;</span><span class="p">,</span> <span class="s2">&quot;settings/locinf.ini&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Connect to the MongoDB</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Connecting to MongoDB...&quot;</span><span class="p">)</span>
+    <span class="n">client</span> <span class="o">=</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">MongoClient</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;mongo&quot;</span><span class="p">,</span> <span class="s2">&quot;address&quot;</span><span class="p">),</span> <span class="n">config</span><span class="o">.</span><span class="n">getint</span><span class="p">(</span><span class="s2">&quot;mongo&quot;</span><span class="p">,</span> <span class="s2">&quot;port&quot;</span><span class="p">))</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Connected to MongoDB&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Select the database and collection based off config</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">db</span> <span class="o">=</span> <span class="n">client</span><span class="p">[</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;mongo&quot;</span><span class="p">,</span> <span class="s2">&quot;database&quot;</span><span class="p">)]</span>
+        <span class="n">user_col</span> <span class="o">=</span> <span class="n">db</span><span class="p">[</span><span class="s2">&quot;users&quot;</span><span class="p">]</span>
+        <span class="n">user_col</span><span class="o">.</span><span class="n">create_index</span><span class="p">([(</span><span class="s1">&#39;user.id&#39;</span><span class="p">,</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">ASCENDING</span><span class="p">)],</span> <span class="n">unique</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="n">user_col</span><span class="o">.</span><span class="n">create_index</span><span class="p">([(</span><span class="s1">&#39;user.screen_name&#39;</span><span class="p">,</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">ASCENDING</span><span class="p">)])</span>
+    <span class="k">except</span> <span class="n">NoOptionError</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s2">&quot;Cannot connect to MongoDB database and collection. Config incorrect?&quot;</span><span class="p">)</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
+
+    <span class="c1"># Get the tweet collection</span>
+    <span class="n">tweet_col</span> <span class="o">=</span> <span class="n">db</span><span class="p">[</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;mongo&quot;</span><span class="p">,</span> <span class="s2">&quot;collection&quot;</span><span class="p">)]</span>
+
+    <span class="n">cursor</span> <span class="o">=</span> <span class="n">tweet_col</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s1">&#39;geo&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;$ne&#39;</span><span class="p">:</span> <span class="bp">None</span><span class="p">},</span> <span class="s1">&#39;locinf.sl.test&#39;</span><span class="p">:</span> <span class="bp">None</span><span class="p">})</span>
+    <span class="n">infersl</span> <span class="o">=</span> <span class="n">InferSL</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">user_col</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">tweet</span> <span class="ow">in</span> <span class="n">cursor</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">NEXT USER&quot;</span><span class="p">,</span> <span class="n">tweet</span><span class="p">[</span><span class="s1">&#39;user&#39;</span><span class="p">][</span><span class="s1">&#39;screen_name&#39;</span><span class="p">],</span> <span class="s2">&quot;:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">input</span><span class="p">(</span><span class="n">tweet</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;s&quot;</span><span class="p">:</span>
+            <span class="k">continue</span>
+
+        <span class="n">inf</span> <span class="o">=</span> <span class="n">infersl</span><span class="o">.</span><span class="n">infer</span><span class="p">(</span><span class="n">tweet</span><span class="p">[</span><span class="s1">&#39;user&#39;</span><span class="p">][</span><span class="s1">&#39;id&#39;</span><span class="p">],</span> <span class="n">test</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+        <span class="k">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Inferred location:&quot;</span><span class="p">,</span> <span class="n">inf</span><span class="p">)</span>
+        <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;&gt;&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Store inferred loc in db</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">tweets</span><span class="o">.</span><span class="n">update_one</span><span class="p">({</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="n">tweet</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">]},</span> <span class="p">{</span>
+            <span class="s1">&#39;$set&#39;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s1">&#39;locinf.sl.test&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">inf</span><span class="p">)</span>
+            <span class="p">}</span>
+        <span class="p">})</span>
+
+        <span class="k">if</span> <span class="n">inf</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">continue</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#"><code class="docutils literal"><span class="pre">twied.labelprop</span></code> &#8212; SLP Inference Method</a><ul>
+<li><a class="reference internal" href="#geometric-mean">Geometric Mean</a></li>
+<li><a class="reference internal" href="#slp-inference">SLP Inference</a></li>
+<li><a class="reference internal" href="#example">Example</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="eventdetection.html"
+                        title="previous chapter"><code class="docutils literal"><span class="pre">twied.eventec</span></code> &#8212; Event Detection</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/labelprop.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="eventdetection.html" title="twied.eventec — Event Detection"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Twicol 0.2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2016, Humphrey Shotton.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.2.
+    </div>
+  </body>
+</html>

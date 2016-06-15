@@ -1,0 +1,174 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>twied.multiind.indicators.messageindicator &mdash; Twicol 0.2 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '0.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Twicol 0.2 documentation" href="../../../../index.html" />
+    <link rel="up" title="Module code" href="../../../index.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Twicol 0.2 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for twied.multiind.indicators.messageindicator</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">from</span> <span class="nn">..interfaces</span> <span class="kn">import</span> <span class="n">DBPInterface</span><span class="p">,</span> <span class="n">DBPSpotlightInterface</span><span class="p">,</span> <span class="n">GADMPolyInterface</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">Indicator</span>
+
+
+<div class="viewcode-block" id="MessageIndicator"><a class="viewcode-back" href="../../../../locinf.html#twied.multiind.indicators.messageindicator.MessageIndicator">[docs]</a><span class="k">class</span> <span class="nc">MessageIndicator</span><span class="p">(</span><span class="n">Indicator</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Indicator which finds place names in tweet text using DBpedia spotlight and</span>
+<span class="sd">    maps them to a area or point location.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">polydb_url</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;multiindicator&quot;</span><span class="p">,</span> <span class="s2">&quot;gadm_polydb_path&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">dbps</span> <span class="o">=</span> <span class="n">DBPSpotlightInterface</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dbpi</span> <span class="o">=</span> <span class="n">DBPInterface</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">weight</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">getfloat</span><span class="p">(</span><span class="s2">&quot;mi_weights&quot;</span><span class="p">,</span> <span class="s2">&quot;SP&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="MessageIndicator.get_loc"><a class="viewcode-back" href="../../../../locinf.html#twied.multiind.indicators.messageindicator.MessageIndicator.get_loc">[docs]</a>    <span class="k">def</span> <span class="nf">get_loc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">message</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span>
+
+        <span class="c1"># setup db connection</span>
+        <span class="n">gadmpoly</span> <span class="o">=</span> <span class="n">GADMPolyInterface</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">polydb_url</span><span class="p">)</span>
+
+        <span class="n">j</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dbps</span><span class="o">.</span><span class="n">req</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">j</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span>
+
+        <span class="n">statstr</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">polygons</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">if</span> <span class="s1">&#39;Resources&#39;</span> <span class="ow">in</span> <span class="n">j</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">resource</span> <span class="ow">in</span> <span class="n">j</span><span class="p">[</span><span class="s1">&#39;Resources&#39;</span><span class="p">]:</span>
+                <span class="c1"># check that it is a place and not something useless</span>
+                <span class="k">if</span> <span class="s1">&#39;Schema:Place&#39;</span> <span class="ow">in</span> <span class="n">resource</span><span class="p">[</span><span class="s1">&#39;@types&#39;</span><span class="p">]:</span>
+                    <span class="n">r_url</span> <span class="o">=</span> <span class="n">resource</span><span class="p">[</span><span class="s1">&#39;@URI&#39;</span><span class="p">]</span>
+                    <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dbpi</span><span class="o">.</span><span class="n">extract_name</span><span class="p">(</span><span class="n">r_url</span><span class="p">)</span>
+                    <span class="n">datareq</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dbpi</span><span class="o">.</span><span class="n">req</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+
+                    <span class="k">if</span> <span class="n">datareq</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                        <span class="k">continue</span>
+                    <span class="c1"># TODO: check if http://dbpedia.org/ontology/wikiPageRedirects exists</span>
+
+                    <span class="c1"># get the polygons and weigh them</span>
+                    <span class="n">similarity</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">resource</span><span class="p">[</span><span class="s1">&#39;@similarityScore&#39;</span><span class="p">])</span>
+                    <span class="n">polys</span> <span class="o">=</span> <span class="n">gadmpoly</span><span class="o">.</span><span class="n">get_polys</span><span class="p">(</span><span class="n">name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_weight</span><span class="p">(</span><span class="n">similarity</span><span class="p">))</span>
+
+                    <span class="k">if</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="n">polys</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="n">polygons</span> <span class="o">+=</span> <span class="n">polys</span>
+                        <span class="n">statstr</span> <span class="o">+=</span> <span class="s1">&#39;#&#39;</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">try</span><span class="p">:</span>
+                            <span class="n">lat</span><span class="p">,</span> <span class="n">lon</span> <span class="o">=</span> <span class="n">datareq</span><span class="p">[</span><span class="s1">&#39;http://www.georss.org/georss/point&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;value&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
+                            <span class="n">pos</span> <span class="o">=</span> <span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">lon</span><span class="p">),</span> <span class="nb">float</span><span class="p">(</span><span class="n">lat</span><span class="p">))</span>
+                            <span class="n">polygons</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">point_to_poly</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="n">similarity</span><span class="p">))</span>
+                            <span class="n">statstr</span> <span class="o">+=</span> <span class="s1">&#39;.&#39;</span>
+                        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                            <span class="k">try</span><span class="p">:</span>
+                                <span class="n">lat</span> <span class="o">=</span> <span class="n">datareq</span><span class="p">[</span><span class="s1">&#39;http://dbpedia.org/property/sourceLatD&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;value&#39;</span><span class="p">]</span>
+                                <span class="n">lon</span> <span class="o">=</span> <span class="n">datareq</span><span class="p">[</span><span class="s1">&#39;http://dbpedia.org/property/sourceLongD&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;value&#39;</span><span class="p">]</span>
+                                <span class="n">pos</span> <span class="o">=</span> <span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">lon</span><span class="p">),</span> <span class="nb">float</span><span class="p">(</span><span class="n">lat</span><span class="p">))</span>
+                                <span class="n">polygons</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">point_to_poly</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="n">similarity</span><span class="p">))</span>
+                                <span class="n">statstr</span> <span class="o">+=</span> <span class="s1">&#39;.&#39;</span>
+                            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                                <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;No georss/sourceD field on &#39;place&#39;: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">name</span><span class="p">)</span>
+                                <span class="n">statstr</span> <span class="o">+=</span> <span class="s1">&#39;!&#39;</span>
+                                <span class="c1"># TODO: try latd or longd</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">statstr</span> <span class="o">+=</span> <span class="s1">&#39; &#39;</span>
+
+            <span class="n">pargs</span> <span class="o">=</span> <span class="p">(</span><span class="n">MessageIndicator</span><span class="o">.</span><span class="n">__name__</span><span class="p">[:</span><span class="o">-</span><span class="mi">9</span><span class="p">],</span> <span class="nb">len</span><span class="p">(</span><span class="n">j</span><span class="p">[</span><span class="s1">&#39;Resources&#39;</span><span class="p">]),</span> <span class="n">statstr</span><span class="p">)</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%10s</span><span class="s2"> =  </span><span class="si">%i</span><span class="s2"> resources [</span><span class="si">%s</span><span class="s2">]&quot;</span> <span class="o">%</span> <span class="n">pargs</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">pargs</span> <span class="o">=</span> <span class="p">(</span><span class="n">MessageIndicator</span><span class="o">.</span><span class="n">__name__</span><span class="p">[:</span><span class="o">-</span><span class="mi">9</span><span class="p">])</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%10s</span><span class="s2"> =  0 resources in response&quot;</span> <span class="o">%</span> <span class="n">pargs</span><span class="p">)</span>
+
+        <span class="n">gadmpoly</span><span class="o">.</span><span class="n">destroy</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">polygons</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Twicol 0.2 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2016, Humphrey Shotton.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.2.
+    </div>
+  </body>
+</html>

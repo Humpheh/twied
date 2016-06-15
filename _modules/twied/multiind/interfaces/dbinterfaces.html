@@ -1,0 +1,244 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>twied.multiind.interfaces.dbinterfaces &mdash; Twicol 0.2 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '0.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Twicol 0.2 documentation" href="../../../../index.html" />
+    <link rel="up" title="Module code" href="../../../index.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Twicol 0.2 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for twied.multiind.interfaces.dbinterfaces</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">sqlite3</span>
+<span class="kn">import</span> <span class="nn">ast</span>
+
+
+<div class="viewcode-block" id="proc_polystr"><a class="viewcode-back" href="../../../../locinf.html#twied.multiind.interfaces.dbinterfaces.proc_polystr">[docs]</a><span class="k">def</span> <span class="nf">proc_polystr</span><span class="p">(</span><span class="n">polys</span><span class="p">,</span> <span class="n">weight</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Process a string of polygons into an array of polygons with</span>
+<span class="sd">    a weight.</span>
+
+<span class="sd">    :param polys: The string of the polygon data.</span>
+<span class="sd">    :param weight: The weight of the polygons.</span>
+<span class="sd">    :return: Array of tuples of (polygon, weight).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">polys</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[]</span>
+
+    <span class="n">all_polys</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">polys</span><span class="p">:</span>
+        <span class="n">ji</span> <span class="o">=</span> <span class="n">ast</span><span class="o">.</span><span class="n">literal_eval</span><span class="p">(</span><span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">ji</span><span class="p">[</span><span class="s1">&#39;coordinates&#39;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">p</span><span class="p">:</span>
+                    <span class="n">all_polys</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">weight</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">all_polys</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">p</span><span class="p">,</span> <span class="n">weight</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">all_polys</span></div>
+
+
+<div class="viewcode-block" id="GADMPolyInterface"><a class="viewcode-back" href="../../../../locinf.html#twied.multiind.interfaces.dbinterfaces.GADMPolyInterface">[docs]</a><span class="k">class</span> <span class="nc">GADMPolyInterface</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Interface with the GADMPoly database table.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dbloc</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialise the database interface.</span>
+
+<span class="sd">        :param dbloc: The location of the sqlite3 database.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conn</span> <span class="o">=</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">dbloc</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+        <span class="n">orstr</span> <span class="o">=</span> <span class="s2">&quot; or &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;n{0} = :n{0}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">)])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">qstring</span> <span class="o">=</span> <span class="s2">&quot;SELECT poly FROM gadm WHERE &quot;</span> <span class="o">+</span> <span class="n">orstr</span>
+
+<div class="viewcode-block" id="GADMPolyInterface.get_polys"><a class="viewcode-back" href="../../../../locinf.html#twied.multiind.interfaces.dbinterfaces.GADMPolyInterface.get_polys">[docs]</a>    <span class="k">def</span> <span class="nf">get_polys</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">weight</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets the polygons for a name of a administrative district.</span>
+
+<span class="sd">        :param name: The name of the area.</span>
+<span class="sd">        :param weight: The weight of the returned polygons.</span>
+<span class="sd">        :return: The array of polygons and weights.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">qstring</span><span class="p">,</span> <span class="p">{</span>
+            <span class="s1">&#39;n1&#39;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span> <span class="s1">&#39;n2&#39;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span> <span class="s1">&#39;n3&#39;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span> <span class="s1">&#39;n4&#39;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span> <span class="s1">&#39;n5&#39;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
+        <span class="p">})</span>
+
+        <span class="n">polys</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">proc_polystr</span><span class="p">(</span><span class="n">polys</span><span class="p">,</span> <span class="n">weight</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GADMPolyInterface.destroy"><a class="viewcode-back" href="../../../../locinf.html#twied.multiind.interfaces.dbinterfaces.GADMPolyInterface.destroy">[docs]</a>    <span class="k">def</span> <span class="nf">destroy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Close the connection.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="CountryPolyInterface"><a class="viewcode-back" href="../../../../locinf.html#twied.multiind.interfaces.dbinterfaces.CountryPolyInterface">[docs]</a><span class="k">class</span> <span class="nc">CountryPolyInterface</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Interface with the Country polygon database table.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dbloc</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialise the database interface.</span>
+
+<span class="sd">        :param dbloc: The location of the sqlite3 database.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conn</span> <span class="o">=</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">dbloc</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">qstring</span> <span class="o">=</span> <span class="s2">&quot;SELECT poly FROM countries WHERE name LIKE :name&quot;</span>
+
+<div class="viewcode-block" id="CountryPolyInterface.get_polys"><a class="viewcode-back" href="../../../../locinf.html#twied.multiind.interfaces.dbinterfaces.CountryPolyInterface.get_polys">[docs]</a>    <span class="k">def</span> <span class="nf">get_polys</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">weight</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets the polygons for a name of a Country.</span>
+
+<span class="sd">        :param name: The name of the area.</span>
+<span class="sd">        :param weight: The weight of the returned polygons.</span>
+<span class="sd">        :return: The array of polygons and weights.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">qstring</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="n">name</span><span class="p">})</span>
+
+        <span class="n">polys</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">proc_polystr</span><span class="p">(</span><span class="n">polys</span><span class="p">,</span> <span class="n">weight</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CountryPolyInterface.destroy"><a class="viewcode-back" href="../../../../locinf.html#twied.multiind.interfaces.dbinterfaces.CountryPolyInterface.destroy">[docs]</a>    <span class="k">def</span> <span class="nf">destroy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Close the connection.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="TZPolyInterface"><a class="viewcode-back" href="../../../../locinf.html#twied.multiind.interfaces.dbinterfaces.TZPolyInterface">[docs]</a><span class="k">class</span> <span class="nc">TZPolyInterface</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Interface with the Timezone polygon database table.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dbloc</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialise the database interface.</span>
+
+<span class="sd">        :param dbloc: The location of the sqlite3 database.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conn</span> <span class="o">=</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">dbloc</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">qstring</span> <span class="o">=</span> <span class="s2">&quot;SELECT poly FROM tz WHERE zone LIKE :zone&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">qstringoff</span> <span class="o">=</span> <span class="s2">&quot;SELECT poly FROM tz WHERE offset LIKE :offset&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">qstringamerica</span> <span class="o">=</span> <span class="s2">&quot;SELECT poly FROM tz WHERE zone LIKE :zone AND code = :code&quot;</span>
+
+<div class="viewcode-block" id="TZPolyInterface.get_polys"><a class="viewcode-back" href="../../../../locinf.html#twied.multiind.interfaces.dbinterfaces.TZPolyInterface.get_polys">[docs]</a>    <span class="k">def</span> <span class="nf">get_polys</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">weight</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets the polygons for a timezone.</span>
+
+<span class="sd">        :param name: The name of the area.</span>
+<span class="sd">        :param weight: The weight of the returned polygons.</span>
+<span class="sd">        :return: The array of polygons and weights.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">qstring</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;zone&#39;</span><span class="p">:</span> <span class="s2">&quot;%&quot;</span> <span class="o">+</span> <span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;%&quot;</span><span class="p">})</span>
+        <span class="k">return</span> <span class="n">proc_polystr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">fetchall</span><span class="p">(),</span> <span class="n">weight</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TZPolyInterface.get_polys_offset"><a class="viewcode-back" href="../../../../locinf.html#twied.multiind.interfaces.dbinterfaces.TZPolyInterface.get_polys_offset">[docs]</a>    <span class="k">def</span> <span class="nf">get_polys_offset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="n">weight</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets the polygons for a timezone using the offset value.</span>
+
+<span class="sd">        :param offset: The offset of the timezone.</span>
+<span class="sd">        :param weight: The weight of the returned polygons.</span>
+<span class="sd">        :return: The array of polygons and weights.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">qstringoff</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;offset&#39;</span><span class="p">:</span> <span class="n">offset</span><span class="p">})</span>
+        <span class="k">return</span> <span class="n">proc_polystr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">fetchall</span><span class="p">(),</span> <span class="n">weight</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TZPolyInterface.get_polys_america"><a class="viewcode-back" href="../../../../locinf.html#twied.multiind.interfaces.dbinterfaces.TZPolyInterface.get_polys_america">[docs]</a>    <span class="k">def</span> <span class="nf">get_polys_america</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">code</span><span class="p">,</span> <span class="n">weight</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets the polygons for American timezones.</span>
+
+<span class="sd">        :param code: The american code string.</span>
+<span class="sd">        :param weight: The weight of the returned polygons.</span>
+<span class="sd">        :return: The array of polygons and weights.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">qstringamerica</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;zone&#39;</span><span class="p">:</span> <span class="s2">&quot;%America%&quot;</span><span class="p">,</span> <span class="s1">&#39;code&#39;</span><span class="p">:</span> <span class="n">code</span><span class="p">})</span>
+        <span class="k">return</span> <span class="n">proc_polystr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">fetchall</span><span class="p">(),</span> <span class="n">weight</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TZPolyInterface.destroy"><a class="viewcode-back" href="../../../../locinf.html#twied.multiind.interfaces.dbinterfaces.TZPolyInterface.destroy">[docs]</a>    <span class="k">def</span> <span class="nf">destroy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Close the connection.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Twicol 0.2 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2016, Humphrey Shotton.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.2.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,337 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>twied.eventec.eventdetection &mdash; Twicol 0.2 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Twicol 0.2 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Twicol 0.2 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for twied.eventec.eventdetection</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">.clustermanager</span> <span class="kn">import</span> <span class="n">ClusterManager</span>
+<span class="kn">from</span> <span class="nn">.clustercreatorgrid</span> <span class="kn">import</span> <span class="n">ClusterCreatorGrid</span>
+<span class="kn">from</span> <span class="nn">.clustercreator</span> <span class="kn">import</span> <span class="n">ClusterCreator</span>
+<span class="kn">from</span> <span class="nn">.clusterupdater</span> <span class="kn">import</span> <span class="n">ClusterUpdater</span>
+<span class="kn">from</span> <span class="nn">.popcount</span> <span class="kn">import</span> <span class="n">PopMap</span>
+
+<span class="kn">import</span> <span class="nn">datetime</span>
+
+
+<div class="viewcode-block" id="EventDetection"><a class="viewcode-back" href="../../../eventdetection.html#twied.eventec.eventdetection.EventDetection">[docs]</a><span class="k">class</span> <span class="nc">EventDetection</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Main entry point for the Event Detection implementation.</span>
+
+<span class="sd">    This method is based of that proposed in *M.Walther and M. Kaisser,</span>
+<span class="sd">    &quot;Geo-spatial event detection in the twitter stream&quot;* which focuses</span>
+<span class="sd">    on clustering tweets temporally and spatially.</span>
+
+<span class="sd">    The technique monitors the most recent tweets and clusters those</span>
+<span class="sd">    issued geographically close to each other in a given timeframe.</span>
+<span class="sd">    Three modules manage the clusters:</span>
+
+<span class="sd">    * :class:`ClusterCreator`</span>
+<span class="sd">        checks the most recent tweets and creates</span>
+<span class="sd">        new clusters where more than a threshold  number of tweets were</span>
+<span class="sd">        issued within a set time frame and within a set radius.</span>
+<span class="sd">    * :class:`ClusterUpdater`</span>
+<span class="sd">        adds new tweets to clusters if they are</span>
+<span class="sd">        within the area of an existing cluster. This module also merges</span>
+<span class="sd">        clusters that are overlapping. Clusters are deleted after they</span>
+<span class="sd">        have reached a maximum amount of time with no new tweets being</span>
+<span class="sd">        added to them.</span>
+<span class="sd">    * :class:`ClusterManager`</span>
+<span class="sd">        manages the clusters.</span>
+
+<span class="sd">    This class manages the creation, updation and deletion of event clusters</span>
+<span class="sd">    by passing the tweets to each of the modules and deciding on what should</span>
+<span class="sd">    happen.</span>
+
+<span class="sd">    :Usage:</span>
+
+<span class="sd">    After the object is initialised, tweets should be fed to the class</span>
+<span class="sd">    in ascending datetime order to the :func:`process_tweet` method.</span>
+<span class="sd">    The order is required as the classes will compare times based off</span>
+<span class="sd">    the newest tweet, removing tweets or events older than a certain</span>
+<span class="sd">    age.</span>
+
+<span class="sd">    &gt;&gt;&gt; ed = EventDetection()</span>
+<span class="sd">    &gt;&gt;&gt; for t in tweets:</span>
+<span class="sd">    &gt;&gt;&gt;     ed.process_tweet(t)</span>
+
+<span class="sd">    Active clusters can be retrieved at any time using the :func:`get_clusters`</span>
+<span class="sd">    method. Other methods also exist for getting expired events, which are</span>
+<span class="sd">    clusters that did not add a new tweet for a period of time.</span>
+
+<span class="sd">    The removal of clusters will only be performed once a new tweet has</span>
+<span class="sd">    arrived. Each cluster returned from these methods is a :class:`EventCluster`</span>
+<span class="sd">    object. A dictionary of the clusters can be retrieved using the :func:`as_dict()`</span>
+<span class="sd">    method on the cluster object.</span>
+
+<span class="sd">    &gt;&gt;&gt; clusters = ed.get_all_clusters()</span>
+<span class="sd">    &gt;&gt;&gt; cdicts = [c.as_dict() for c in clusters]</span>
+
+<span class="sd">    .. seemore: :class:`EventCluster` contains more details about the fields</span>
+<span class="sd">        in each cluster.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="o">=</span><span class="s1">&#39;geo.coordinate&#39;</span><span class="p">,</span> <span class="n">tsfield</span><span class="o">=</span><span class="s1">&#39;timestamp_obj&#39;</span><span class="p">,</span> <span class="n">gridded</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+                 <span class="n">popfunc</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">popmaploc</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">mincnt</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">mdcnt</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
+                 <span class="n">cluster_radius</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">cluster_timediff</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">minutes</span><span class="o">=</span><span class="mi">30</span><span class="p">),</span>
+                 <span class="n">cluster_maxage</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">hours</span><span class="o">=</span><span class="mi">6</span><span class="p">)):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialises and sets up the event detection class.</span>
+
+<span class="sd">        Either the `popfunc` value or the `popmaploc` field must be set. If there</span>
+<span class="sd">        is no `popmaploc` value, then the `popfunc` will be used to calculate</span>
+<span class="sd">        the required number of tweets to start an event at a position. Otherwise</span>
+<span class="sd">        the function using a :class:`PopMap` will be used.</span>
+
+<span class="sd">        .. seealso:: :class:`PopMap` which describes the function for determining</span>
+<span class="sd">            the number of required tweets.</span>
+
+<span class="sd">        :param field: The field in the tweet dictionary where the coordinates</span>
+<span class="sd">            are stored. *(default &#39;geo.coordinate&#39;)*</span>
+
+<span class="sd">            Can be passed a dot delimited string of the location of the</span>
+<span class="sd">            location of the coordinate in the tweet dictionary.</span>
+<span class="sd">        :type field: str</span>
+<span class="sd">        :param tsfield: The field in the tweet dictionary where the timestamp</span>
+<span class="sd">            field is stored. (This field cannot be dot delimited).</span>
+<span class="sd">            *(default &#39;timestamp_obj&#39;)*</span>
+<span class="sd">        :type tsfield: str</span>
+<span class="sd">        :param gridded: Whether or not to use the :class:`ClusterCreatorGrid`</span>
+<span class="sd">            or the less performant :class:`ClusterCreator`. See documentation</span>
+<span class="sd">            for these classes for reasons to use either. *(default `True`)*</span>
+<span class="sd">        :type gridded: bool</span>
+<span class="sd">        :param popfunc: *(Optional)* Function which takes a two parameters: lon and lat,</span>
+<span class="sd">            and returns a single integer value for the number of required</span>
+<span class="sd">            tweets to start an event at that coordinate. If this function is</span>
+<span class="sd">            not set, then the population map will be assumed and the `popmaploc`</span>
+<span class="sd">            string must be set.</span>
+
+<span class="sd">            Simple example for a static value:</span>
+
+<span class="sd">            &gt;&gt;&gt; popfunc = lambda lat, lon: 25</span>
+<span class="sd">        :type popfunc: lambda</span>
+<span class="sd">        :param popmaploc: *(Optional)* The location of the population grid</span>
+<span class="sd">            to be used for the population map function. This only works for</span>
+<span class="sd">            the UK grid. If this value is not set then the `popfunc` value</span>
+<span class="sd">            must be set.</span>
+
+<span class="sd">            If the popmap still needs to be used with a different function,</span>
+<span class="sd">            this can be setup seperately using the `popfunc` parameter</span>
+<span class="sd">            and passed in.</span>
+<span class="sd">        :type popmaploc: str</span>
+<span class="sd">        :param mincnt: If the `popmaploc` value is set this is the minimum</span>
+<span class="sd">            number of tweets required to start an event in the lowest populated</span>
+<span class="sd">            areas. *(default 10)*</span>
+<span class="sd">        :type mincnt: int</span>
+<span class="sd">        :param mdcnt: If the `popmaploc` value is set this is the median</span>
+<span class="sd">            number of tweets required to start an event in the median</span>
+<span class="sd">            populated areas. *(default 30)*</span>
+<span class="sd">        :type mdcnt: int</span>
+<span class="sd">        :param cluster_radius: Maximum radius of the events (km). *(default 10km)*</span>
+<span class="sd">        :type cluster_radius: float</span>
+<span class="sd">        :param cluster_timediff: Maximum time difference between all tweets</span>
+<span class="sd">            to create a cluster. *(default 30 minutes)*</span>
+<span class="sd">        :type cluster_timediff: datetime.timedelta</span>
+<span class="sd">        :param cluster_maxage: Maximum age of a cluster since the last new tweet</span>
+<span class="sd">            before it is deleted. *(default 6 hours)*</span>
+<span class="sd">        :type cluster_maxage: datetime.timedelta</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tsfield</span> <span class="o">=</span> <span class="n">tsfield</span>
+
+        <span class="c1"># Setup the cluster manager and updater modules.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">c_manager</span> <span class="o">=</span> <span class="n">ClusterManager</span><span class="p">(</span><span class="n">field</span><span class="o">=</span><span class="n">field</span><span class="p">,</span> <span class="n">tsfield</span><span class="o">=</span><span class="n">tsfield</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="n">cluster_radius</span><span class="p">,</span>
+                                        <span class="n">timediff</span><span class="o">=</span><span class="n">cluster_timediff</span><span class="p">,</span> <span class="n">maxage</span><span class="o">=</span><span class="n">cluster_maxage</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">c_updater</span> <span class="o">=</span> <span class="n">ClusterUpdater</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">c_manager</span><span class="p">)</span>
+
+        <span class="c1"># Setup the cluster creator selected from the gridded parameter</span>
+        <span class="k">if</span> <span class="n">gridded</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">c_creator</span> <span class="o">=</span> <span class="n">ClusterCreatorGrid</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">c_manager</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">c_creator</span> <span class="o">=</span> <span class="n">ClusterCreator</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">c_manager</span><span class="p">)</span>
+
+        <span class="c1"># Setup the population function</span>
+        <span class="k">if</span> <span class="n">popfunc</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">popmaploc</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="c1"># Setup the population map</span>
+            <span class="n">popmap</span> <span class="o">=</span> <span class="n">PopMap</span><span class="p">(</span><span class="n">popmaploc</span><span class="p">)</span>
+            <span class="n">ppfnc</span> <span class="o">=</span> <span class="n">popmap</span><span class="o">.</span><span class="n">get_reqfunc_uk</span><span class="p">(</span><span class="n">mdcnt</span><span class="p">,</span> <span class="n">mincnt</span><span class="p">)</span>  <span class="c1"># (5, 3 for geo)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">popfunc</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">lt</span><span class="p">,</span> <span class="n">ln</span><span class="p">:</span> <span class="n">ppfnc</span><span class="p">(</span><span class="n">popmap</span><span class="o">.</span><span class="n">get_population</span><span class="p">(</span><span class="n">ln</span><span class="p">,</span> <span class="n">lt</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="n">popfunc</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">popmaploc</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">popfunc</span> <span class="o">=</span> <span class="n">popfunc</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Incorrect setup of Event Detection class: &quot;</span>
+                            <span class="s2">&quot;popfunc and popmaploc cannot both be null or set.&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="EventDetection.process_tweet"><a class="viewcode-back" href="../../../eventdetection.html#twied.eventec.eventdetection.EventDetection.process_tweet">[docs]</a>    <span class="k">def</span> <span class="nf">process_tweet</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tweet</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Process a tweet through the event detection.</span>
+
+<span class="sd">        Tweets should be fed into this method in ascending datetime</span>
+<span class="sd">        order. If there is an error in retrieving the coordinate or</span>
+<span class="sd">        population of the tweet a silent error will be thrown and the</span>
+<span class="sd">        method will return `False`.</span>
+
+<span class="sd">        :param tweet: Dictionary of tweet information.</span>
+<span class="sd">        :type tweet: dict</span>
+<span class="sd">        :return: Whether the tweet was processed correctly.</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Try to get the coordinate, if fails, pass the tweet</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">coord</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">c_manager</span><span class="o">.</span><span class="n">get_coordinate</span><span class="p">(</span><span class="n">tweet</span><span class="p">)</span>
+            <span class="n">tweet</span><span class="p">[</span><span class="s1">&#39;_coord&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">coord</span>
+
+            <span class="n">tweet</span><span class="p">[</span><span class="s1">&#39;_popreq&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">popfunc</span><span class="p">(</span><span class="n">coord</span><span class="o">.</span><span class="n">lon</span><span class="p">,</span> <span class="n">coord</span><span class="o">.</span><span class="n">lat</span><span class="p">)</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">KeyError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+            <span class="c1"># Could not get coordinate or population</span>
+            <span class="k">return</span> <span class="bp">False</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="c1"># Unknown error was thrown</span>
+            <span class="k">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">e</span>
+
+        <span class="c1"># Update the manager with the time of the latest tweet</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">c_manager</span><span class="o">.</span><span class="n">lasttime</span> <span class="o">=</span> <span class="n">tweet</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">tsfield</span><span class="p">]</span>
+
+        <span class="c1"># Attempt to create new cluster</span>
+        <span class="n">created</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">c_creator</span><span class="o">.</span><span class="n">process_tweet</span><span class="p">(</span><span class="n">tweet</span><span class="p">)</span>
+
+        <span class="c1"># If none created, update existing</span>
+        <span class="n">updated</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">created</span><span class="p">:</span>
+            <span class="n">updated</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">c_updater</span><span class="o">.</span><span class="n">process_tweet</span><span class="p">(</span><span class="n">tweet</span><span class="p">)</span>
+
+        <span class="c1"># If tweet was not added to a cluster, add to unclustered</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">updated</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">created</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">c_creator</span><span class="o">.</span><span class="n">add_unclustered</span><span class="p">(</span><span class="n">tweet</span><span class="p">)</span>
+
+        <span class="c1"># Update and merge clusters</span>
+        <span class="k">if</span> <span class="n">created</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">c_updater</span><span class="o">.</span><span class="n">update_clusters</span><span class="p">(</span><span class="n">tweet</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">c_updater</span><span class="o">.</span><span class="n">update_oldclusters</span><span class="p">(</span><span class="n">tweet</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">True</span></div>
+
+<div class="viewcode-block" id="EventDetection.get_clusters"><a class="viewcode-back" href="../../../eventdetection.html#twied.eventec.eventdetection.EventDetection.get_clusters">[docs]</a>    <span class="k">def</span> <span class="nf">get_clusters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets the list of current active clusters from the :class:`ClusterManager`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">c_manager</span><span class="o">.</span><span class="n">clusters</span></div>
+
+<div class="viewcode-block" id="EventDetection.get_unclustered"><a class="viewcode-back" href="../../../eventdetection.html#twied.eventec.eventdetection.EventDetection.get_unclustered">[docs]</a>    <span class="k">def</span> <span class="nf">get_unclustered</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets the list of current unclustered tweets from the :class:`ClusterCreator`.</span>
+
+<span class="sd">        .. warning:: only the non-gridded :class:`ClusterCreator` class supports</span>
+<span class="sd">            getting the list of unclustered tweets. It is not possible to get this</span>
+<span class="sd">            list when using the :class:`ClusterCreatorGrid` class.</span>
+
+<span class="sd">            Will raise an exception if this method is used with the wrong class.</span>
+
+<span class="sd">        :returns: List of unclustered tweets.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">c_creator</span><span class="p">)</span> <span class="o">==</span> <span class="n">ClusterCreatorGrid</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;List of unclustered tweets cannot be retrieved using the &quot;</span>
+                            <span class="s2">&quot;grid version of ClusterCreator&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">c_creator</span><span class="o">.</span><span class="n">unclustered</span></div>
+
+<div class="viewcode-block" id="EventDetection.get_unclustered_points"><a class="viewcode-back" href="../../../eventdetection.html#twied.eventec.eventdetection.EventDetection.get_unclustered_points">[docs]</a>    <span class="k">def</span> <span class="nf">get_unclustered_points</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">c_manager</span><span class="o">.</span><span class="n">get_coordinate</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_unclustered</span><span class="p">()]</span></div>
+
+<div class="viewcode-block" id="EventDetection.get_all_clusters"><a class="viewcode-back" href="../../../eventdetection.html#twied.eventec.eventdetection.EventDetection.get_all_clusters">[docs]</a>    <span class="k">def</span> <span class="nf">get_all_clusters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets the list of current active clusters and old clusters appended</span>
+<span class="sd">        together from the :class:`ClusterManager`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">c_manager</span><span class="o">.</span><span class="n">get_all_clusters</span><span class="p">()</span></div>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a string of the status from each of the three modules.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">c_manager</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">c_creator</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">c_updater</span><span class="p">)</span></div>
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Twicol 0.2 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2016, Humphrey Shotton.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.2.
+    </div>
+  </body>
+</html>

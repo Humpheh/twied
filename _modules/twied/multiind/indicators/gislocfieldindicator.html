@@ -1,0 +1,210 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>twied.multiind.indicators.gislocfieldindicator &mdash; Twicol 0.2 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '0.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Twicol 0.2 documentation" href="../../../../index.html" />
+    <link rel="up" title="Module code" href="../../../index.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Twicol 0.2 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for twied.multiind.indicators.gislocfieldindicator</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">Indicator</span><span class="p">,</span> <span class="n">MessageIndicator</span>
+<span class="kn">from</span> <span class="nn">..interfaces</span> <span class="kn">import</span> <span class="n">GisgraphyInterface</span><span class="p">,</span> <span class="n">GADMPolyInterface</span>
+
+
+<div class="viewcode-block" id="GisgraphyException"><a class="viewcode-back" href="../../../../locinf.html#twied.multiind.indicators.gislocfieldindicator.GisgraphyException">[docs]</a><span class="k">class</span> <span class="nc">GisgraphyException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Exception object thrown when there is an error is getting the location</span>
+<span class="sd">    from the Gisgraphy service.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="GISLocFieldIndicator"><a class="viewcode-back" href="../../../../locinf.html#twied.multiind.indicators.gislocfieldindicator.GISLocFieldIndicator">[docs]</a><span class="k">class</span> <span class="nc">GISLocFieldIndicator</span><span class="p">(</span><span class="n">Indicator</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Indicator which finds toponyms in the location field and maps them to a area or point using</span>
+<span class="sd">    the geonames gazetteer.</span>
+
+<span class="sd">    This is a reimplementation of the :class:`LocFieldIndicator` class which uses the</span>
+<span class="sd">    `Gisgraphy &lt;http://gisgraphy.com/&gt;_` open source gazeteer instead of the</span>
+<span class="sd">    `Geonames &lt;http://www.geonames.org/&gt;_` gazeteer. In testing this service was found</span>
+<span class="sd">    to have a less useful search feature, however was not API limited as the service</span>
+<span class="sd">    could be hosted locally.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialise the indicator.</span>
+
+<span class="sd">        :param config: The config object for the MI technique.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">polydb_url</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;multiindicator&quot;</span><span class="p">,</span> <span class="s2">&quot;gadm_polydb_path&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">geonames</span> <span class="o">=</span> <span class="n">GisgraphyInterface</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">geolimit</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">getint</span><span class="p">(</span><span class="s2">&quot;geonames&quot;</span><span class="p">,</span> <span class="s2">&quot;limit&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">weight</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">getfloat</span><span class="p">(</span><span class="s2">&quot;mi_weights&quot;</span><span class="p">,</span> <span class="s2">&quot;GN&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">messageindicator</span> <span class="o">=</span> <span class="n">MessageIndicator</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">messageindicator</span><span class="o">.</span><span class="n">weight</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">getfloat</span><span class="p">(</span><span class="s2">&quot;mi_weights&quot;</span><span class="p">,</span> <span class="s2">&quot;GN_3&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="GISLocFieldIndicator.get_loc"><a class="viewcode-back" href="../../../../locinf.html#twied.multiind.indicators.gislocfieldindicator.GISLocFieldIndicator.get_loc">[docs]</a>    <span class="k">def</span> <span class="nf">get_loc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">location</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">location</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span>
+
+        <span class="c1"># setup db</span>
+        <span class="n">gadmpoly</span> <span class="o">=</span> <span class="n">GADMPolyInterface</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">polydb_url</span><span class="p">)</span>
+
+        <span class="n">polygons</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_polys</span><span class="p">(</span><span class="n">location</span><span class="p">,</span> <span class="n">gadmpoly</span><span class="p">)</span>
+
+        <span class="c1"># split by commas</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">polygons</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">spl</span> <span class="o">=</span> <span class="n">location</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="n">spl</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">component</span> <span class="ow">in</span> <span class="n">spl</span><span class="p">:</span>
+                    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;,:&quot;</span><span class="p">,</span> <span class="n">component</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+                    <span class="n">polygons</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_polys</span><span class="p">(</span><span class="n">component</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="n">gadmpoly</span><span class="p">)</span>
+
+        <span class="c1"># if still none, split by spaces</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">polygons</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">component</span> <span class="ow">in</span> <span class="n">location</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">):</span>
+                <span class="k">print</span><span class="p">(</span><span class="s2">&quot; :&quot;</span><span class="p">,</span> <span class="n">component</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+                <span class="n">polygons</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_polys</span><span class="p">(</span><span class="n">component</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="n">gadmpoly</span><span class="p">)</span>
+
+        <span class="c1"># if geonames couldn&#39;t find anything - try running it through the backup message indicator</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">polygons</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">polygons</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">messageindicator</span><span class="o">.</span><span class="n">get_loc</span><span class="p">(</span><span class="n">location</span><span class="p">)</span>
+
+        <span class="n">gadmpoly</span><span class="o">.</span><span class="n">destroy</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">polygons</span></div>
+
+<div class="viewcode-block" id="GISLocFieldIndicator.get_polys"><a class="viewcode-back" href="../../../../locinf.html#twied.multiind.indicators.gislocfieldindicator.GISLocFieldIndicator.get_polys">[docs]</a>    <span class="k">def</span> <span class="nf">get_polys</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">location</span><span class="p">,</span> <span class="n">gadmpoly</span><span class="p">):</span>
+
+        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">geonames</span><span class="o">.</span><span class="n">req</span><span class="p">(</span><span class="n">location</span><span class="p">)</span>
+
+        <span class="c1"># check if failed, if have then raise an exception</span>
+        <span class="k">if</span> <span class="s1">&#39;response&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">res</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">GisgraphyException</span><span class="p">(</span><span class="s2">&quot;Geonames not present in result?&quot;</span><span class="p">)</span>
+
+        <span class="n">statstr</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">polygons</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">res</span><span class="p">[</span><span class="s1">&#39;response&#39;</span><span class="p">][</span><span class="s1">&#39;docs&#39;</span><span class="p">]:</span>
+            <span class="n">userpoint</span> <span class="o">=</span> <span class="bp">True</span>
+
+            <span class="c1"># belief in coordinate decreases by 0.1 the lower down the list from 1 to 0.5</span>
+            <span class="n">belief</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">g</span><span class="p">[</span><span class="s1">&#39;score&#39;</span><span class="p">])</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="s1">&#39;response&#39;</span><span class="p">][</span><span class="s1">&#39;maxScore&#39;</span><span class="p">])</span>  <span class="c1">#1 - (count / self.geolimit / 2)</span>
+
+            <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">p</span> <span class="ow">in</span> <span class="n">g</span><span class="p">[</span><span class="s1">&#39;placetype&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;Adm&#39;</span><span class="p">,</span> <span class="s1">&#39;City&#39;</span><span class="p">]):</span>
+                <span class="c1"># getpolygon for the place</span>
+                <span class="n">polys</span> <span class="o">=</span> <span class="n">gadmpoly</span><span class="o">.</span><span class="n">get_polys</span><span class="p">(</span><span class="n">g</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_weight</span><span class="p">(</span><span class="n">belief</span><span class="p">))</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">polys</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">polygons</span> <span class="o">+=</span> <span class="n">polys</span>
+                    <span class="n">userpoint</span> <span class="o">=</span> <span class="bp">False</span>
+                    <span class="n">statstr</span> <span class="o">+=</span> <span class="s2">&quot;=&quot;</span>
+
+            <span class="k">if</span> <span class="n">userpoint</span><span class="p">:</span>
+                <span class="c1"># cannot get any polys, just plot the point</span>
+                <span class="n">polypoint</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">point_to_poly</span><span class="p">((</span><span class="nb">float</span><span class="p">(</span><span class="n">g</span><span class="p">[</span><span class="s1">&#39;lng&#39;</span><span class="p">]),</span> <span class="nb">float</span><span class="p">(</span><span class="n">g</span><span class="p">[</span><span class="s1">&#39;lat&#39;</span><span class="p">])),</span> <span class="n">belief</span><span class="p">)</span>
+                <span class="n">polygons</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">polypoint</span><span class="p">)</span>
+                <span class="n">statstr</span> <span class="o">+=</span> <span class="s2">&quot;.&quot;</span>
+
+            <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="n">count</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">geolimit</span><span class="p">:</span>
+                <span class="k">break</span>
+
+        <span class="n">pargs</span> <span class="o">=</span> <span class="p">(</span><span class="n">location</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="s1">&#39;response&#39;</span><span class="p">][</span><span class="s1">&#39;docs&#39;</span><span class="p">]),</span> <span class="n">statstr</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%10s</span><span class="s2"> =  </span><span class="si">%i</span><span class="s2"> geonames [</span><span class="si">%s</span><span class="s2">]&quot;</span> <span class="o">%</span> <span class="n">pargs</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">polygons</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Twicol 0.2 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2016, Humphrey Shotton.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.2.
+    </div>
+  </body>
+</html>

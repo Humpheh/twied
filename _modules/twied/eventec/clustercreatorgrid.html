@@ -1,0 +1,281 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>twied.eventec.clustercreatorgrid &mdash; Twicol 0.2 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Twicol 0.2 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Twicol 0.2 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for twied.eventec.clustercreatorgrid</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">geopy.distance</span> <span class="kn">import</span> <span class="n">vincenty</span>
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">product</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+
+
+<div class="viewcode-block" id="GeoGrid"><a class="viewcode-back" href="../../../eventdetection.html#twied.eventec.clustercreatorgrid.GeoGrid">[docs]</a><span class="k">class</span> <span class="nc">GeoGrid</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Simple class which stores tweets in a grid storage system for faster</span>
+<span class="sd">    retrieval of neighbouring tweets.</span>
+
+<span class="sd">    The :func:`add_tweet` method will add a tweet to a cell based on its</span>
+<span class="sd">    coordinate. Will store the tweet in the cell of the coordinate and the</span>
+<span class="sd">    surrounding cells. The cell key the tweet is stored in will be the int</span>
+<span class="sd">    value of the coordinates. The :func:`get_surrounding` method will retrieve</span>
+<span class="sd">    the tweets within a cell, meaning tweets in surrounding cells are also</span>
+<span class="sd">    included.</span>
+
+<span class="sd">    .. note:: this class is not useful if the event radius parameter is</span>
+<span class="sd">        too large.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Setup the geogrid.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">areas</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tests</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">product</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">repeat</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
+
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="GeoGrid.get_str"><a class="viewcode-back" href="../../../eventdetection.html#twied.eventec.clustercreatorgrid.GeoGrid.get_str">[docs]</a>    <span class="k">def</span> <span class="nf">get_str</span><span class="p">(</span><span class="n">coord</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets a string of the lat and lon integer values of the coordinate to</span>
+<span class="sd">        for fast indexing using a dictionary.</span>
+
+<span class="sd">        :Example:</span>
+
+<span class="sd">        &gt;&gt;&gt; g = GeoGrid()</span>
+<span class="sd">        &gt;&gt;&gt; g.get_str((50.734910, -3.533687))</span>
+<span class="sd">        &#39;50,-3&#39;</span>
+
+<span class="sd">        :param coord: Tuple of the (lat, lon) of the coordinate.</span>
+<span class="sd">        :type coord: tuple/list, float</span>
+<span class="sd">        :return: String of the key for the coordinate.</span>
+
+<span class="sd">        .. note:: this function does not round the values of the coordinates.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">%.1d</span><span class="s2">,</span><span class="si">%.1d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">coord</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">coord</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="GeoGrid.add_tweet"><a class="viewcode-back" href="../../../eventdetection.html#twied.eventec.clustercreatorgrid.GeoGrid.add_tweet">[docs]</a>    <span class="k">def</span> <span class="nf">add_tweet</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tweet</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a tweet dictionary to the cell of its coordinates and the</span>
+<span class="sd">        surrounding cells. Uses the :func:`get_str` method to calculate</span>
+<span class="sd">        the cells the tweet will be stored in.</span>
+
+<span class="sd">        :param tweet: Dictionary of tweet information.</span>
+<span class="sd">        :type tweet: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">coord</span> <span class="o">=</span> <span class="n">tweet</span><span class="p">[</span><span class="s1">&#39;_coord&#39;</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tests</span><span class="p">:</span>
+            <span class="n">newc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_str</span><span class="p">([(</span><span class="n">coord</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="p">(</span><span class="n">coord</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">])])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">areas</span><span class="p">[</span><span class="n">newc</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tweet</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GeoGrid.remove_tweet"><a class="viewcode-back" href="../../../eventdetection.html#twied.eventec.clustercreatorgrid.GeoGrid.remove_tweet">[docs]</a>    <span class="k">def</span> <span class="nf">remove_tweet</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tweet</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Removes a tweet dictionary from all cells it is in.</span>
+
+<span class="sd">        :param tweet: Dictionary of tweet information.</span>
+<span class="sd">        :type tweet: dict</span>
+
+<span class="sd">        .. note:: the tweet dictionary must be the same object as the one</span>
+<span class="sd">            added using the :func:`add_tweet` method.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">coord</span> <span class="o">=</span> <span class="n">tweet</span><span class="p">[</span><span class="s1">&#39;_coord&#39;</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tests</span><span class="p">:</span>
+            <span class="n">newc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_str</span><span class="p">([(</span><span class="n">coord</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="p">(</span><span class="n">coord</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">])])</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">areas</span><span class="p">[</span><span class="n">newc</span><span class="p">]</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">tweet</span><span class="p">)</span>
+            <span class="k">except</span> <span class="p">(</span><span class="ne">KeyError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+                <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="GeoGrid.get_surrounding"><a class="viewcode-back" href="../../../eventdetection.html#twied.eventec.clustercreatorgrid.GeoGrid.get_surrounding">[docs]</a>    <span class="k">def</span> <span class="nf">get_surrounding</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tweet</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets the tweets within a cell based on the coordinate of the tweet.</span>
+<span class="sd">        As tweets area stored in surrounding cells, will get the tweets</span>
+<span class="sd">        surrounding this cell also.</span>
+
+<span class="sd">        :param tweet: Dictionary of tweet information.</span>
+<span class="sd">        :type tweet: dict</span>
+<span class="sd">        :return: Surrounding tweet dictionaries.</span>
+<span class="sd">        :rtype: list, dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">areas</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">get_str</span><span class="p">(</span><span class="n">tweet</span><span class="p">[</span><span class="s1">&#39;_coord&#39;</span><span class="p">])]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span></div></div>
+
+
+<div class="viewcode-block" id="ClusterCreatorGrid"><a class="viewcode-back" href="../../../eventdetection.html#twied.eventec.clustercreatorgrid.ClusterCreatorGrid">[docs]</a><span class="k">class</span> <span class="nc">ClusterCreatorGrid</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class to manage the creation of clusters from tweets. This is a</span>
+<span class="sd">    alternative implementation of the :class:`ClusterCreator` class</span>
+<span class="sd">    which uses a :class:`GeoGrid` for more efficient comparisons of</span>
+<span class="sd">    nearby tweets.</span>
+
+<span class="sd">    Tweets are fed in through the :func:`process_tweet` method. These</span>
+<span class="sd">    are compared with the current unclustered tweets and a cluster is</span>
+<span class="sd">    created if the required number of tweets were posted within a</span>
+<span class="sd">    certain timeframe and radius.</span>
+
+<span class="sd">    Class also manages a list of unclustered tweets. Tweets are added</span>
+<span class="sd">    using the :func:`add_unclustered` method. The :func:`process_tweet`</span>
+<span class="sd">    method will remove tweets from the unclustered set if they are added</span>
+<span class="sd">    to a cluster or if the difference between the times are greater</span>
+<span class="sd">    than the threshold.</span>
+
+<span class="sd">    .. seealso:: :class:`ClusterCreator`, less efficient version of</span>
+<span class="sd">        this class which examines all unclustered tweets.</span>
+<span class="sd">    .. note:: This class will not work well for large cluster radiuses,</span>
+<span class="sd">        instead :class:`ClusterCreator` should be used.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">clsman</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create the cluster manager.</span>
+
+<span class="sd">        :param clsman: The cluster managaer object.</span>
+<span class="sd">        :type clsman: ClusterManager</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clsman</span> <span class="o">=</span> <span class="n">clsman</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">grid</span> <span class="o">=</span> <span class="n">GeoGrid</span><span class="p">()</span>
+
+<div class="viewcode-block" id="ClusterCreatorGrid.process_tweet"><a class="viewcode-back" href="../../../eventdetection.html#twied.eventec.clustercreatorgrid.ClusterCreatorGrid.process_tweet">[docs]</a>    <span class="k">def</span> <span class="nf">process_tweet</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tweet</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Take a tweet and attempt to create a new cluster.</span>
+
+<span class="sd">        :param tweet: Dictionary of tweet information.</span>
+<span class="sd">        :return: Whether a cluster has been created or not.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Use the GeoGrid to get the tweets to search in.</span>
+        <span class="n">searchspace</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">get_surrounding</span><span class="p">(</span><span class="n">tweet</span><span class="p">)</span>
+
+        <span class="c1"># Keep a list of tweets to remove after this tweet has been processed</span>
+        <span class="n">toremove</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># Keep a list of tweets that could be part of a new cluster</span>
+        <span class="n">candidates</span> <span class="o">=</span> <span class="p">[</span><span class="n">tweet</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">searchspace</span><span class="p">:</span>
+            <span class="c1"># Check if tweets were within time and radius</span>
+            <span class="n">dist</span> <span class="o">=</span> <span class="n">vincenty</span><span class="p">(</span><span class="n">tweet</span><span class="p">[</span><span class="s1">&#39;_coord&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">rev</span><span class="p">(),</span> <span class="n">t</span><span class="p">[</span><span class="s1">&#39;_coord&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">rev</span><span class="p">())</span><span class="o">.</span><span class="n">km</span>
+            <span class="n">time</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">tweet</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">clsman</span><span class="o">.</span><span class="n">tsfield</span><span class="p">]</span> <span class="o">-</span> <span class="n">t</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">clsman</span><span class="o">.</span><span class="n">tsfield</span><span class="p">])</span>
+
+            <span class="k">if</span> <span class="n">dist</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">clsman</span><span class="o">.</span><span class="n">radius</span> <span class="ow">and</span> <span class="n">time</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">clsman</span><span class="o">.</span><span class="n">timediff</span><span class="p">:</span>
+                <span class="c1"># Tweet is within radius and time</span>
+                <span class="n">candidates</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">time</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">clsman</span><span class="o">.</span><span class="n">timediff</span><span class="p">:</span>
+                <span class="c1"># Tweet is older than the max age so remove from unclustered</span>
+                <span class="n">toremove</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+
+        <span class="c1"># Remove old tweets</span>
+        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">toremove</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">remove_tweet</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+        <span class="c1"># If have enough candidates to create a cluster</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">candidates</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">tweet</span><span class="p">[</span><span class="s1">&#39;_popreq&#39;</span><span class="p">]:</span>
+            <span class="c1"># Remove candidates from unclustered</span>
+            <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">candidates</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">remove_tweet</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+            <span class="c1"># Create new cluster</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">clsman</span><span class="o">.</span><span class="n">add_cluster</span><span class="p">(</span><span class="n">candidates</span><span class="p">,</span> <span class="n">tweet</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Not enough candidates to create cluster</span>
+            <span class="k">return</span> <span class="bp">False</span></div>
+
+<div class="viewcode-block" id="ClusterCreatorGrid.add_unclustered"><a class="viewcode-back" href="../../../eventdetection.html#twied.eventec.clustercreatorgrid.ClusterCreatorGrid.add_unclustered">[docs]</a>    <span class="k">def</span> <span class="nf">add_unclustered</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tweet</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a tweet to the list of unclustered tweets.</span>
+
+<span class="sd">        :param tweet: Dictionary of tweet information.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">add_tweet</span><span class="p">(</span><span class="n">tweet</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        String representation of the number of unclustered tweets.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s2">&quot;&lt;ClusterCreatorGrid: </span><span class="si">%i</span><span class="s2"> areas&gt;&quot;</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">areas</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Twicol 0.2 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2016, Humphrey Shotton.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.2.
+    </div>
+  </body>
+</html>

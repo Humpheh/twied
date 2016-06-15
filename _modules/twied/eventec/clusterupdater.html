@@ -1,0 +1,155 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>twied.eventec.clusterupdater &mdash; Twicol 0.2 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Twicol 0.2 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Twicol 0.2 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for twied.eventec.clusterupdater</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">from</span> <span class="nn">geopy.distance</span> <span class="kn">import</span> <span class="n">vincenty</span>
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">permutations</span><span class="p">,</span> <span class="n">product</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+
+
+<div class="viewcode-block" id="ClusterUpdater"><a class="viewcode-back" href="../../../eventdetection.html#twied.eventec.clusterupdater.ClusterUpdater">[docs]</a><span class="k">class</span> <span class="nc">ClusterUpdater</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">clsman</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clsman</span> <span class="o">=</span> <span class="n">clsman</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pastcomparisons</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="n">defaultdict</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ClusterUpdater.has_comp"><a class="viewcode-back" href="../../../eventdetection.html#twied.eventec.clusterupdater.ClusterUpdater.has_comp">[docs]</a>    <span class="k">def</span> <span class="nf">has_comp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c1</span><span class="p">,</span> <span class="n">c2</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pastcomparisons</span><span class="p">[</span><span class="n">c1</span><span class="p">][</span><span class="n">c2</span><span class="p">]</span> <span class="o">==</span> <span class="bp">True</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">False</span></div>
+
+<div class="viewcode-block" id="ClusterUpdater.add_done_comp"><a class="viewcode-back" href="../../../eventdetection.html#twied.eventec.clusterupdater.ClusterUpdater.add_done_comp">[docs]</a>    <span class="k">def</span> <span class="nf">add_done_comp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c1</span><span class="p">,</span> <span class="n">c2</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pastcomparisons</span><span class="p">[</span><span class="n">c1</span><span class="p">][</span><span class="n">c2</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pastcomparisons</span><span class="p">[</span><span class="n">c2</span><span class="p">][</span><span class="n">c1</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span></div>
+
+<div class="viewcode-block" id="ClusterUpdater.process_tweet"><a class="viewcode-back" href="../../../eventdetection.html#twied.eventec.clusterupdater.ClusterUpdater.process_tweet">[docs]</a>    <span class="k">def</span> <span class="nf">process_tweet</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tweet</span><span class="p">):</span>
+        <span class="c1"># add the tweet to a cluster if it is in one</span>
+        <span class="k">for</span> <span class="n">cluster</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">clsman</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">cluster</span><span class="o">.</span><span class="n">in_cluster</span><span class="p">(</span><span class="n">tweet</span><span class="p">):</span>
+                <span class="c1"># tweet within cluster, adding to cluster</span>
+                <span class="n">cluster</span><span class="o">.</span><span class="n">add_tweet</span><span class="p">(</span><span class="n">tweet</span><span class="p">)</span>
+                <span class="k">return</span> <span class="bp">True</span>
+        <span class="k">return</span> <span class="bp">False</span></div>
+
+<div class="viewcode-block" id="ClusterUpdater.update_clusters"><a class="viewcode-back" href="../../../eventdetection.html#twied.eventec.clusterupdater.ClusterUpdater.update_clusters">[docs]</a>    <span class="k">def</span> <span class="nf">update_clusters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tweet</span><span class="p">):</span>
+        <span class="c1"># check if any clusters are overlapping</span>
+        <span class="n">changed</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="k">while</span> <span class="n">changed</span><span class="p">:</span>
+            <span class="n">changed</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="k">for</span> <span class="n">c1</span><span class="p">,</span> <span class="n">c2</span> <span class="ow">in</span> <span class="n">permutations</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">clsman</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
+                <span class="n">centres</span> <span class="o">=</span> <span class="n">product</span><span class="p">(</span><span class="n">c1</span><span class="o">.</span><span class="n">centres</span><span class="p">,</span> <span class="n">c2</span><span class="o">.</span><span class="n">centres</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">centres</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_comp</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+                        <span class="k">continue</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">add_done_comp</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+
+                    <span class="k">if</span> <span class="n">vincenty</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">rev</span><span class="p">(),</span> <span class="n">y</span><span class="o">.</span><span class="n">rev</span><span class="p">())</span><span class="o">.</span><span class="n">km</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">clsman</span><span class="o">.</span><span class="n">radius</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">clsman</span><span class="o">.</span><span class="n">merge_clusters</span><span class="p">(</span><span class="n">c1</span><span class="p">,</span> <span class="n">c2</span><span class="p">)</span>
+                        <span class="n">changed</span> <span class="o">=</span> <span class="bp">True</span>
+                        <span class="k">break</span>
+                <span class="k">if</span> <span class="n">changed</span><span class="p">:</span>
+                    <span class="k">break</span></div>
+
+<div class="viewcode-block" id="ClusterUpdater.update_oldclusters"><a class="viewcode-back" href="../../../eventdetection.html#twied.eventec.clusterupdater.ClusterUpdater.update_oldclusters">[docs]</a>    <span class="k">def</span> <span class="nf">update_oldclusters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tweet</span><span class="p">):</span>
+        <span class="c1"># remove any that are more than a maxage</span>
+        <span class="n">old</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">cluster</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">clsman</span><span class="p">:</span>
+            <span class="n">age</span> <span class="o">=</span> <span class="n">tweet</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">clsman</span><span class="o">.</span><span class="n">tsfield</span><span class="p">]</span> <span class="o">-</span> <span class="n">cluster</span><span class="o">.</span><span class="n">latest</span>
+            <span class="k">if</span> <span class="n">age</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">clsman</span><span class="o">.</span><span class="n">maxage</span><span class="p">:</span>
+                <span class="n">old</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cluster</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">cluster</span> <span class="ow">in</span> <span class="n">old</span><span class="p">:</span>
+            <span class="c1"># removing cluster</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">clsman</span><span class="o">.</span><span class="n">remove_cluster</span><span class="p">(</span><span class="n">cluster</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;&lt;ClusterUpdater&gt;&quot;</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Twicol 0.2 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2016, Humphrey Shotton.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.2.
+    </div>
+  </body>
+</html>

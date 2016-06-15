@@ -1,0 +1,1053 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>twied.eventec — Event Detection &mdash; Twicol 0.2 documentation</title>
+    
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Twicol 0.2 documentation" href="index.html" />
+    <link rel="next" title="twied.labelprop — SLP Inference Method" href="labelprop.html" />
+    <link rel="prev" title="twied.multiind — Multi-Indicator Location Inference" href="locinf.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="labelprop.html" title="twied.labelprop — SLP Inference Method"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="locinf.html" title="twied.multiind — Multi-Indicator Location Inference"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Twicol 0.2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-twied.eventec">
+<span id="twied-eventec-event-detection"></span><h1><a class="reference internal" href="#module-twied.eventec" title="twied.eventec"><code class="xref py py-mod docutils literal"><span class="pre">twied.eventec</span></code></a> &#8212; Event Detection<a class="headerlink" href="#module-twied.eventec" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="event-detection">
+<h2>Event Detection<a class="headerlink" href="#event-detection" title="Permalink to this headline">¶</a></h2>
+<p>The evet detection class is the main class which should be used for the event detection.
+This class takes in tweets and manages the other cluster modules.</p>
+<span class="target" id="module-twied.eventec.eventdetection"></span><dl class="class">
+<dt id="twied.eventec.eventdetection.EventDetection">
+<em class="property">class </em><code class="descclassname">twied.eventec.eventdetection.</code><code class="descname">EventDetection</code><span class="sig-paren">(</span><em>field='geo.coordinate'</em>, <em>tsfield='timestamp_obj'</em>, <em>gridded=True</em>, <em>popfunc=None</em>, <em>popmaploc=None</em>, <em>mincnt=10</em>, <em>mdcnt=30</em>, <em>cluster_radius=10</em>, <em>cluster_timediff=datetime.timedelta(0</em>, <em>1800)</em>, <em>cluster_maxage=datetime.timedelta(0</em>, <em>21600)</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/eventec/eventdetection.html#EventDetection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.eventec.eventdetection.EventDetection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Main entry point for the Event Detection implementation.</p>
+<p>This method is based of that proposed in <em>M.Walther and M. Kaisser,
+&#8220;Geo-spatial event detection in the twitter stream&#8221;</em> which focuses
+on clustering tweets temporally and spatially.</p>
+<p>The technique monitors the most recent tweets and clusters those
+issued geographically close to each other in a given timeframe.
+Three modules manage the clusters:</p>
+<ul>
+<li><dl class="first docutils">
+<dt><code class="xref py py-class docutils literal"><span class="pre">ClusterCreator</span></code></dt>
+<dd><p class="first last">checks the most recent tweets and creates
+new clusters where more than a threshold  number of tweets were
+issued within a set time frame and within a set radius.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><code class="xref py py-class docutils literal"><span class="pre">ClusterUpdater</span></code></dt>
+<dd><p class="first last">adds new tweets to clusters if they are
+within the area of an existing cluster. This module also merges
+clusters that are overlapping. Clusters are deleted after they
+have reached a maximum amount of time with no new tweets being
+added to them.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><code class="xref py py-class docutils literal"><span class="pre">ClusterManager</span></code></dt>
+<dd><p class="first last">manages the clusters.</p>
+</dd>
+</dl>
+</li>
+</ul>
+<p>This class manages the creation, updation and deletion of event clusters
+by passing the tweets to each of the modules and deciding on what should
+happen.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Usage:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<p>After the object is initialised, tweets should be fed to the class
+in ascending datetime order to the <a class="reference internal" href="#twied.eventec.eventdetection.EventDetection.process_tweet" title="twied.eventec.eventdetection.EventDetection.process_tweet"><code class="xref py py-func docutils literal"><span class="pre">process_tweet()</span></code></a> method.
+The order is required as the classes will compare times based off
+the newest tweet, removing tweets or events older than a certain
+age.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ed</span> <span class="o">=</span> <span class="n">EventDetection</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tweets</span><span class="p">:</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="n">ed</span><span class="o">.</span><span class="n">process_tweet</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Active clusters can be retrieved at any time using the <a class="reference internal" href="#twied.eventec.eventdetection.EventDetection.get_clusters" title="twied.eventec.eventdetection.EventDetection.get_clusters"><code class="xref py py-func docutils literal"><span class="pre">get_clusters()</span></code></a>
+method. Other methods also exist for getting expired events, which are
+clusters that did not add a new tweet for a period of time.</p>
+<p>The removal of clusters will only be performed once a new tweet has
+arrived. Each cluster returned from these methods is a <code class="xref py py-class docutils literal"><span class="pre">EventCluster</span></code>
+object. A dictionary of the clusters can be retrieved using the <code class="xref py py-func docutils literal"><span class="pre">as_dict()</span></code>
+method on the cluster object.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">clusters</span> <span class="o">=</span> <span class="n">ed</span><span class="o">.</span><span class="n">get_all_clusters</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cdicts</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span><span class="o">.</span><span class="n">as_dict</span><span class="p">()</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">clusters</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Initialises and sets up the event detection class.</p>
+<p>Either the <cite>popfunc</cite> value or the <cite>popmaploc</cite> field must be set. If there
+is no <cite>popmaploc</cite> value, then the <cite>popfunc</cite> will be used to calculate
+the required number of tweets to start an event at a position. Otherwise
+the function using a <code class="xref py py-class docutils literal"><span class="pre">PopMap</span></code> will be used.</p>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><code class="xref py py-class docutils literal"><span class="pre">PopMap</span></code> which describes the function for determining
+the number of required tweets.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>field</strong> (<em>str</em>) &#8211; <p>The field in the tweet dictionary where the coordinates
+are stored. <em>(default &#8216;geo.coordinate&#8217;)</em></p>
+<p>Can be passed a dot delimited string of the location of the
+location of the coordinate in the tweet dictionary.</p>
+</li>
+<li><strong>tsfield</strong> (<em>str</em>) &#8211; The field in the tweet dictionary where the timestamp
+field is stored. (This field cannot be dot delimited).
+<em>(default &#8216;timestamp_obj&#8217;)</em></li>
+<li><strong>gridded</strong> (<em>bool</em>) &#8211; Whether or not to use the <code class="xref py py-class docutils literal"><span class="pre">ClusterCreatorGrid</span></code>
+or the less performant <code class="xref py py-class docutils literal"><span class="pre">ClusterCreator</span></code>. See documentation
+for these classes for reasons to use either. <em>(default `True`)</em></li>
+<li><strong>popfunc</strong> (<em>lambda</em>) &#8211; <p><em>(Optional)</em> Function which takes a two parameters: lon and lat,
+and returns a single integer value for the number of required
+tweets to start an event at that coordinate. If this function is
+not set, then the population map will be assumed and the <cite>popmaploc</cite>
+string must be set.</p>
+<p>Simple example for a static value:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">popfunc</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">lat</span><span class="p">,</span> <span class="n">lon</span><span class="p">:</span> <span class="mi">25</span>
+</pre></div>
+</div>
+</li>
+<li><strong>popmaploc</strong> (<em>str</em>) &#8211; <p><em>(Optional)</em> The location of the population grid
+to be used for the population map function. This only works for
+the UK grid. If this value is not set then the <cite>popfunc</cite> value
+must be set.</p>
+<p>If the popmap still needs to be used with a different function,
+this can be setup seperately using the <cite>popfunc</cite> parameter
+and passed in.</p>
+</li>
+<li><strong>mincnt</strong> (<em>int</em>) &#8211; If the <cite>popmaploc</cite> value is set this is the minimum
+number of tweets required to start an event in the lowest populated
+areas. <em>(default 10)</em></li>
+<li><strong>mdcnt</strong> (<em>int</em>) &#8211; If the <cite>popmaploc</cite> value is set this is the median
+number of tweets required to start an event in the median
+populated areas. <em>(default 30)</em></li>
+<li><strong>cluster_radius</strong> (<em>float</em>) &#8211; Maximum radius of the events (km). <em>(default 10km)</em></li>
+<li><strong>cluster_timediff</strong> (<em>datetime.timedelta</em>) &#8211; Maximum time difference between all tweets
+to create a cluster. <em>(default 30 minutes)</em></li>
+<li><strong>cluster_maxage</strong> (<em>datetime.timedelta</em>) &#8211; Maximum age of a cluster since the last new tweet
+before it is deleted. <em>(default 6 hours)</em></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="twied.eventec.eventdetection.EventDetection.get_all_clusters">
+<code class="descname">get_all_clusters</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/eventec/eventdetection.html#EventDetection.get_all_clusters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.eventec.eventdetection.EventDetection.get_all_clusters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the list of current active clusters and old clusters appended
+together from the <code class="xref py py-class docutils literal"><span class="pre">ClusterManager</span></code>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="twied.eventec.eventdetection.EventDetection.get_clusters">
+<code class="descname">get_clusters</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/eventec/eventdetection.html#EventDetection.get_clusters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.eventec.eventdetection.EventDetection.get_clusters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the list of current active clusters from the <code class="xref py py-class docutils literal"><span class="pre">ClusterManager</span></code>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="twied.eventec.eventdetection.EventDetection.get_unclustered">
+<code class="descname">get_unclustered</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/eventec/eventdetection.html#EventDetection.get_unclustered"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.eventec.eventdetection.EventDetection.get_unclustered" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the list of current unclustered tweets from the <code class="xref py py-class docutils literal"><span class="pre">ClusterCreator</span></code>.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p>only the non-gridded <code class="xref py py-class docutils literal"><span class="pre">ClusterCreator</span></code> class supports
+getting the list of unclustered tweets. It is not possible to get this
+list when using the <code class="xref py py-class docutils literal"><span class="pre">ClusterCreatorGrid</span></code> class.</p>
+<p class="last">Will raise an exception if this method is used with the wrong class.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">List of unclustered tweets.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="twied.eventec.eventdetection.EventDetection.get_unclustered_points">
+<code class="descname">get_unclustered_points</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/eventec/eventdetection.html#EventDetection.get_unclustered_points"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.eventec.eventdetection.EventDetection.get_unclustered_points" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="twied.eventec.eventdetection.EventDetection.process_tweet">
+<code class="descname">process_tweet</code><span class="sig-paren">(</span><em>tweet</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/eventec/eventdetection.html#EventDetection.process_tweet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.eventec.eventdetection.EventDetection.process_tweet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Process a tweet through the event detection.</p>
+<p>Tweets should be fed into this method in ascending datetime
+order. If there is an error in retrieving the coordinate or
+population of the tweet a silent error will be thrown and the
+method will return <cite>False</cite>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>tweet</strong> (<em>dict</em>) &#8211; Dictionary of tweet information.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Whether the tweet was processed correctly.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="cluster-modules">
+<h2>Cluster Modules<a class="headerlink" href="#cluster-modules" title="Permalink to this headline">¶</a></h2>
+<p>These modules are primarily used by the <cite>EventDetection</cite> class to create and
+alter clusters.</p>
+<span class="target" id="module-twied.eventec.clustermanager"></span><dl class="class">
+<dt id="twied.eventec.clustermanager.ClusterManager">
+<em class="property">class </em><code class="descclassname">twied.eventec.clustermanager.</code><code class="descname">ClusterManager</code><span class="sig-paren">(</span><em>field</em>, <em>tsfield</em>, <em>radius=10</em>, <em>timediff=datetime.timedelta(0</em>, <em>1800)</em>, <em>maxage=datetime.timedelta(0</em>, <em>21600)</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/eventec/clustermanager.html#ClusterManager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.eventec.clustermanager.ClusterManager" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class to manage detected clusters. Stores current active clusters
+along with expired clusters.</p>
+<p>Creates a cluster manager.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>field</strong> (<em>str</em>) &#8211; <p>The field in the tweet dictionary where the coordinates
+are stored.</p>
+<p>Can be passed a dot delimited string of the location of the
+location of the coordinate in the tweet dictionary.</p>
+</li>
+<li><strong>tsfield</strong> (<em>str</em>) &#8211; The field in the tweet dictionary where the timestamp
+field is stored. (This field cannot be dot delimited).</li>
+<li><strong>radius</strong> (<em>float</em>) &#8211; Maximum radius of the events (km). <em>(default 10km)</em></li>
+<li><strong>timediff</strong> (<em>datetime.timedelta</em>) &#8211; Maximum time difference between all tweets to create a
+cluster. <em>(default 30 minutes)</em></li>
+<li><strong>maxage</strong> (<em>datetime.timedelta</em>) &#8211; Maximum age of a cluster since the last new tweet before it
+is deleted. <em>(default 6 hours)</em></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="twied.eventec.clustermanager.ClusterManager.add_cluster">
+<code class="descname">add_cluster</code><span class="sig-paren">(</span><em>tweets</em>, <em>maintweet</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/eventec/clustermanager.html#ClusterManager.add_cluster"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.eventec.clustermanager.ClusterManager.add_cluster" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a new cluster and saves it. The <cite>maintweet</cite> parameter will be
+used as the center for the cluster.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>tweets</strong> &#8211; Tweets within the cluster.</li>
+<li><strong>maintweet</strong> &#8211; Tweet which created the cluster.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The created cluster object.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#twied.eventec.clustermanager.TweetCluster" title="twied.eventec.clustermanager.TweetCluster"><code class="xref py py-class docutils literal"><span class="pre">TweetCluster</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="twied.eventec.clustermanager.ClusterManager.get_all_clusters">
+<code class="descname">get_all_clusters</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/eventec/clustermanager.html#ClusterManager.get_all_clusters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.eventec.clustermanager.ClusterManager.get_all_clusters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets a list of all clusters that have been created, including ones
+that have reached the maximum age.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">List of clusters.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">list</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="twied.eventec.clustermanager.ClusterManager.get_coordinate">
+<code class="descname">get_coordinate</code><span class="sig-paren">(</span><em>tweet</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/eventec/clustermanager.html#ClusterManager.get_coordinate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.eventec.clustermanager.ClusterManager.get_coordinate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets a <a class="reference internal" href="#twied.eventec.clustermanager.Coordinate" title="twied.eventec.clustermanager.Coordinate"><code class="xref py py-class docutils literal"><span class="pre">Coordinate</span></code></a> object from a tweet which stores the values of the
+lat and long coordinates. Uses the field passed in during initialisation of this
+class to find the coordinate field in the tweet object.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>tweet</strong> (<em>dict</em>) &#8211; Dictionary of tweet information.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Coordinate object.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#twied.eventec.clustermanager.Coordinate" title="twied.eventec.clustermanager.Coordinate"><code class="xref py py-class docutils literal"><span class="pre">Coordinate</span></code></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="twied.eventec.clustermanager.ClusterManager.merge_clusters">
+<code class="descname">merge_clusters</code><span class="sig-paren">(</span><em>c1</em>, <em>c2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/eventec/clustermanager.html#ClusterManager.merge_clusters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.eventec.clustermanager.ClusterManager.merge_clusters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Merges two clusters together. Will add of the information from
+<cite>c1</cite> to <cite>c2</cite> and then remove c2 from the active clusters.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>c1</strong> (<a class="reference internal" href="#twied.eventec.clustermanager.TweetCluster" title="twied.eventec.clustermanager.TweetCluster"><code class="xref py py-class docutils literal"><span class="pre">TweetCluster</span></code></a>) &#8211; First cluster to merge.</li>
+<li><strong>c2</strong> (<a class="reference internal" href="#twied.eventec.clustermanager.TweetCluster" title="twied.eventec.clustermanager.TweetCluster"><code class="xref py py-class docutils literal"><span class="pre">TweetCluster</span></code></a>) &#8211; Second cluster to merge.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="twied.eventec.clustermanager.ClusterManager.remove_cluster">
+<code class="descname">remove_cluster</code><span class="sig-paren">(</span><em>cluster</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/eventec/clustermanager.html#ClusterManager.remove_cluster"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.eventec.clustermanager.ClusterManager.remove_cluster" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes a cluster from the current active list and adds it to the
+list of old clusters.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>cluster</strong> &#8211; The <a class="reference internal" href="#twied.eventec.clustermanager.TweetCluster" title="twied.eventec.clustermanager.TweetCluster"><code class="xref py py-class docutils literal"><span class="pre">TweetCluster</span></code></a> object to remove from the active list.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Whether the cluster was removed or not. If not in active set will
+return <cite>False</cite>.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="twied.eventec.clustermanager.Coordinate">
+<em class="property">class </em><code class="descclassname">twied.eventec.clustermanager.</code><code class="descname">Coordinate</code><span class="sig-paren">(</span><em>lat</em>, <em>lon</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/eventec/clustermanager.html#Coordinate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.eventec.clustermanager.Coordinate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Object to store the lat and lon coordinates and provides some methods
+to quickly access or reverse the list depending on the needs.</p>
+<p>Create a new object.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>lat</strong> (<em>float</em>) &#8211; The latitude of the coordinate.</li>
+<li><strong>lon</strong> (<em>float</em>) &#8211; The longitude of the coordinate.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="twied.eventec.clustermanager.Coordinate.get">
+<code class="descname">get</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/eventec/clustermanager.html#Coordinate.get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.eventec.clustermanager.Coordinate.get" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the coordinates in the form lat, lon.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">List of the lat, lon.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="twied.eventec.clustermanager.Coordinate.rev">
+<code class="descname">rev</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/eventec/clustermanager.html#Coordinate.rev"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.eventec.clustermanager.Coordinate.rev" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the reverse form of the coordinates in lon, lat.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">List of the lon, lat.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="twied.eventec.clustermanager.TweetCluster">
+<em class="property">class </em><code class="descclassname">twied.eventec.clustermanager.</code><code class="descname">TweetCluster</code><span class="sig-paren">(</span><em>tweets</em>, <em>centre</em>, <em>clsman</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/eventec/clustermanager.html#TweetCluster"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.eventec.clustermanager.TweetCluster" title="Permalink to this definition">¶</a></dt>
+<dd><p>Holds information about a tweet cluster including the list of tweets within
+it, the centres of the cluster, the required population that initialised the
+cluster and the latest tweet within it.</p>
+<p>This class is used by the other modules in the event detection and provides
+methods to merge the cluster or check if a tweet should be within. Also allows
+for new tweets to be added to the cluster.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">as clusters can be merged there can be multiple centres of the
+cluster.</p>
+</div>
+<p>Creates a new <a class="reference internal" href="#twied.eventec.clustermanager.TweetCluster" title="twied.eventec.clustermanager.TweetCluster"><code class="xref py py-class docutils literal"><span class="pre">TweetCluster</span></code></a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>tweets</strong> (<em>list, dict</em>) &#8211; List of tweets within the cluster.</li>
+<li><strong>centre</strong> (<em>dict</em>) &#8211; Tweet which represents the centre of the cluster.</li>
+<li><strong>clsman</strong> (<a class="reference internal" href="#twied.eventec.clustermanager.ClusterManager" title="twied.eventec.clustermanager.ClusterManager"><code class="xref py py-class docutils literal"><span class="pre">ClusterManager</span></code></a>) &#8211; The <a class="reference internal" href="#twied.eventec.clustermanager.ClusterManager" title="twied.eventec.clustermanager.ClusterManager"><code class="xref py py-class docutils literal"><span class="pre">ClusterManager</span></code></a> object.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="twied.eventec.clustermanager.TweetCluster.add_tweet">
+<code class="descname">add_tweet</code><span class="sig-paren">(</span><em>tweet</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/eventec/clustermanager.html#TweetCluster.add_tweet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.eventec.clustermanager.TweetCluster.add_tweet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a tweet to the cluster. Will also update the value for the latest
+tweet.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>tweet</strong> (<em>dict</em>) &#8211; Dictionary of tweet information.</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">this method does not test if the tweet should be within the
+cluster and will add it regardless. The <a class="reference internal" href="#twied.eventec.clustermanager.TweetCluster.in_cluster" title="twied.eventec.clustermanager.TweetCluster.in_cluster"><code class="xref py py-func docutils literal"><span class="pre">in_cluster()</span></code></a> method
+should be used first to ensure that the tweet is within the cluster
+radius.</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="twied.eventec.clustermanager.TweetCluster.as_dict">
+<code class="descname">as_dict</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/eventec/clustermanager.html#TweetCluster.as_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.eventec.clustermanager.TweetCluster.as_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the information from the tweet cluster in a dicationary format.
+This is then used when saving the cluster information.</p>
+<dl class="docutils">
+<dt>The returned dictionary includes:</dt>
+<dd><ul class="first last">
+<li><dl class="first docutils">
+<dt><cite>tweets</cite> - list of all tweets within the cluster, including each of</dt>
+<dd><p class="first last">their tweet_id&#8217;s, the time of posting and the coordinate of the
+tweets posting location.</p>
+</dd>
+</dl>
+</li>
+<li><p class="first"><cite>centres</cite> - list of centres in the cluster</p>
+</li>
+<li><dl class="first docutils">
+<dt><cite>times</cite> - the start and finish times of the tweets posted in the</dt>
+<dd><p class="first last">cluster.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Cluster dictionary.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="twied.eventec.clustermanager.TweetCluster.get_points">
+<code class="descname">get_points</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/eventec/clustermanager.html#TweetCluster.get_points"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.eventec.clustermanager.TweetCluster.get_points" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets a list of the coordinates of all the tweets in the cluster.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">List of <a class="reference internal" href="#twied.eventec.clustermanager.Coordinate" title="twied.eventec.clustermanager.Coordinate"><code class="xref py py-class docutils literal"><span class="pre">Coordinate</span></code></a> objects for all of the locations
+of the tweets.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">list, <a class="reference internal" href="#twied.eventec.clustermanager.Coordinate" title="twied.eventec.clustermanager.Coordinate"><code class="xref py py-class docutils literal"><span class="pre">Coordinate</span></code></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="twied.eventec.clustermanager.TweetCluster.in_cluster">
+<code class="descname">in_cluster</code><span class="sig-paren">(</span><em>tweet</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/eventec/clustermanager.html#TweetCluster.in_cluster"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.eventec.clustermanager.TweetCluster.in_cluster" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if a tweet was posted within the radius of the cluster. Will
+check for all the centres of the cluster.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>tweet</strong> (<em>dict</em>) &#8211; The tweet dictionary to test.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Boolean of if the tweet was posted within the required radius.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="twied.eventec.clustermanager.TweetCluster.merge">
+<code class="descname">merge</code><span class="sig-paren">(</span><em>cluster</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/eventec/clustermanager.html#TweetCluster.merge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.eventec.clustermanager.TweetCluster.merge" title="Permalink to this definition">¶</a></dt>
+<dd><p>Merge two clusters by appending both of the tweets and cluster
+centres together.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>cluster</strong> (<a class="reference internal" href="#twied.eventec.clustermanager.TweetCluster" title="twied.eventec.clustermanager.TweetCluster"><code class="xref py py-class docutils literal"><span class="pre">TweetCluster</span></code></a>) &#8211; The other cluster to merge into this one.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-twied.eventec.clustercreator"></span><dl class="class">
+<dt id="twied.eventec.clustercreator.ClusterCreator">
+<em class="property">class </em><code class="descclassname">twied.eventec.clustercreator.</code><code class="descname">ClusterCreator</code><span class="sig-paren">(</span><em>clsman</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/eventec/clustercreator.html#ClusterCreator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.eventec.clustercreator.ClusterCreator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class to manage the creation of clusters from tweets.</p>
+<p>Tweets are fed in through the <a class="reference internal" href="#twied.eventec.clustercreator.ClusterCreator.process_tweet" title="twied.eventec.clustercreator.ClusterCreator.process_tweet"><code class="xref py py-func docutils literal"><span class="pre">process_tweet()</span></code></a> method. These
+are compared with the current unclustered tweets and a cluster is
+created if the required number of tweets were posted within a
+certain timeframe and radius.</p>
+<p>Class also manages a list of unclustered tweets. Tweets are added
+using the <a class="reference internal" href="#twied.eventec.clustercreator.ClusterCreator.add_unclustered" title="twied.eventec.clustercreator.ClusterCreator.add_unclustered"><code class="xref py py-func docutils literal"><span class="pre">add_unclustered()</span></code></a> method. The <a class="reference internal" href="#twied.eventec.clustercreator.ClusterCreator.process_tweet" title="twied.eventec.clustercreator.ClusterCreator.process_tweet"><code class="xref py py-func docutils literal"><span class="pre">process_tweet()</span></code></a>
+method will remove tweets from the unclustered set if they are added
+to a cluster or if the difference between the times are greater
+than the threshold.</p>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><code class="xref py py-class docutils literal"><span class="pre">ClusterCreatorGrid</span></code>, more efficient version of
+this class which only examines surrounding tweets using a grid data
+structure.</p>
+</div>
+<p>Create the cluster manager.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>clsman</strong> (<a class="reference internal" href="#twied.eventec.clustermanager.ClusterManager" title="twied.eventec.clustermanager.ClusterManager"><em>ClusterManager</em></a>) &#8211; The cluster managaer object.</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="twied.eventec.clustercreator.ClusterCreator.add_unclustered">
+<code class="descname">add_unclustered</code><span class="sig-paren">(</span><em>tweet</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/eventec/clustercreator.html#ClusterCreator.add_unclustered"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.eventec.clustercreator.ClusterCreator.add_unclustered" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a tweet to the list of unclustered tweets.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>tweet</strong> &#8211; Dictionary of tweet information.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="twied.eventec.clustercreator.ClusterCreator.process_tweet">
+<code class="descname">process_tweet</code><span class="sig-paren">(</span><em>tweet</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/eventec/clustercreator.html#ClusterCreator.process_tweet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.eventec.clustercreator.ClusterCreator.process_tweet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Take a tweet and attempt to create a new cluster.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>tweet</strong> &#8211; Dictionary of tweet information.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Whether a cluster has been created or not.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-twied.eventec.clustercreatorgrid"></span><dl class="class">
+<dt id="twied.eventec.clustercreatorgrid.ClusterCreatorGrid">
+<em class="property">class </em><code class="descclassname">twied.eventec.clustercreatorgrid.</code><code class="descname">ClusterCreatorGrid</code><span class="sig-paren">(</span><em>clsman</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/eventec/clustercreatorgrid.html#ClusterCreatorGrid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.eventec.clustercreatorgrid.ClusterCreatorGrid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class to manage the creation of clusters from tweets. This is a
+alternative implementation of the <code class="xref py py-class docutils literal"><span class="pre">ClusterCreator</span></code> class
+which uses a <a class="reference internal" href="#twied.eventec.clustercreatorgrid.GeoGrid" title="twied.eventec.clustercreatorgrid.GeoGrid"><code class="xref py py-class docutils literal"><span class="pre">GeoGrid</span></code></a> for more efficient comparisons of
+nearby tweets.</p>
+<p>Tweets are fed in through the <a class="reference internal" href="#twied.eventec.clustercreatorgrid.ClusterCreatorGrid.process_tweet" title="twied.eventec.clustercreatorgrid.ClusterCreatorGrid.process_tweet"><code class="xref py py-func docutils literal"><span class="pre">process_tweet()</span></code></a> method. These
+are compared with the current unclustered tweets and a cluster is
+created if the required number of tweets were posted within a
+certain timeframe and radius.</p>
+<p>Class also manages a list of unclustered tweets. Tweets are added
+using the <a class="reference internal" href="#twied.eventec.clustercreatorgrid.ClusterCreatorGrid.add_unclustered" title="twied.eventec.clustercreatorgrid.ClusterCreatorGrid.add_unclustered"><code class="xref py py-func docutils literal"><span class="pre">add_unclustered()</span></code></a> method. The <a class="reference internal" href="#twied.eventec.clustercreatorgrid.ClusterCreatorGrid.process_tweet" title="twied.eventec.clustercreatorgrid.ClusterCreatorGrid.process_tweet"><code class="xref py py-func docutils literal"><span class="pre">process_tweet()</span></code></a>
+method will remove tweets from the unclustered set if they are added
+to a cluster or if the difference between the times are greater
+than the threshold.</p>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><code class="xref py py-class docutils literal"><span class="pre">ClusterCreator</span></code>, less efficient version of
+this class which examines all unclustered tweets.</p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This class will not work well for large cluster radiuses,
+instead <code class="xref py py-class docutils literal"><span class="pre">ClusterCreator</span></code> should be used.</p>
+</div>
+<p>Create the cluster manager.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>clsman</strong> (<a class="reference internal" href="#twied.eventec.clustermanager.ClusterManager" title="twied.eventec.clustermanager.ClusterManager"><em>ClusterManager</em></a>) &#8211; The cluster managaer object.</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="twied.eventec.clustercreatorgrid.ClusterCreatorGrid.add_unclustered">
+<code class="descname">add_unclustered</code><span class="sig-paren">(</span><em>tweet</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/eventec/clustercreatorgrid.html#ClusterCreatorGrid.add_unclustered"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.eventec.clustercreatorgrid.ClusterCreatorGrid.add_unclustered" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a tweet to the list of unclustered tweets.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>tweet</strong> &#8211; Dictionary of tweet information.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="twied.eventec.clustercreatorgrid.ClusterCreatorGrid.process_tweet">
+<code class="descname">process_tweet</code><span class="sig-paren">(</span><em>tweet</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/eventec/clustercreatorgrid.html#ClusterCreatorGrid.process_tweet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.eventec.clustercreatorgrid.ClusterCreatorGrid.process_tweet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Take a tweet and attempt to create a new cluster.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>tweet</strong> &#8211; Dictionary of tweet information.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Whether a cluster has been created or not.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="twied.eventec.clustercreatorgrid.GeoGrid">
+<em class="property">class </em><code class="descclassname">twied.eventec.clustercreatorgrid.</code><code class="descname">GeoGrid</code><a class="reference internal" href="_modules/twied/eventec/clustercreatorgrid.html#GeoGrid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.eventec.clustercreatorgrid.GeoGrid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Simple class which stores tweets in a grid storage system for faster
+retrieval of neighbouring tweets.</p>
+<p>The <a class="reference internal" href="#twied.eventec.clustercreatorgrid.GeoGrid.add_tweet" title="twied.eventec.clustercreatorgrid.GeoGrid.add_tweet"><code class="xref py py-func docutils literal"><span class="pre">add_tweet()</span></code></a> method will add a tweet to a cell based on its
+coordinate. Will store the tweet in the cell of the coordinate and the
+surrounding cells. The cell key the tweet is stored in will be the int
+value of the coordinates. The <a class="reference internal" href="#twied.eventec.clustercreatorgrid.GeoGrid.get_surrounding" title="twied.eventec.clustercreatorgrid.GeoGrid.get_surrounding"><code class="xref py py-func docutils literal"><span class="pre">get_surrounding()</span></code></a> method will retrieve
+the tweets within a cell, meaning tweets in surrounding cells are also
+included.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">this class is not useful if the event radius parameter is
+too large.</p>
+</div>
+<p>Setup the geogrid.</p>
+<dl class="method">
+<dt id="twied.eventec.clustercreatorgrid.GeoGrid.add_tweet">
+<code class="descname">add_tweet</code><span class="sig-paren">(</span><em>tweet</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/eventec/clustercreatorgrid.html#GeoGrid.add_tweet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.eventec.clustercreatorgrid.GeoGrid.add_tweet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a tweet dictionary to the cell of its coordinates and the
+surrounding cells. Uses the <a class="reference internal" href="#twied.eventec.clustercreatorgrid.GeoGrid.get_str" title="twied.eventec.clustercreatorgrid.GeoGrid.get_str"><code class="xref py py-func docutils literal"><span class="pre">get_str()</span></code></a> method to calculate
+the cells the tweet will be stored in.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>tweet</strong> (<em>dict</em>) &#8211; Dictionary of tweet information.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="twied.eventec.clustercreatorgrid.GeoGrid.get_str">
+<em class="property">static </em><code class="descname">get_str</code><span class="sig-paren">(</span><em>coord</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/eventec/clustercreatorgrid.html#GeoGrid.get_str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.eventec.clustercreatorgrid.GeoGrid.get_str" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets a string of the lat and lon integer values of the coordinate to
+for fast indexing using a dictionary.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">g</span> <span class="o">=</span> <span class="n">GeoGrid</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">g</span><span class="o">.</span><span class="n">get_str</span><span class="p">((</span><span class="mf">50.734910</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.533687</span><span class="p">))</span>
+<span class="go">&#39;50,-3&#39;</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>coord</strong> (<em>tuple/list, float</em>) &#8211; Tuple of the (lat, lon) of the coordinate.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">String of the key for the coordinate.</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">this function does not round the values of the coordinates.</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="twied.eventec.clustercreatorgrid.GeoGrid.get_surrounding">
+<code class="descname">get_surrounding</code><span class="sig-paren">(</span><em>tweet</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/eventec/clustercreatorgrid.html#GeoGrid.get_surrounding"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.eventec.clustercreatorgrid.GeoGrid.get_surrounding" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the tweets within a cell based on the coordinate of the tweet.
+As tweets area stored in surrounding cells, will get the tweets
+surrounding this cell also.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>tweet</strong> (<em>dict</em>) &#8211; Dictionary of tweet information.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Surrounding tweet dictionaries.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">list, dict</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="twied.eventec.clustercreatorgrid.GeoGrid.remove_tweet">
+<code class="descname">remove_tweet</code><span class="sig-paren">(</span><em>tweet</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/eventec/clustercreatorgrid.html#GeoGrid.remove_tweet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.eventec.clustercreatorgrid.GeoGrid.remove_tweet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes a tweet dictionary from all cells it is in.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>tweet</strong> (<em>dict</em>) &#8211; Dictionary of tweet information.</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">the tweet dictionary must be the same object as the one
+added using the <a class="reference internal" href="#twied.eventec.clustercreatorgrid.GeoGrid.add_tweet" title="twied.eventec.clustercreatorgrid.GeoGrid.add_tweet"><code class="xref py py-func docutils literal"><span class="pre">add_tweet()</span></code></a> method.</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-twied.eventec.clusterupdater"></span><dl class="class">
+<dt id="twied.eventec.clusterupdater.ClusterUpdater">
+<em class="property">class </em><code class="descclassname">twied.eventec.clusterupdater.</code><code class="descname">ClusterUpdater</code><span class="sig-paren">(</span><em>clsman</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/eventec/clusterupdater.html#ClusterUpdater"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.eventec.clusterupdater.ClusterUpdater" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="twied.eventec.clusterupdater.ClusterUpdater.add_done_comp">
+<code class="descname">add_done_comp</code><span class="sig-paren">(</span><em>c1</em>, <em>c2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/eventec/clusterupdater.html#ClusterUpdater.add_done_comp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.eventec.clusterupdater.ClusterUpdater.add_done_comp" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="twied.eventec.clusterupdater.ClusterUpdater.has_comp">
+<code class="descname">has_comp</code><span class="sig-paren">(</span><em>c1</em>, <em>c2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/eventec/clusterupdater.html#ClusterUpdater.has_comp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.eventec.clusterupdater.ClusterUpdater.has_comp" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="twied.eventec.clusterupdater.ClusterUpdater.process_tweet">
+<code class="descname">process_tweet</code><span class="sig-paren">(</span><em>tweet</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/eventec/clusterupdater.html#ClusterUpdater.process_tweet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.eventec.clusterupdater.ClusterUpdater.process_tweet" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="twied.eventec.clusterupdater.ClusterUpdater.update_clusters">
+<code class="descname">update_clusters</code><span class="sig-paren">(</span><em>tweet</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/eventec/clusterupdater.html#ClusterUpdater.update_clusters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.eventec.clusterupdater.ClusterUpdater.update_clusters" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="twied.eventec.clusterupdater.ClusterUpdater.update_oldclusters">
+<code class="descname">update_oldclusters</code><span class="sig-paren">(</span><em>tweet</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/eventec/clusterupdater.html#ClusterUpdater.update_oldclusters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.eventec.clusterupdater.ClusterUpdater.update_oldclusters" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="population-grid">
+<h2>Population Grid<a class="headerlink" href="#population-grid" title="Permalink to this headline">¶</a></h2>
+<p>This class is used as an interface for the grid of worldwide population.</p>
+<span class="target" id="module-twied.eventec.popcount"></span><dl class="class">
+<dt id="twied.eventec.popcount.PopMap">
+<em class="property">class </em><code class="descclassname">twied.eventec.popcount.</code><code class="descname">PopMap</code><span class="sig-paren">(</span><em>filename='glds15ag.asc'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/eventec/popcount.html#PopMap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.eventec.popcount.PopMap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Provides access to the population map for choosing the required
+number of tweets to create a cluster.</p>
+<p>This uses the population map retrieved from the
+<a class="reference external" href="http://sedac.ciesin.columbia.edu/data/collection/gpw-v3">SEDAC</a>
+data centre. The file should be an .asc ASCII file containing the
+population of each point on the planet.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">while the <a class="reference internal" href="#twied.eventec.popcount.PopMap.get_reqfunc_uk" title="twied.eventec.popcount.PopMap.get_reqfunc_uk"><code class="xref py py-func docutils literal"><span class="pre">get_reqfunc_uk()</span></code></a> function is provided
+for the UK, there is no function for the rest of the world.</p>
+</div>
+<p>Create a new PopMap instance.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>filename</strong> (<em>str</em>) &#8211; The population file to load.</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="twied.eventec.popcount.PopMap.get_cell">
+<code class="descname">get_cell</code><span class="sig-paren">(</span><em>lon</em>, <em>lat</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/eventec/popcount.html#PopMap.get_cell"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.eventec.popcount.PopMap.get_cell" title="Permalink to this definition">¶</a></dt>
+<dd><p>Translates a lat, lon coordinate into the coordinates of the population
+on the population grid.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>lon</strong> (<em>float</em>) &#8211; Longitude of the coordinate.</li>
+<li><strong>lat</strong> (<em>float</em>) &#8211; Latitude of the coordinate.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The indexes of the population in the grid.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">Tuple of the (x, y) grid coordinate in the population grid.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="#twied.eventec.popcount.PopMap.get_ll" title="twied.eventec.popcount.PopMap.get_ll"><code class="xref py py-func docutils literal"><span class="pre">get_ll()</span></code></a> performs the reverse of this method.</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="twied.eventec.popcount.PopMap.get_ll">
+<code class="descname">get_ll</code><span class="sig-paren">(</span><em>clat</em>, <em>clon</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/eventec/popcount.html#PopMap.get_ll"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.eventec.popcount.PopMap.get_ll" title="Permalink to this definition">¶</a></dt>
+<dd><p>Translates a cell_lat, cell_lon coordinate back into global
+lat, lon coordinates. Note that this will not return the exact
+value that was used when creating the cell coordinates.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>clat</strong> (<em>integer</em>) &#8211; The x coordinate of the cell.</li>
+<li><strong>clon</strong> (<em>integer</em>) &#8211; The y coordinate of the cell.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The lat, lon position of the centre of the grid cell.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="#twied.eventec.popcount.PopMap.get_cell" title="twied.eventec.popcount.PopMap.get_cell"><code class="xref py py-func docutils literal"><span class="pre">get_cell()</span></code></a> performs the reverse of this method.</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="twied.eventec.popcount.PopMap.get_population">
+<code class="descname">get_population</code><span class="sig-paren">(</span><em>lon</em>, <em>lat</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/eventec/popcount.html#PopMap.get_population"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.eventec.popcount.PopMap.get_population" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the population at a lon, lat coordinate.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>lon</strong> (<em>float</em>) &#8211; Longitude of the coordinate.</li>
+<li><strong>lat</strong> (<em>float</em>) &#8211; Latitude of the coordinate.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The population at the coordinate.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><p class="first last">float</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="twied.eventec.popcount.PopMap.get_reqfunc_uk">
+<code class="descname">get_reqfunc_uk</code><span class="sig-paren">(</span><em>mediancount</em>, <em>mincount</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/eventec/popcount.html#PopMap.get_reqfunc_uk"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.eventec.popcount.PopMap.get_reqfunc_uk" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates and returns a function for finding the required number
+of tweets to initialise a cluster within the UK.</p>
+<p>Method returns a lambda function which takes a population value
+and returns the number of tweets required to start the cluster.
+The function is a logarithmic function which will return a
+minimum value at the lowest population densities within the UK
+and a median value at places with median population densities.
+The function levels off for larger population values.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>mediancount</strong> &#8211; The median count to return at median population
+densities within the UK.</li>
+<li><strong>mincount</strong> &#8211; The minimum count to return at the minimum
+population densities within the UK.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">lambda function which takes a population and returns the
+required number of tweets.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#"><code class="docutils literal"><span class="pre">twied.eventec</span></code> &#8212; Event Detection</a><ul>
+<li><a class="reference internal" href="#event-detection">Event Detection</a></li>
+<li><a class="reference internal" href="#cluster-modules">Cluster Modules</a></li>
+<li><a class="reference internal" href="#population-grid">Population Grid</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="locinf.html"
+                        title="previous chapter"><code class="docutils literal"><span class="pre">twied.multiind</span></code> &#8212; Multi-Indicator Location Inference</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="labelprop.html"
+                        title="next chapter"><code class="docutils literal"><span class="pre">twied.labelprop</span></code> &#8212; SLP Inference Method</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/eventdetection.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="labelprop.html" title="twied.labelprop — SLP Inference Method"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="locinf.html" title="twied.multiind — Multi-Indicator Location Inference"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Twicol 0.2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2016, Humphrey Shotton.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.2.
+    </div>
+  </body>
+</html>

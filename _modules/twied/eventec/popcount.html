@@ -1,0 +1,215 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>twied.eventec.popcount &mdash; Twicol 0.2 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Twicol 0.2 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Twicol 0.2 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for twied.eventec.popcount</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">math</span>
+
+
+<div class="viewcode-block" id="PopMap"><a class="viewcode-back" href="../../../eventdetection.html#twied.eventec.popcount.PopMap">[docs]</a><span class="k">class</span> <span class="nc">PopMap</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Provides access to the population map for choosing the required</span>
+<span class="sd">    number of tweets to create a cluster.</span>
+
+<span class="sd">    This uses the population map retrieved from the</span>
+<span class="sd">    `SEDAC &lt;http://sedac.ciesin.columbia.edu/data/collection/gpw-v3&gt;`_</span>
+<span class="sd">    data centre. The file should be an .asc ASCII file containing the</span>
+<span class="sd">    population of each point on the planet.</span>
+
+<span class="sd">    .. note:: while the :func:`get_reqfunc_uk` function is provided</span>
+<span class="sd">        for the UK, there is no function for the rest of the world.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s1">&#39;glds15ag.asc&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a new PopMap instance.</span>
+
+<span class="sd">        :param filename: The population file to load.</span>
+<span class="sd">        :type filename: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">genfromtxt</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">max_rows</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">usecols</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="c1"># Load the settings and save them in a dictionary.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;ncols&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
+            <span class="s1">&#39;nrows&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
+            <span class="s1">&#39;xllcorner&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span>
+            <span class="s1">&#39;yllcorner&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="mi">3</span><span class="p">]),</span>
+            <span class="s1">&#39;cellsize&#39;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="mi">4</span><span class="p">]),</span>
+            <span class="s1">&#39;NODATA_value&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="mi">5</span><span class="p">])</span>
+        <span class="p">}</span>
+
+        <span class="c1"># Load the population data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">skiprows</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
+
+<div class="viewcode-block" id="PopMap.get_cell"><a class="viewcode-back" href="../../../eventdetection.html#twied.eventec.popcount.PopMap.get_cell">[docs]</a>    <span class="k">def</span> <span class="nf">get_cell</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lon</span><span class="p">,</span> <span class="n">lat</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Translates a lat, lon coordinate into the coordinates of the population</span>
+<span class="sd">        on the population grid.</span>
+
+<span class="sd">        :param lon: Longitude of the coordinate.</span>
+<span class="sd">        :type lon: float</span>
+<span class="sd">        :param lat: Latitude of the coordinate.</span>
+<span class="sd">        :type lat: float</span>
+<span class="sd">        :return: The indexes of the population in the grid.</span>
+<span class="sd">        :rtype: Tuple of the (x, y) grid coordinate in the population grid.</span>
+
+<span class="sd">        .. seealso:: :func:`get_ll` performs the reverse of this method.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">clat</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">lat</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;xllcorner&#39;</span><span class="p">])</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;cellsize&#39;</span><span class="p">]</span>
+        <span class="n">clon</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">lon</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;yllcorner&#39;</span><span class="p">])</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;cellsize&#39;</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="nb">round</span><span class="p">(</span><span class="n">clat</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;nrows&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="nb">round</span><span class="p">(</span><span class="n">clon</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="PopMap.get_population"><a class="viewcode-back" href="../../../eventdetection.html#twied.eventec.popcount.PopMap.get_population">[docs]</a>    <span class="k">def</span> <span class="nf">get_population</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lon</span><span class="p">,</span> <span class="n">lat</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets the population at a lon, lat coordinate.</span>
+
+<span class="sd">        :param lon: Longitude of the coordinate.</span>
+<span class="sd">        :type lon: float</span>
+<span class="sd">        :param lat: Latitude of the coordinate.</span>
+<span class="sd">        :type lat: float</span>
+<span class="sd">        :return: The population at the coordinate.</span>
+<span class="sd">        :type: float</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cellat</span><span class="p">,</span> <span class="n">cellon</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_cell</span><span class="p">(</span><span class="n">lon</span><span class="p">,</span> <span class="n">lat</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">cellon</span><span class="p">,</span> <span class="n">cellat</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="PopMap.get_ll"><a class="viewcode-back" href="../../../eventdetection.html#twied.eventec.popcount.PopMap.get_ll">[docs]</a>    <span class="k">def</span> <span class="nf">get_ll</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">clat</span><span class="p">,</span> <span class="n">clon</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Translates a cell_lat, cell_lon coordinate back into global</span>
+<span class="sd">        lat, lon coordinates. Note that this will not return the exact</span>
+<span class="sd">        value that was used when creating the cell coordinates.</span>
+
+<span class="sd">        :param clat: The x coordinate of the cell.</span>
+<span class="sd">        :type clat: integer</span>
+<span class="sd">        :param clon: The y coordinate of the cell.</span>
+<span class="sd">        :type clon: integer</span>
+<span class="sd">        :return: The lat, lon position of the centre of the grid cell.</span>
+<span class="sd">        :rtype: tuple</span>
+
+<span class="sd">        .. seealso:: :func:`get_cell` performs the reverse of this method.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">lat</span> <span class="o">=</span> <span class="p">(</span><span class="n">clat</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;cellsize&#39;</span><span class="p">])</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;xllcorner&#39;</span><span class="p">]</span>
+        <span class="n">lon</span> <span class="o">=</span> <span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;nrows&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">clon</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;cellsize&#39;</span><span class="p">])</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;yllcorner&#39;</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">lat</span><span class="p">,</span> <span class="n">lon</span></div>
+
+<div class="viewcode-block" id="PopMap.get_reqfunc_uk"><a class="viewcode-back" href="../../../eventdetection.html#twied.eventec.popcount.PopMap.get_reqfunc_uk">[docs]</a>    <span class="k">def</span> <span class="nf">get_reqfunc_uk</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mediancount</span><span class="p">,</span> <span class="n">mincount</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculates and returns a function for finding the required number</span>
+<span class="sd">        of tweets to initialise a cluster within the UK.</span>
+
+<span class="sd">        Method returns a lambda function which takes a population value</span>
+<span class="sd">        and returns the number of tweets required to start the cluster.</span>
+<span class="sd">        The function is a logarithmic function which will return a</span>
+<span class="sd">        minimum value at the lowest population densities within the UK</span>
+<span class="sd">        and a median value at places with median population densities.</span>
+<span class="sd">        The function levels off for larger population values.</span>
+
+<span class="sd">        :param mediancount: The median count to return at median population</span>
+<span class="sd">            densities within the UK.</span>
+<span class="sd">        :param mincount: The minimum count to return at the minimum</span>
+<span class="sd">            population densities within the UK.</span>
+<span class="sd">        :return: lambda function which takes a population and returns the</span>
+<span class="sd">            required number of tweets.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ukdata</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">600</span><span class="p">:</span><span class="mi">850</span><span class="p">,</span> <span class="mi">4025</span><span class="p">:</span><span class="mi">4400</span><span class="p">]</span>
+        <span class="n">ukvals</span> <span class="o">=</span> <span class="n">ukdata</span><span class="p">[</span><span class="n">ukdata</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;NODATA_value&#39;</span><span class="p">]]</span>
+
+        <span class="n">x1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">ukvals</span><span class="p">)</span>
+        <span class="n">x2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">ukvals</span><span class="p">)</span>
+
+        <span class="n">y1</span> <span class="o">=</span> <span class="n">mincount</span>
+        <span class="n">y2</span> <span class="o">=</span> <span class="n">mediancount</span>
+
+        <span class="n">a</span> <span class="o">=</span> <span class="p">(</span><span class="n">y1</span> <span class="o">-</span> <span class="n">y2</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">x1</span> <span class="o">/</span> <span class="n">x2</span><span class="p">)</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(((</span><span class="n">y2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">x1</span><span class="p">))</span> <span class="o">-</span> <span class="p">(</span><span class="n">y1</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">x2</span><span class="p">)))</span><span class="o">/</span><span class="p">(</span><span class="n">y1</span> <span class="o">-</span> <span class="n">y2</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">a</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">x</span> <span class="o">*</span> <span class="n">b</span><span class="p">))</span> <span class="k">if</span> <span class="n">x</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">mincount</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Twicol 0.2 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2016, Humphrey Shotton.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.2.
+    </div>
+  </body>
+</html>

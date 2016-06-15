@@ -1,0 +1,1141 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>twied.multiind — Multi-Indicator Location Inference &mdash; Twicol 0.2 documentation</title>
+    
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Twicol 0.2 documentation" href="index.html" />
+    <link rel="next" title="twied.eventec — Event Detection" href="eventdetection.html" />
+    <link rel="prev" title="twied.twicol — Twitter Collection" href="collection.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="eventdetection.html" title="twied.eventec — Event Detection"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="collection.html" title="twied.twicol — Twitter Collection"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Twicol 0.2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="twied-multiind-multi-indicator-location-inference">
+<h1><code class="xref py py-mod docutils literal"><span class="pre">twied.multiind</span></code> &#8212; Multi-Indicator Location Inference<a class="headerlink" href="#twied-multiind-multi-indicator-location-inference" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-twied.multiind.inference">
+<span id="location-inference-thread"></span><h2>Location Inference Thread<a class="headerlink" href="#module-twied.multiind.inference" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="twied.multiind.inference.Indicators">
+<em class="property">class </em><code class="descclassname">twied.multiind.inference.</code><code class="descname">Indicators</code><a class="reference internal" href="_modules/twied/multiind/inference.html#Indicators"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.multiind.inference.Indicators" title="Permalink to this definition">¶</a></dt>
+<dd><p>Simple enum which stores values for each of the Indicators.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="twied.multiind.inference.InferThread">
+<em class="property">class </em><code class="descclassname">twied.multiind.inference.</code><code class="descname">InferThread</code><span class="sig-paren">(</span><em>dbcol</em>, <em>config</em>, <em>inf_id=None</em>, <em>proc_id='default'</em>, <em>test=False</em>, <em>tweetfunc=None</em>, <em>tweetint=1000</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/multiind/inference.html#InferThread"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.multiind.inference.InferThread" title="Permalink to this definition">¶</a></dt>
+<dd><p>This class manages the inference of users by creating and managing multiple threads
+of indicators. The class will setup a number of threads to simultaneously infer
+tweets. Each of these threads will in turn setup their own threads to contact each
+of the indicators.</p>
+<p>This class takes a MongoDB database which the tweets will be retrieved from, a config
+object which contains all of the configuration for the indicators. The class will setup
+all of the indicators in the package:</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="xref py py-class docutils literal"><span class="pre">MessageIndicator</span></code> - uses message field to find topoynms.</li>
+<li><code class="xref py py-class docutils literal"><span class="pre">TZIndicator</span></code> - uses the timezone the user is in.</li>
+<li><code class="xref py py-class docutils literal"><span class="pre">TZOffsetIndicator</span></code> - uses the timezone offset the user is in.</li>
+<li><code class="xref py py-class docutils literal"><span class="pre">LocFieldIndicator</span></code> - uses topoynms in the users location field.</li>
+<li><code class="xref py py-class docutils literal"><span class="pre">CoordinateIndicator</span></code> - finds coordinates in the users location field.</li>
+<li><code class="xref py py-class docutils literal"><span class="pre">WebsiteIndicator</span></code> - uses the TLD of the users website address.</li>
+<li><code class="xref py py-class docutils literal"><span class="pre">GeotagIndicator</span></code> - uses the geotag on the users tweet.</li>
+</ul>
+</div></blockquote>
+<p>Each of these indicators will be contacted to return estimations of the location of the
+user. These are then &#8216;stacked&#8217; to determine an area where the weight is the higest. This
+class will write the inferred polygon and other information back onto the tweet object
+in the MongoDB.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This class is not multi-core, which would need to be setup manually or
+by using multiple processes of this class pointing at different sections of the
+data.</p>
+</div>
+<p>Initialise the MI location inference.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>dbcol</strong> &#8211; The MongoDB collection to recover tweets from.</li>
+<li><strong>config</strong> &#8211; The <code class="xref py py-class docutils literal"><span class="pre">configparser</span></code> object containing the configuration.</li>
+<li><strong>inf_id</strong> &#8211; The inference ID. Has no impact on the inference but is stored
+in the database alongside the inferred location to act as a tag for the
+inference task which inferred the location.</li>
+<li><strong>proc_id</strong> &#8211; The process name, also stored alongside the inferred location.</li>
+<li><strong>test</strong> (<em>bool</em>) &#8211; If <cite>True</cite> will not use the <code class="xref py py-class docutils literal"><span class="pre">GeotagIndicator</span></code>.</li>
+<li><strong>tweetfunc</strong> &#8211; A function which is called every <cite>tweetint</cite> number of inferred
+tweets which passes a string of the current inference status.</li>
+<li><strong>tweetint</strong> &#8211; The number of tweets before each call of the <cite>tweetfunc</cite>.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="twied.multiind.inference.InferThread.add_ind">
+<code class="descname">add_ind</code><span class="sig-paren">(</span><em>task</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/multiind/inference.html#InferThread.add_ind"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.multiind.inference.InferThread.add_ind" title="Permalink to this definition">¶</a></dt>
+<dd><p>Processes a task. The task takes a tuple of a Indicator and a field. This
+method is used in parallel.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>task</strong> &#8211; The tuple of the Inidicator and the field.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The result of passing the field through the indicator.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="twied.multiind.inference.InferThread.infer">
+<code class="descname">infer</code><span class="sig-paren">(</span><em>query</em>, <em>field='locinf.mi'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/multiind/inference.html#InferThread.infer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.multiind.inference.InferThread.infer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Starts the location inference task.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>query</strong> &#8211; The query used to select tweets from the MongoDB.</li>
+<li><strong>field</strong> &#8211; The name of the field to write the inferred location
+to. For example with the field &#8216;locinf.mi&#8217; (as default), the final
+polygon would be written to &#8216;locinf.mi.poly&#8217;.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="twied.multiind.inference.InferThread.process_tweet">
+<code class="descname">process_tweet</code><span class="sig-paren">(</span><em>twt</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/multiind/inference.html#InferThread.process_tweet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.multiind.inference.InferThread.process_tweet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Process a single tweet.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>twt</strong> &#8211; The tweet object.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Tuple of the inferred polygons, the number of indicators with a result,
+the number of polygons returned, the maximum &#8216;height&#8217; of the stacked polygons,
+and the tweet object.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-twied.multiind.polystacker">
+<span id="polygon-stacker"></span><h2>Polygon Stacker<a class="headerlink" href="#module-twied.multiind.polystacker" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="twied.multiind.polystacker.coord2grid">
+<code class="descclassname">twied.multiind.polystacker.</code><code class="descname">coord2grid</code><span class="sig-paren">(</span><em>p</em>, <em>scale</em>, <em>offset</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/multiind/polystacker.html#coord2grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.multiind.polystacker.coord2grid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Translates a (lat, long) coordinate on a point on the grid.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>p</strong> &#8211; Point on the grid</li>
+<li><strong>scale</strong> &#8211; Scale of the grid</li>
+<li><strong>offset</strong> &#8211; Offset of the grid</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Grid coordinate the point is related to.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="twied.multiind.polystacker.find_bounds">
+<code class="descclassname">twied.multiind.polystacker.</code><code class="descname">find_bounds</code><span class="sig-paren">(</span><em>coords</em>, <em>border</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/multiind/polystacker.html#find_bounds"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.multiind.polystacker.find_bounds" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds the top left and bottom right coordinates of the grid which contains the set of points.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>coords</strong> &#8211; Set of coordinates to find the area around</li>
+<li><strong>border</strong> &#8211; Padding (in degrees) around the bounding area to return</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Top left coordinate, bottom right coordinate, coordinate area tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="twied.multiind.polystacker.generate_polygon">
+<code class="descclassname">twied.multiind.polystacker.</code><code class="descname">generate_polygon</code><span class="sig-paren">(</span><em>coords</em>, <em>scale</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/multiind/polystacker.html#generate_polygon"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.multiind.polystacker.generate_polygon" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a polygon that encompasses a set of grid coordinates.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>coords</strong> &#8211; List of coordinates to draw polygon around</li>
+<li><strong>scale</strong> &#8211; Area around each grid square (1/scale in degrees is area of each point)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Polygon of area representing the set of points</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Polygon of area representing the set of points</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="twied.multiind.polystacker.get_highest">
+<code class="descclassname">twied.multiind.polystacker.</code><code class="descname">get_highest</code><span class="sig-paren">(</span><em>mask</em>, <em>scale</em>, <em>offset</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/multiind/polystacker.html#get_highest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.multiind.polystacker.get_highest" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of coordinates that have the largest weight in a grid.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>mask</strong> &#8211; A numpy matrix of the weight for each grid point</li>
+<li><strong>scale</strong> &#8211; Scaling used to generate the grid</li>
+<li><strong>offset</strong> &#8211; Offset used to generate the grid</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Array of points of the highest weight, maximum value in the grid</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="twied.multiind.polystacker.grid2coord">
+<code class="descclassname">twied.multiind.polystacker.</code><code class="descname">grid2coord</code><span class="sig-paren">(</span><em>p</em>, <em>scale</em>, <em>offset</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/multiind/polystacker.html#grid2coord"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.multiind.polystacker.grid2coord" title="Permalink to this definition">¶</a></dt>
+<dd><p>Translates a grid point to a (lat, long) coordinate.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>p</strong> &#8211; Point on the grid</li>
+<li><strong>scale</strong> &#8211; Scale of the grid</li>
+<li><strong>offset</strong> &#8211; Offset of the grid</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">World coordinate the point is related to.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="twied.multiind.polystacker.infer_location">
+<code class="descclassname">twied.multiind.polystacker.</code><code class="descname">infer_location</code><span class="sig-paren">(</span><em>polys</em>, <em>demo=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/multiind/polystacker.html#infer_location"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.multiind.polystacker.infer_location" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stacks a list of weighted polygons and returns the area with the highest weight in the form of
+a polygon. This polygon may contain multiple contours.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>polys</strong> &#8211; Array of indicators with each having an array of (polygon coords, list)</li>
+<li><strong>demo</strong> &#8211; Wether to plot diagrams (default=False)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Polygon of the highest stacked area from the polygons</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="twied.multiind.polystacker.plot_area">
+<code class="descclassname">twied.multiind.polystacker.</code><code class="descname">plot_area</code><span class="sig-paren">(</span><em>polys</em>, <em>scale=1.0</em>, <em>p1=(-180</em>, <em>90)</em>, <em>p2=(180</em>, <em>-90)</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/multiind/polystacker.html#plot_area"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.multiind.polystacker.plot_area" title="Permalink to this definition">¶</a></dt>
+<dd><p>Polt a array of weighted polygons on a grid and return the weighted grid.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>polys</strong> &#8211; Polygons to plot</li>
+<li><strong>scale</strong> &#8211; The resolution of the grid - scale is the number of points per degree</li>
+<li><strong>p1</strong> &#8211; Top left coordinate of the grid to generate</li>
+<li><strong>p2</strong> &#8211; Bottom left coordinate of the grid to generate</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Numpy matrix grid, scale of grid, offset of grid</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-twied.multiind.indicators.indicator">
+<span id="indicators"></span><h2>Indicators<a class="headerlink" href="#module-twied.multiind.indicators.indicator" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="twied.multiind.indicators.indicator.Indicator">
+<em class="property">class </em><code class="descclassname">twied.multiind.indicators.indicator.</code><code class="descname">Indicator</code><a class="reference internal" href="_modules/twied/multiind/indicators/indicator.html#Indicator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.multiind.indicators.indicator.Indicator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base class for an indicator.</p>
+<dl class="method">
+<dt id="twied.multiind.indicators.indicator.Indicator.get_weight">
+<code class="descname">get_weight</code><span class="sig-paren">(</span><em>belief</em>, <em>overloadw=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/multiind/indicators/indicator.html#Indicator.get_weight"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.multiind.indicators.indicator.Indicator.get_weight" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the weight of a polygon based on a belief for the polygon and
+the weight of this indicator.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>belief</strong> (<em>float</em>) &#8211; Value in [0, 1] of how confident the estimation is.</li>
+<li><strong>overloadw</strong> (<em>float</em>) &#8211; <em>(optional)</em> If <cite>None</cite> will use normal weight, otherwise
+can override the weight of the indicator.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The value of the indicator</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">float</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="twied.multiind.indicators.indicator.Indicator.point_to_poly">
+<code class="descname">point_to_poly</code><span class="sig-paren">(</span><em>point</em>, <em>belief</em>, <em>overloadw=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/multiind/indicators/indicator.html#Indicator.point_to_poly"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.multiind.indicators.indicator.Indicator.point_to_poly" title="Permalink to this definition">¶</a></dt>
+<dd><p>Translates a (lat, lon) point into a circular polygon of 0.1 degree radius.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>point</strong> (<em>tuple</em>) &#8211; The (lat, lon) point to get a polygon around.</li>
+<li><strong>belief</strong> (<em>float</em>) &#8211; Value in [0, 1] of how confident the estimation is.</li>
+<li><strong>overloadw</strong> (<em>float</em>) &#8211; <em>(optional)</em> If <cite>None</cite> will use normal weight, otherwise
+can override the weight of the indicator.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-twied.multiind.indicators.coordinateindicator"></span><dl class="class">
+<dt id="twied.multiind.indicators.coordinateindicator.CoordinateIndicator">
+<em class="property">class </em><code class="descclassname">twied.multiind.indicators.coordinateindicator.</code><code class="descname">CoordinateIndicator</code><span class="sig-paren">(</span><em>config</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/multiind/indicators/coordinateindicator.html#CoordinateIndicator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.multiind.indicators.coordinateindicator.CoordinateIndicator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Indicator for users with coordinates in their location field.</p>
+<p>Initialise the indicator.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>config</strong> &#8211; The config object for the MI technique.</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="twied.multiind.indicators.coordinateindicator.CoordinateIndicator.get_loc">
+<code class="descname">get_loc</code><span class="sig-paren">(</span><em>string</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/multiind/indicators/coordinateindicator.html#CoordinateIndicator.get_loc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.multiind.indicators.coordinateindicator.CoordinateIndicator.get_loc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a point polygon if the users location field contains coordinates
+in it.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>string</strong> &#8211; The users location field.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Array of polygons.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="twied.multiind.indicators.coordinateindicator.CoordinateIndicator.regex">
+<code class="descname">regex</code><em class="property"> = '(-?\\d{1,2}\\.\\d{6})\\s?,\\s?(-?\\d{1,2}\\.\\d{6})'</em><a class="headerlink" href="#twied.multiind.indicators.coordinateindicator.CoordinateIndicator.regex" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-twied.multiind.indicators.geotagindicator"></span><dl class="class">
+<dt id="twied.multiind.indicators.geotagindicator.GeotagIndicator">
+<em class="property">class </em><code class="descclassname">twied.multiind.indicators.geotagindicator.</code><code class="descname">GeotagIndicator</code><span class="sig-paren">(</span><em>config</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/multiind/indicators/geotagindicator.html#GeotagIndicator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.multiind.indicators.geotagindicator.GeotagIndicator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Indicator which returns a single point if the tweet has a geotag on it.</p>
+<p>Initialise the indicator.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>config</strong> &#8211; The config object for the MI technique.</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="twied.multiind.indicators.geotagindicator.GeotagIndicator.get_loc">
+<code class="descname">get_loc</code><span class="sig-paren">(</span><em>geofield</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/multiind/indicators/geotagindicator.html#GeotagIndicator.get_loc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.multiind.indicators.geotagindicator.GeotagIndicator.get_loc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a polygon around the location in the geotag if it exists.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>geofield</strong> &#8211; The users &#8216;geotag&#8217; field on the tweet object.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Array of single polygon around the coordinate of the user.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-twied.multiind.indicators.gislocfieldindicator"></span><dl class="class">
+<dt id="twied.multiind.indicators.gislocfieldindicator.GISLocFieldIndicator">
+<em class="property">class </em><code class="descclassname">twied.multiind.indicators.gislocfieldindicator.</code><code class="descname">GISLocFieldIndicator</code><span class="sig-paren">(</span><em>config</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/multiind/indicators/gislocfieldindicator.html#GISLocFieldIndicator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.multiind.indicators.gislocfieldindicator.GISLocFieldIndicator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Indicator which finds toponyms in the location field and maps them to a area or point using
+the geonames gazetteer.</p>
+<p>This is a reimplementation of the <code class="xref py py-class docutils literal"><span class="pre">LocFieldIndicator</span></code> class which uses the
+<cite>Gisgraphy &lt;http://gisgraphy.com/&gt;_</cite> open source gazeteer instead of the
+<cite>Geonames &lt;http://www.geonames.org/&gt;_</cite> gazeteer. In testing this service was found
+to have a less useful search feature, however was not API limited as the service
+could be hosted locally.</p>
+<p>Initialise the indicator.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>config</strong> &#8211; The config object for the MI technique.</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="twied.multiind.indicators.gislocfieldindicator.GISLocFieldIndicator.get_loc">
+<code class="descname">get_loc</code><span class="sig-paren">(</span><em>location</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/multiind/indicators/gislocfieldindicator.html#GISLocFieldIndicator.get_loc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.multiind.indicators.gislocfieldindicator.GISLocFieldIndicator.get_loc" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="twied.multiind.indicators.gislocfieldindicator.GISLocFieldIndicator.get_polys">
+<code class="descname">get_polys</code><span class="sig-paren">(</span><em>location</em>, <em>gadmpoly</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/multiind/indicators/gislocfieldindicator.html#GISLocFieldIndicator.get_polys"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.multiind.indicators.gislocfieldindicator.GISLocFieldIndicator.get_polys" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="exception">
+<dt id="twied.multiind.indicators.gislocfieldindicator.GisgraphyException">
+<em class="property">exception </em><code class="descclassname">twied.multiind.indicators.gislocfieldindicator.</code><code class="descname">GisgraphyException</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/multiind/indicators/gislocfieldindicator.html#GisgraphyException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.multiind.indicators.gislocfieldindicator.GisgraphyException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Exception object thrown when there is an error is getting the location
+from the Gisgraphy service.</p>
+</dd></dl>
+
+<span class="target" id="module-twied.multiind.indicators.locfieldindicator"></span><dl class="exception">
+<dt id="twied.multiind.indicators.locfieldindicator.GeonamesException">
+<em class="property">exception </em><code class="descclassname">twied.multiind.indicators.locfieldindicator.</code><code class="descname">GeonamesException</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/multiind/indicators/locfieldindicator.html#GeonamesException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.multiind.indicators.locfieldindicator.GeonamesException" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="twied.multiind.indicators.locfieldindicator.LocFieldIndicator">
+<em class="property">class </em><code class="descclassname">twied.multiind.indicators.locfieldindicator.</code><code class="descname">LocFieldIndicator</code><span class="sig-paren">(</span><em>config</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/multiind/indicators/locfieldindicator.html#LocFieldIndicator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.multiind.indicators.locfieldindicator.LocFieldIndicator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Indicator which finds toponyms in the location field and maps them to a area or point using
+the geonames gazetteer.</p>
+<dl class="method">
+<dt id="twied.multiind.indicators.locfieldindicator.LocFieldIndicator.get_loc">
+<code class="descname">get_loc</code><span class="sig-paren">(</span><em>location</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/multiind/indicators/locfieldindicator.html#LocFieldIndicator.get_loc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.multiind.indicators.locfieldindicator.LocFieldIndicator.get_loc" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-twied.multiind.indicators.messageindicator"></span><dl class="class">
+<dt id="twied.multiind.indicators.messageindicator.MessageIndicator">
+<em class="property">class </em><code class="descclassname">twied.multiind.indicators.messageindicator.</code><code class="descname">MessageIndicator</code><span class="sig-paren">(</span><em>config</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/multiind/indicators/messageindicator.html#MessageIndicator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.multiind.indicators.messageindicator.MessageIndicator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Indicator which finds place names in tweet text using DBpedia spotlight and
+maps them to a area or point location.</p>
+<dl class="method">
+<dt id="twied.multiind.indicators.messageindicator.MessageIndicator.get_loc">
+<code class="descname">get_loc</code><span class="sig-paren">(</span><em>message</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/multiind/indicators/messageindicator.html#MessageIndicator.get_loc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.multiind.indicators.messageindicator.MessageIndicator.get_loc" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-twied.multiind.indicators.tzindicator"></span><dl class="class">
+<dt id="twied.multiind.indicators.tzindicator.TZIndicator">
+<em class="property">class </em><code class="descclassname">twied.multiind.indicators.tzindicator.</code><code class="descname">TZIndicator</code><span class="sig-paren">(</span><em>config</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/multiind/indicators/tzindicator.html#TZIndicator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.multiind.indicators.tzindicator.TZIndicator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Indicator which gets an area for the timezone the user is in.</p>
+<dl class="method">
+<dt id="twied.multiind.indicators.tzindicator.TZIndicator.get_loc">
+<code class="descname">get_loc</code><span class="sig-paren">(</span><em>tz</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/multiind/indicators/tzindicator.html#TZIndicator.get_loc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.multiind.indicators.tzindicator.TZIndicator.get_loc" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-twied.multiind.interfaces.dbinterfaces">
+<span id="interfaces"></span><h2>Interfaces<a class="headerlink" href="#module-twied.multiind.interfaces.dbinterfaces" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="twied.multiind.interfaces.dbinterfaces.CountryPolyInterface">
+<em class="property">class </em><code class="descclassname">twied.multiind.interfaces.dbinterfaces.</code><code class="descname">CountryPolyInterface</code><span class="sig-paren">(</span><em>dbloc</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/multiind/interfaces/dbinterfaces.html#CountryPolyInterface"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.multiind.interfaces.dbinterfaces.CountryPolyInterface" title="Permalink to this definition">¶</a></dt>
+<dd><p>Interface with the Country polygon database table.</p>
+<p>Initialise the database interface.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>dbloc</strong> &#8211; The location of the sqlite3 database.</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="twied.multiind.interfaces.dbinterfaces.CountryPolyInterface.destroy">
+<code class="descname">destroy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/multiind/interfaces/dbinterfaces.html#CountryPolyInterface.destroy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.multiind.interfaces.dbinterfaces.CountryPolyInterface.destroy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Close the connection.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="twied.multiind.interfaces.dbinterfaces.CountryPolyInterface.get_polys">
+<code class="descname">get_polys</code><span class="sig-paren">(</span><em>name</em>, <em>weight</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/multiind/interfaces/dbinterfaces.html#CountryPolyInterface.get_polys"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.multiind.interfaces.dbinterfaces.CountryPolyInterface.get_polys" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the polygons for a name of a Country.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>name</strong> &#8211; The name of the area.</li>
+<li><strong>weight</strong> &#8211; The weight of the returned polygons.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The array of polygons and weights.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="twied.multiind.interfaces.dbinterfaces.GADMPolyInterface">
+<em class="property">class </em><code class="descclassname">twied.multiind.interfaces.dbinterfaces.</code><code class="descname">GADMPolyInterface</code><span class="sig-paren">(</span><em>dbloc</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/multiind/interfaces/dbinterfaces.html#GADMPolyInterface"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.multiind.interfaces.dbinterfaces.GADMPolyInterface" title="Permalink to this definition">¶</a></dt>
+<dd><p>Interface with the GADMPoly database table.</p>
+<p>Initialise the database interface.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>dbloc</strong> &#8211; The location of the sqlite3 database.</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="twied.multiind.interfaces.dbinterfaces.GADMPolyInterface.destroy">
+<code class="descname">destroy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/multiind/interfaces/dbinterfaces.html#GADMPolyInterface.destroy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.multiind.interfaces.dbinterfaces.GADMPolyInterface.destroy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Close the connection.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="twied.multiind.interfaces.dbinterfaces.GADMPolyInterface.get_polys">
+<code class="descname">get_polys</code><span class="sig-paren">(</span><em>name</em>, <em>weight</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/multiind/interfaces/dbinterfaces.html#GADMPolyInterface.get_polys"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.multiind.interfaces.dbinterfaces.GADMPolyInterface.get_polys" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the polygons for a name of a administrative district.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>name</strong> &#8211; The name of the area.</li>
+<li><strong>weight</strong> &#8211; The weight of the returned polygons.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The array of polygons and weights.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="twied.multiind.interfaces.dbinterfaces.TZPolyInterface">
+<em class="property">class </em><code class="descclassname">twied.multiind.interfaces.dbinterfaces.</code><code class="descname">TZPolyInterface</code><span class="sig-paren">(</span><em>dbloc</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/multiind/interfaces/dbinterfaces.html#TZPolyInterface"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.multiind.interfaces.dbinterfaces.TZPolyInterface" title="Permalink to this definition">¶</a></dt>
+<dd><p>Interface with the Timezone polygon database table.</p>
+<p>Initialise the database interface.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>dbloc</strong> &#8211; The location of the sqlite3 database.</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="twied.multiind.interfaces.dbinterfaces.TZPolyInterface.destroy">
+<code class="descname">destroy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/multiind/interfaces/dbinterfaces.html#TZPolyInterface.destroy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.multiind.interfaces.dbinterfaces.TZPolyInterface.destroy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Close the connection.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="twied.multiind.interfaces.dbinterfaces.TZPolyInterface.get_polys">
+<code class="descname">get_polys</code><span class="sig-paren">(</span><em>name</em>, <em>weight</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/multiind/interfaces/dbinterfaces.html#TZPolyInterface.get_polys"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.multiind.interfaces.dbinterfaces.TZPolyInterface.get_polys" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the polygons for a timezone.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>name</strong> &#8211; The name of the area.</li>
+<li><strong>weight</strong> &#8211; The weight of the returned polygons.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The array of polygons and weights.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="twied.multiind.interfaces.dbinterfaces.TZPolyInterface.get_polys_america">
+<code class="descname">get_polys_america</code><span class="sig-paren">(</span><em>code</em>, <em>weight</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/multiind/interfaces/dbinterfaces.html#TZPolyInterface.get_polys_america"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.multiind.interfaces.dbinterfaces.TZPolyInterface.get_polys_america" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the polygons for American timezones.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>code</strong> &#8211; The american code string.</li>
+<li><strong>weight</strong> &#8211; The weight of the returned polygons.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The array of polygons and weights.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="twied.multiind.interfaces.dbinterfaces.TZPolyInterface.get_polys_offset">
+<code class="descname">get_polys_offset</code><span class="sig-paren">(</span><em>offset</em>, <em>weight</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/multiind/interfaces/dbinterfaces.html#TZPolyInterface.get_polys_offset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.multiind.interfaces.dbinterfaces.TZPolyInterface.get_polys_offset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the polygons for a timezone using the offset value.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>offset</strong> &#8211; The offset of the timezone.</li>
+<li><strong>weight</strong> &#8211; The weight of the returned polygons.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The array of polygons and weights.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="twied.multiind.interfaces.dbinterfaces.proc_polystr">
+<code class="descclassname">twied.multiind.interfaces.dbinterfaces.</code><code class="descname">proc_polystr</code><span class="sig-paren">(</span><em>polys</em>, <em>weight</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/multiind/interfaces/dbinterfaces.html#proc_polystr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.multiind.interfaces.dbinterfaces.proc_polystr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Process a string of polygons into an array of polygons with
+a weight.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>polys</strong> &#8211; The string of the polygon data.</li>
+<li><strong>weight</strong> &#8211; The weight of the polygons.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Array of tuples of (polygon, weight).</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<span class="target" id="module-twied.multiind.interfaces.webinterfaces"></span><dl class="class">
+<dt id="twied.multiind.interfaces.webinterfaces.DBPInterface">
+<em class="property">class </em><code class="descclassname">twied.multiind.interfaces.webinterfaces.</code><code class="descname">DBPInterface</code><a class="reference internal" href="_modules/twied/multiind/interfaces/webinterfaces.html#DBPInterface"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.multiind.interfaces.webinterfaces.DBPInterface" title="Permalink to this definition">¶</a></dt>
+<dd><p>Interface for access to the DBPedia API.</p>
+<dl class="method">
+<dt id="twied.multiind.interfaces.webinterfaces.DBPInterface.destroy">
+<code class="descname">destroy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/multiind/interfaces/webinterfaces.html#DBPInterface.destroy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.multiind.interfaces.webinterfaces.DBPInterface.destroy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Close the inferace and destroy the pool.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="twied.multiind.interfaces.webinterfaces.DBPInterface.extract_name">
+<code class="descname">extract_name</code><span class="sig-paren">(</span><em>text</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/multiind/interfaces/webinterfaces.html#DBPInterface.extract_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.multiind.interfaces.webinterfaces.DBPInterface.extract_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extracts the name of the page from a DBPedia URL. (the last field)
+:param text: The DBPedia URL.
+:return: The name of the page.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="twied.multiind.interfaces.webinterfaces.DBPInterface.req">
+<code class="descname">req</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/multiind/interfaces/webinterfaces.html#DBPInterface.req"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.multiind.interfaces.webinterfaces.DBPInterface.req" title="Permalink to this definition">¶</a></dt>
+<dd><p>Request the information from the DBPedia page with the name.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>name</strong> &#8211; The name of the DBPedia page.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The JSON result of the page.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="exception">
+<dt id="twied.multiind.interfaces.webinterfaces.DBPSpotlightException">
+<em class="property">exception </em><code class="descclassname">twied.multiind.interfaces.webinterfaces.</code><code class="descname">DBPSpotlightException</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/multiind/interfaces/webinterfaces.html#DBPSpotlightException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.multiind.interfaces.webinterfaces.DBPSpotlightException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Exception for twhen there is an issue with DBPediaSpotlight.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="twied.multiind.interfaces.webinterfaces.DBPSpotlightInterface">
+<em class="property">class </em><code class="descclassname">twied.multiind.interfaces.webinterfaces.</code><code class="descname">DBPSpotlightInterface</code><span class="sig-paren">(</span><em>config</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/multiind/interfaces/webinterfaces.html#DBPSpotlightInterface"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.multiind.interfaces.webinterfaces.DBPSpotlightInterface" title="Permalink to this definition">¶</a></dt>
+<dd><p>Interface to access the DBpedia spotlight API.</p>
+<p>Initialise the DBPediaSpotlight interface.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>config</strong> &#8211; The <code class="xref py py-class docutils literal"><span class="pre">configparser</span></code> object.</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="twied.multiind.interfaces.webinterfaces.DBPSpotlightInterface.destroy">
+<code class="descname">destroy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/multiind/interfaces/webinterfaces.html#DBPSpotlightInterface.destroy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.multiind.interfaces.webinterfaces.DBPSpotlightInterface.destroy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Close the inferace and destroy the pool.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="twied.multiind.interfaces.webinterfaces.DBPSpotlightInterface.req">
+<code class="descname">req</code><span class="sig-paren">(</span><em>text</em>, <em>delay=0.5</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/multiind/interfaces/webinterfaces.html#DBPSpotlightInterface.req"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.multiind.interfaces.webinterfaces.DBPSpotlightInterface.req" title="Permalink to this definition">¶</a></dt>
+<dd><p>Request the result for some text on DBPediaSpotlight.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>text</strong> &#8211; The text to request information for.</li>
+<li><strong>delay</strong> &#8211; The number of seconds before retrying if no result is returned. Will
+double each failure to a maximum of 30 seconds before throwing an exception.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The JSON result from the service.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="exception">
+<dt id="twied.multiind.interfaces.webinterfaces.GeonamesDecodeException">
+<em class="property">exception </em><code class="descclassname">twied.multiind.interfaces.webinterfaces.</code><code class="descname">GeonamesDecodeException</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/multiind/interfaces/webinterfaces.html#GeonamesDecodeException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.multiind.interfaces.webinterfaces.GeonamesDecodeException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Exception for when Geonames returns a result which cannot be decoded.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="twied.multiind.interfaces.webinterfaces.GeonamesInterface">
+<em class="property">class </em><code class="descclassname">twied.multiind.interfaces.webinterfaces.</code><code class="descname">GeonamesInterface</code><span class="sig-paren">(</span><em>config</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/multiind/interfaces/webinterfaces.html#GeonamesInterface"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.multiind.interfaces.webinterfaces.GeonamesInterface" title="Permalink to this definition">¶</a></dt>
+<dd><p>Interface for access to the Geonames API.</p>
+<p>Initialise the Geonames interface.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>config</strong> &#8211; The <code class="xref py py-class docutils literal"><span class="pre">configparser</span></code> object.</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="twied.multiind.interfaces.webinterfaces.GeonamesInterface.destroy">
+<code class="descname">destroy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/multiind/interfaces/webinterfaces.html#GeonamesInterface.destroy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.multiind.interfaces.webinterfaces.GeonamesInterface.destroy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Close the inferace and destroy the pool.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="twied.multiind.interfaces.webinterfaces.GeonamesInterface.req">
+<code class="descname">req</code><span class="sig-paren">(</span><em>query</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/multiind/interfaces/webinterfaces.html#GeonamesInterface.req"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.multiind.interfaces.webinterfaces.GeonamesInterface.req" title="Permalink to this definition">¶</a></dt>
+<dd><p>Request the result from the API.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>query</strong> &#8211; The string to search.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The JSON result from the API.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="twied.multiind.interfaces.webinterfaces.GisgraphyInterface">
+<em class="property">class </em><code class="descclassname">twied.multiind.interfaces.webinterfaces.</code><code class="descname">GisgraphyInterface</code><span class="sig-paren">(</span><em>config</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/multiind/interfaces/webinterfaces.html#GisgraphyInterface"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.multiind.interfaces.webinterfaces.GisgraphyInterface" title="Permalink to this definition">¶</a></dt>
+<dd><p>Interface for access to the Gisgraphy API.</p>
+<p>Initialise the Gisgraphy interface.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>config</strong> &#8211; The <code class="xref py py-class docutils literal"><span class="pre">configparser</span></code> object.</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="twied.multiind.interfaces.webinterfaces.GisgraphyInterface.destroy">
+<code class="descname">destroy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/multiind/interfaces/webinterfaces.html#GisgraphyInterface.destroy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.multiind.interfaces.webinterfaces.GisgraphyInterface.destroy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Close the inferace and destroy the pool.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="twied.multiind.interfaces.webinterfaces.GisgraphyInterface.req">
+<code class="descname">req</code><span class="sig-paren">(</span><em>query</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/multiind/interfaces/webinterfaces.html#GisgraphyInterface.req"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.multiind.interfaces.webinterfaces.GisgraphyInterface.req" title="Permalink to this definition">¶</a></dt>
+<dd><p>Request the result from the API.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>query</strong> &#8211; The string to search.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The JSON result from the API.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="twied.multiind.interfaces.webinterfaces.filter_emoji">
+<code class="descclassname">twied.multiind.interfaces.webinterfaces.</code><code class="descname">filter_emoji</code><span class="sig-paren">(</span><em>text</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/multiind/interfaces/webinterfaces.html#filter_emoji"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.multiind.interfaces.webinterfaces.filter_emoji" title="Permalink to this definition">¶</a></dt>
+<dd><p>Filters out emoji characters in a string.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>text</strong> &#8211; The string to filter.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The text string without the emoji characters.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="twied.multiind.interfaces.webinterfaces.req_using_pool">
+<code class="descclassname">twied.multiind.interfaces.webinterfaces.</code><code class="descname">req_using_pool</code><span class="sig-paren">(</span><em>pool</em>, <em>page</em>, <em>data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/multiind/interfaces/webinterfaces.html#req_using_pool"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.multiind.interfaces.webinterfaces.req_using_pool" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function to perform a <cite>GET</cite> request on a thread pool with a certain page
+and get data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>pool</strong> &#8211; The pool to perform the request on.</li>
+<li><strong>page</strong> &#8211; The page to contact.</li>
+<li><strong>data</strong> &#8211; The get data in the request.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The result of the request.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="example">
+<h2>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h2>
+<p>Below is a guide on how to setup and use the package for location inference.</p>
+<div class="section" id="how-to-use">
+<h3>How to use<a class="headerlink" href="#how-to-use" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><ol class="arabic simple">
+<li>Obtain the <cite>twied</cite> package.</li>
+<li>Install prerequisite modules.</li>
+<li>Download databases.</li>
+<li>Setup config file.</li>
+<li>Create inference script.</li>
+<li>Start inference.</li>
+</ol>
+</div></blockquote>
+</div>
+<div class="section" id="configuration-file">
+<h3>Configuration File<a class="headerlink" href="#configuration-file" title="Permalink to this headline">¶</a></h3>
+<p>Below is an example config file for use with the <a class="reference internal" href="#twied.multiind.inference.InferThread" title="twied.multiind.inference.InferThread"><code class="xref py py-class docutils literal"><span class="pre">twied.multiind.inference.InferThread</span></code></a>
+class. Each of the sections is broken down below the example.</p>
+<div class="highlight-ini"><div class="highlight"><pre><span></span><span class="k">[twitter]</span>
+<span class="na">app_key</span> <span class="o">=</span> <span class="s">wYHFS6G9fqVNxYwt53UNUcxT0</span>
+<span class="na">app_secret</span> <span class="o">=</span> <span class="s">MU3r4yi2HGDrAbBma2syPpOvFOcWFxaUIiKmeySX8Ard80lr53</span>
+<span class="na">oauth_token</span> <span class="o">=</span> <span class="s">3950426785-SNgK3NmghSzdjLcJGRTAwQq3xyMait0bVQ6HVvV</span>
+<span class="na">oauth_token_secret</span> <span class="o">=</span> <span class="s">x0FASasjEHqsSvLAZ3h6sqClPWtt54TcM78W8PLOJ1BLv</span>
+
+<span class="k">[mongo]</span>
+<span class="na">address</span> <span class="o">=</span> <span class="s">localhost</span>
+<span class="na">port</span> <span class="o">=</span> <span class="s">27017</span>
+<span class="na">database</span> <span class="o">=</span> <span class="s">twitter</span>
+<span class="na">collection</span> <span class="o">=</span> <span class="s">tweets</span>
+
+<span class="c1">#### Settings for Multi-Indicator Approach ####</span>
+
+<span class="k">[multiindicator]</span>
+<span class="na">workers</span> <span class="o">=</span> <span class="s">10</span>
+<span class="na">gadm_polydb_path</span> <span class="o">=</span> <span class="s">D:/ds/polydb_2.db</span>
+<span class="na">tld_csv</span> <span class="o">=</span> <span class="s">D:/ds/tlds.csv</span>
+
+<span class="k">[mi_weights]</span>
+<span class="na">TAG</span> <span class="o">=</span> <span class="s">10</span>
+<span class="na">COD</span> <span class="o">=</span> <span class="s">2.72</span>
+<span class="na">GN</span> <span class="o">=</span> <span class="s">1.51</span>
+<span class="na">GN_1</span> <span class="o">=</span> <span class="s">2.01</span>
+<span class="na">GN_2</span> <span class="o">=</span> <span class="s">1.96</span>
+<span class="na">GN_3</span> <span class="o">=</span> <span class="s">1.96</span>
+<span class="na">SP</span> <span class="o">=</span> <span class="s">0.67</span>
+<span class="na">LBS</span> <span class="o">=</span> <span class="s">4.26</span>
+<span class="na">TZ</span> <span class="o">=</span> <span class="s">0.56</span>
+<span class="na">WS_1</span> <span class="o">=</span> <span class="s">1.07</span>
+
+<span class="k">[geonames]</span>
+<span class="na">url</span> <span class="o">=</span> <span class="s">api.geonames.org</span>
+<span class="na">user</span> <span class="o">=</span> <span class="s">humph</span>
+<span class="na">limit</span> <span class="o">=</span> <span class="s">5</span>
+<span class="na">fuzzy</span> <span class="o">=</span> <span class="s">0.8</span>
+
+<span class="k">[dbpedia]</span>
+<span class="na">spotlight_url</span> <span class="o">=</span> <span class="s">spotlight.sztaki.hu</span>
+<span class="na">spotlight_port</span> <span class="o">=</span> <span class="s">2222</span>
+<span class="na">spotlight_page</span> <span class="o">=</span> <span class="s">/rest/annotate</span>
+
+<span class="k">[slinf]</span>
+<span class="na">min_mentions</span> <span class="o">=</span> <span class="s">3</span>
+<span class="c1"># 4</span>
+<span class="na">max_depth</span> <span class="o">=</span> <span class="s">3</span>
+<span class="na">req_locations</span> <span class="o">=</span> <span class="s">1</span>
+<span class="na">max_iterations</span> <span class="o">=</span> <span class="s">4</span>
+<span class="na">num_timelines</span> <span class="o">=</span> <span class="s">2</span>
+</pre></div>
+</div>
+<dl class="docutils">
+<dt><strong>Fields:</strong></dt>
+<dd><ul class="first last">
+<li><p class="first"><strong>twitter</strong> - This section contains the settings for the Twitter API.
+These settings are not directly used by the Inference class, so can be omitted.</p>
+</li>
+<li><p class="first"><strong>mongo</strong> - This section contains the connection information for the MongoDB,
+including the location of the database, and the database and table names to infer the tweets from.</p>
+</li>
+<li><p class="first"><strong>multiindicator</strong> - The <em>workers</em> value is an integer value of the number of
+simultaneous inference threads to run concurrently. The <em>gadm_polydb_path</em> is the location of the polygon
+database (see below) and the <em>tld_csv</em> string is the location of the TLD to country name file (see below).</p>
+</li>
+<li><p class="first"><strong>mi_weights</strong> - This contains the weights of each of the indicators. The default
+values in this config are the values lifted from the original paper.</p>
+<blockquote>
+<div><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name"><cite>TAG</cite>:</th><td class="field-body">weight of geotag indicator</td>
+</tr>
+<tr class="field-even field"><th class="field-name"><cite>COD</cite>:</th><td class="field-body">weight of coordinate indicator</td>
+</tr>
+<tr class="field-odd field"><th class="field-name"><cite>GN</cite>:</th><td class="field-body">weight of default geonames indicator</td>
+</tr>
+<tr class="field-even field"><th class="field-name"><cite>GN_1</cite>:</th><td class="field-body">weight of geonames indicator when string split by &#8216;/&#8217;</td>
+</tr>
+<tr class="field-odd field"><th class="field-name"><cite>GN_2</cite>:</th><td class="field-body">weight of geonames indicator when string split by &#8216;-&#8216;</td>
+</tr>
+<tr class="field-even field"><th class="field-name"><cite>GN_3</cite>:</th><td class="field-body">weight of geonames indicator when backup message indicator is used</td>
+</tr>
+<tr class="field-odd field"><th class="field-name"><cite>SP</cite>:</th><td class="field-body">weight of message indicator</td>
+</tr>
+<tr class="field-even field"><th class="field-name"><cite>LBS</cite>:</th><td class="field-body">weight of location based services indicator (not implemented)</td>
+</tr>
+<tr class="field-odd field"><th class="field-name"><cite>TZ</cite>:</th><td class="field-body">weight of both timezone indicators</td>
+</tr>
+<tr class="field-even field"><th class="field-name"><cite>WS_1</cite>:</th><td class="field-body">weight of TLD indicator</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+</li>
+<li><p class="first"><strong>geonames</strong> - This contains settings for connecting to the geonames API. <em>limit</em> is the max
+number of suggestions to return and <em>fuzzy</em> is the search fuzzy-ness parameter.</p>
+</li>
+<li><p class="first"><strong>dbpedia</strong> - This contains settings for the URL of the DBPedia spotlight interface.</p>
+</li>
+<li><p class="first"><strong>slinf</strong> - This can be omitted. Containted settings for the spatial label propagation method.</p>
+</li>
+</ul>
+</dd>
+<dt><strong>Files:</strong></dt>
+<dd>The MI approach uses two main extra databases, the <em>polygon database</em> and the
+<em>tld</em> database. These are compiled from various sources. Precompiled database
+files can be downloaded here: <a class="reference external" href="https://drive.google.com/open?id=0B0xoZYJ_Tg1aYVhvNTRlRGRiLW8">https://drive.google.com/open?id=0B0xoZYJ_Tg1aYVhvNTRlRGRiLW8</a></dd>
+</dl>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#"><code class="docutils literal"><span class="pre">twied.multiind</span></code> &#8212; Multi-Indicator Location Inference</a><ul>
+<li><a class="reference internal" href="#module-twied.multiind.inference">Location Inference Thread</a></li>
+<li><a class="reference internal" href="#module-twied.multiind.polystacker">Polygon Stacker</a></li>
+<li><a class="reference internal" href="#module-twied.multiind.indicators.indicator">Indicators</a></li>
+<li><a class="reference internal" href="#module-twied.multiind.interfaces.dbinterfaces">Interfaces</a></li>
+<li><a class="reference internal" href="#example">Example</a><ul>
+<li><a class="reference internal" href="#how-to-use">How to use</a></li>
+<li><a class="reference internal" href="#configuration-file">Configuration File</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="collection.html"
+                        title="previous chapter"><code class="docutils literal"><span class="pre">twied.twicol</span></code> &#8212; Twitter Collection</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="eventdetection.html"
+                        title="next chapter"><code class="docutils literal"><span class="pre">twied.eventec</span></code> &#8212; Event Detection</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/locinf.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="eventdetection.html" title="twied.eventec — Event Detection"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="collection.html" title="twied.twicol — Twitter Collection"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Twicol 0.2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2016, Humphrey Shotton.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.2.
+    </div>
+  </body>
+</html>

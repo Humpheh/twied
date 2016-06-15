@@ -1,0 +1,358 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>twied.twicol — Twitter Collection &mdash; Twicol 0.2 documentation</title>
+    
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Twicol 0.2 documentation" href="index.html" />
+    <link rel="next" title="twied.multiind — Multi-Indicator Location Inference" href="locinf.html" />
+    <link rel="prev" title="&lt;no title&gt;" href="includeme.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="locinf.html" title="twied.multiind — Multi-Indicator Location Inference"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="includeme.html" title="&lt;no title&gt;"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Twicol 0.2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-twied.twicol">
+<span id="twied-twicol-twitter-collection"></span><h1><a class="reference internal" href="#module-twied.twicol" title="twied.twicol"><code class="xref py py-mod docutils literal"><span class="pre">twied.twicol</span></code></a> &#8212; Twitter Collection<a class="headerlink" href="#module-twied.twicol" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="twied.twicol.exception_repeat">
+<code class="descclassname">twied.twicol.</code><code class="descname">exception_repeat</code><span class="sig-paren">(</span><em>func</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/twicol.html#exception_repeat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.twicol.exception_repeat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function decorator that retrys the function if it throws an exception
+after a short interval. Interval grows exponentially the more times
+the function throws an exception. Initial time is 0.5 seconds.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>func</strong> &#8211; The function to wrap.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<div class="section" id="module-twied.twicol.collection">
+<span id="collection"></span><h2>Collection<a class="headerlink" href="#module-twied.twicol.collection" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="twied.twicol.collection.TweetStreamer">
+<em class="property">class </em><code class="descclassname">twied.twicol.collection.</code><code class="descname">TweetStreamer</code><span class="sig-paren">(</span><em>name</em>, <em>trackstr</em>, <em>db=None</em>, <em>callbacks=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/twicol/collection.html#TweetStreamer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.twicol.collection.TweetStreamer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Threaded class which handles callbacks from the twython streamer and
+stores tweets in a MongoDB database.</p>
+<p>Creates the TweetStreamer. This streamer collects tweets from the
+Twitter API and stores them in a MongoDB. Can also callback to functions.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>name</strong> (<em>str</em>) &#8211; An indentifier for the collection.</li>
+<li><strong>trackstr</strong> (<em>str</em>) &#8211; Search string for the twitter API.</li>
+<li><strong>db</strong> &#8211; The MongoDB collection to put the tweet in. If this
+parameter is left as <cite>None</cite>, no database will be written to,
+instead only the <cite>on_add</cite> function will be called <em>(optional)</em>.</li>
+<li><strong>callbacks</strong> &#8211; Functions called when a tweet is recieved.
+Can also be a list of functions which will all be called.
+Will pass three arguments (name, data, insert_id) being the
+collection name, tweet data and mongo insert id respectively
+into the function <em>(optional)</em>.</li>
+<li><strong>**kwargs</strong> &#8211; <p>Settings for the Twitter API. Suggested example
+arguments:</p>
+<blockquote>
+<div><ul>
+<li><cite>app_key</cite></li>
+<li><cite>app_secret</cite></li>
+<li><cite>oauth_token</cite></li>
+<li><cite>oauth_token_secret</cite></li>
+</ul>
+</div></blockquote>
+<p>(for more information see the <code class="xref py py-class docutils literal"><span class="pre">twython.TwythonStreamer</span></code>
+documentation)</p>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Example:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<p>Following example is the usage of the <a class="reference internal" href="#twied.twicol.collection.TweetStreamer" title="twied.twicol.collection.TweetStreamer"><code class="xref py py-class docutils literal"><span class="pre">TweetStreamer</span></code></a> that
+prints out the ID of each tweet when it is recieved. As the db is None
+no storage of the tweets is performed. <cite>api_settings</cite> is a dictionary
+of the Twitter API settings.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">insertid</span><span class="p">):</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Inserted with ID: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">insertid</span><span class="p">)</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ts</span> <span class="o">=</span> <span class="n">TweetStreamer</span><span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">,</span> <span class="s2">&quot;twitter&quot;</span><span class="p">,</span> <span class="n">db</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">callbacks</span><span class="o">=</span><span class="n">test</span><span class="p">,</span> <span class="o">**</span><span class="n">api_settings</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ts</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="twied.twicol.collection.TweetStreamer.on_error">
+<code class="descname">on_error</code><span class="sig-paren">(</span><em>status_code</em>, <em>data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/twicol/collection.html#TweetStreamer.on_error"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.twicol.collection.TweetStreamer.on_error" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called on error with recieving tweet.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="twied.twicol.collection.TweetStreamer.on_success">
+<code class="descname">on_success</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/twicol/collection.html#TweetStreamer.on_success"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.twicol.collection.TweetStreamer.on_success" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function called when a tweet was successfully recieved from the API.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>data</strong> &#8211; The tweet data.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="twied.twicol.collection.TweetStreamer.on_timeout">
+<code class="descname">on_timeout</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/twicol/collection.html#TweetStreamer.on_timeout"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.twicol.collection.TweetStreamer.on_timeout" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called on timeout of the streaming API.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="twied.twicol.collection.TweetStreamer.run">
+<code class="descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/twicol/collection.html#TweetStreamer.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.twicol.collection.TweetStreamer.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Main thread loop.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="twied.twicol.collection.TweetStreamer.stop">
+<code class="descname">stop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/twicol/collection.html#TweetStreamer.stop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.twicol.collection.TweetStreamer.stop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stop the tweet collection.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-twied.twicol.counters">
+<span id="counter"></span><h2>Counter<a class="headerlink" href="#module-twied.twicol.counters" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="twied.twicol.counters.CounterThread">
+<em class="property">class </em><code class="descclassname">twied.twicol.counters.</code><code class="descname">CounterThread</code><span class="sig-paren">(</span><em>interval_s</em>, <em>callbacks</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/twicol/counters.html#CounterThread"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.twicol.counters.CounterThread" title="Permalink to this definition">¶</a></dt>
+<dd><p>Threaded class which calls a callback at specified interval.
+Used with the <code class="xref py py-class docutils literal"><span class="pre">TweetStreamer</span></code> class to gain a callback
+of the number of tweets collected in the previous interval.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<p>Below is an example usage of this class with the <code class="xref py py-class docutils literal"><span class="pre">TweetThread</span></code>
+class.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">log</span><span class="p">(</span><span class="n">count</span><span class="p">):</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Last 5 seconds: </span><span class="si">%i</span><span class="s2"> tweets&quot;</span> <span class="o">%</span> <span class="n">count</span><span class="p">)</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">counter</span> <span class="o">=</span> <span class="n">CounterThread</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="n">log</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ts</span> <span class="o">=</span> <span class="n">TweetStreamer</span><span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">,</span> <span class="s2">&quot;twitter&quot;</span><span class="p">,</span> <span class="n">db</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">callbacks</span><span class="o">=</span><span class="n">counter</span><span class="p">,</span> <span class="o">**</span><span class="n">api_settings</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ts</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">counter</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><code class="xref py py-class docutils literal"><span class="pre">TweetThread</span></code> shows the usage of the collection thread.</p>
+</div>
+<p>Initialise the counter.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>interval_s</strong> &#8211; The number of seconds between calling
+the callback function.</li>
+<li><strong>callbacks</strong> &#8211; The function to call every <cite>interval_s</cite>
+seconds. Can also be a list of functions. The function
+should take a single parameter which is the number of
+tweets recieved in the last interval.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="twied.twicol.counters.CounterThread.run">
+<code class="descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/twicol/counters.html#CounterThread.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.twicol.counters.CounterThread.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run the counter thread.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="twied.twicol.counters.CounterThread.stop">
+<code class="descname">stop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/twicol/counters.html#CounterThread.stop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.twicol.counters.CounterThread.stop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stop the counter thread at the next count. Note that this
+may be a delayed finish as it will stop at the next time
+the call back function is checked.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="example">
+<h2>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h2>
+<p>Below is an example file using the collection class to collect tweets which
+contain the word &#8216;Twitter&#8217;. This script saves these tweets in a MongoDB database
+in the database &#8216;test&#8217; and the collection &#8216;coltest1&#8217;. A <a class="reference internal" href="#twied.twicol.counters.CounterThread" title="twied.twicol.counters.CounterThread"><code class="xref py py-class docutils literal"><span class="pre">CounterThread</span></code></a> is also
+created which ouputs the number of tweets collected in the previous 5 seconds.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The API settings here have been altered so they are not valid. These would
+need to be created for your own app from the <a class="reference external" href="https://apps.twitter.com/">Twitter API</a>.</p>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">time</span>
+
+<span class="kn">from</span> <span class="nn">twied.twicol</span> <span class="kn">import</span> <span class="n">TweetStreamer</span><span class="p">,</span> <span class="n">CounterThread</span>
+<span class="kn">from</span> <span class="nn">pymongo</span> <span class="kn">import</span> <span class="n">MongoClient</span>
+
+<span class="c1"># Save the Twitter API settings</span>
+<span class="n">api_settings</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;app_key&#39;</span><span class="p">:</span> <span class="s1">&#39;wYHFS6G9fqVNxYwt53UNUcxT0&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;app_secret&#39;</span><span class="p">:</span> <span class="s1">&#39;MU3r4yi2HGDrAbBma2syPpOvFOcWFxaUIiKmeySX8Ard80lr53&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;oauth_token&#39;</span><span class="p">:</span> <span class="s1">&#39;3950426785-SNgK3NmghSzdjLcJGRTAwQq3xyMait0bVQ6HVvV&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;oauth_token_secret&#39;</span><span class="p">:</span> <span class="s1">&#39;x0FASasjEHqsSvLAZ3h6sqClPWtt54TcM78W8PLOJ1BLv&#39;</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="n">search_str</span> <span class="o">=</span> <span class="s2">&quot;twitter&quot;</span>
+
+<span class="c1"># Connect to the MongoDB and the correct collection</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">MongoClient</span><span class="p">()</span>
+<span class="n">collection</span> <span class="o">=</span> <span class="n">client</span><span class="p">[</span><span class="s1">&#39;test&#39;</span><span class="p">][</span><span class="s1">&#39;coltest1&#39;</span><span class="p">]</span>
+
+<span class="c1"># Setup the counter thread to output status count ever 5 secs</span>
+<span class="n">counter</span> <span class="o">=</span> <span class="n">CounterThread</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">count</span><span class="p">:</span> <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Recieved </span><span class="si">%i</span><span class="s2"> tweets in last 5 seconds&quot;</span> <span class="o">%</span> <span class="n">count</span><span class="p">))</span>
+
+<span class="c1"># Setup the tweet streamer to listen to tweets with &#39;twitter&#39; in them</span>
+<span class="n">ts</span> <span class="o">=</span> <span class="n">TweetStreamer</span><span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">,</span> <span class="n">search_str</span><span class="p">,</span> <span class="n">db</span><span class="o">=</span><span class="n">collection</span><span class="p">,</span> <span class="n">callbacks</span><span class="o">=</span><span class="n">counter</span><span class="p">,</span> <span class="o">**</span><span class="n">api_settings</span><span class="p">)</span>
+
+<span class="c1"># Start the threads</span>
+<span class="n">ts</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+<span class="n">counter</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="c1"># Wait</span>
+    <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Exception caught...&quot;</span><span class="p">)</span>
+    <span class="k">pass</span>
+<span class="k">finally</span><span class="p">:</span>
+    <span class="c1"># If excepted, close all threads</span>
+    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Stopping collection.&quot;</span><span class="p">)</span>
+    <span class="n">counter</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+    <span class="n">ts</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#"><code class="docutils literal"><span class="pre">twied.twicol</span></code> &#8212; Twitter Collection</a><ul>
+<li><a class="reference internal" href="#module-twied.twicol.collection">Collection</a></li>
+<li><a class="reference internal" href="#module-twied.twicol.counters">Counter</a></li>
+<li><a class="reference internal" href="#example">Example</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="includeme.html"
+                        title="previous chapter">&lt;no title&gt;</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="locinf.html"
+                        title="next chapter"><code class="docutils literal"><span class="pre">twied.multiind</span></code> &#8212; Multi-Indicator Location Inference</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/collection.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="locinf.html" title="twied.multiind — Multi-Indicator Location Inference"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="includeme.html" title="&lt;no title&gt;"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Twicol 0.2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2016, Humphrey Shotton.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.2.
+    </div>
+  </body>
+</html>
