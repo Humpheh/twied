@@ -1,0 +1,276 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>1. Guide &mdash; Twicol 0.2 documentation</title>
+    
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Twicol 0.2 documentation" href="index.html" />
+    <link rel="next" title="2. twied.twicol — Twitter Collection" href="collection.html" />
+    <link rel="prev" title="Welcome to Twicol’s documentation!" href="index.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="collection.html" title="2. twied.twicol — Twitter Collection"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to Twicol’s documentation!"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Twicol 0.2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="guide">
+<h1>1. Guide<a class="headerlink" href="#guide" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="installation">
+<h2>1.1. Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>Below is a guide on how to setup and use the package. This package required <em>Python 3</em>. A number of other
+modules are required for the module to function correctly. Installing the module using <em>pip</em> should automatically
+include all of these modules, however they may need to be retrieved seperately.</p>
+<p>Required modules and supported versions can be seen here: <a class="reference external" href="https://github.com/Humpheh/twied/blob/master/requirements.txt">https://github.com/Humpheh/twied/blob/master/requirements.txt</a>.</p>
+<p><strong>Pip Installation:</strong></p>
+<p><cite>twied</cite> can be installed via pip:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>pip install git+https://github.com/Humpheh/twied.git
+</pre></div>
+</div>
+<p><strong>Source Code:</strong></p>
+<p>The source code for <cite>twied</cite> can be retrieved from <em>GitHub</em> <a class="reference external" href="https://github.com/Humpheh/twied">https://github.com/Humpheh/twied</a>. This can
+be cloned using:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>git clone https://github.com/Humpheh/twied.git
+</pre></div>
+</div>
+<p><strong>Example Scripts:</strong></p>
+<p>Example usage scripts can be seen in the <em>GitHub</em> repository under the directory <cite>/scripts/examples</cite>.</p>
+</div>
+<div class="section" id="usage">
+<h2>1.2. Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="mi-configuration">
+<h3>1.2.1. MI Configuration<a class="headerlink" href="#mi-configuration" title="Permalink to this headline">¶</a></h3>
+<p>Below is a basic breakdown of how setting up for using the MI implementation would work:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li>Obtain the <cite>twied</cite> package.</li>
+<li>Install prerequisite modules (<em>pip</em> likely will install them for you).</li>
+<li>Download databases (see below for link).</li>
+<li>Setup config file.</li>
+<li>Create inference script.</li>
+<li>Start inference.</li>
+</ol>
+</div></blockquote>
+<p>Below is an example config file for use with the <a class="reference internal" href="locinf.html#twied.multiind.inference.InferThread" title="twied.multiind.inference.InferThread"><code class="xref py py-class docutils literal"><span class="pre">twied.multiind.inference.InferThread</span></code></a>
+class. Each of the sections is broken down below the example.</p>
+<div class="highlight-ini"><div class="highlight"><pre><span></span><span class="k">[twitter]</span>
+<span class="na">app_key</span> <span class="o">=</span> <span class="s">wYHFS6G9fqVNxYwt53UNUcxT0</span>
+<span class="na">app_secret</span> <span class="o">=</span> <span class="s">MU3r4yi2HGDrAbBma2syPpOvFOcWFxaUIiKmeySX8Ard80lr53</span>
+<span class="na">oauth_token</span> <span class="o">=</span> <span class="s">3950426785-SNgK3NmghSzdjLcJGRTAwQq3xyMait0bVQ6HVvV</span>
+<span class="na">oauth_token_secret</span> <span class="o">=</span> <span class="s">x0FASasjEHqsSvLAZ3h6sqClPWtt54TcM78W8PLOJ1BLv</span>
+
+<span class="k">[mongo]</span>
+<span class="na">address</span> <span class="o">=</span> <span class="s">localhost</span>
+<span class="na">port</span> <span class="o">=</span> <span class="s">27017</span>
+<span class="na">database</span> <span class="o">=</span> <span class="s">twitter</span>
+<span class="na">collection</span> <span class="o">=</span> <span class="s">tweets</span>
+
+<span class="c1">#### Settings for Multi-Indicator Approach ####</span>
+
+<span class="k">[multiindicator]</span>
+<span class="na">workers</span> <span class="o">=</span> <span class="s">10</span>
+<span class="na">gadm_polydb_path</span> <span class="o">=</span> <span class="s">D:/ds/polydb_2.db</span>
+<span class="na">tld_csv</span> <span class="o">=</span> <span class="s">D:/ds/tlds.csv</span>
+
+<span class="k">[mi_weights]</span>
+<span class="na">TAG</span> <span class="o">=</span> <span class="s">10</span>
+<span class="na">COD</span> <span class="o">=</span> <span class="s">2.72</span>
+<span class="na">GN</span> <span class="o">=</span> <span class="s">1.51</span>
+<span class="na">GN_1</span> <span class="o">=</span> <span class="s">2.01</span>
+<span class="na">GN_2</span> <span class="o">=</span> <span class="s">1.96</span>
+<span class="na">GN_3</span> <span class="o">=</span> <span class="s">1.96</span>
+<span class="na">SP</span> <span class="o">=</span> <span class="s">0.67</span>
+<span class="na">LBS</span> <span class="o">=</span> <span class="s">4.26</span>
+<span class="na">TZ</span> <span class="o">=</span> <span class="s">0.56</span>
+<span class="na">WS_1</span> <span class="o">=</span> <span class="s">1.07</span>
+
+<span class="k">[geonames]</span>
+<span class="na">url</span> <span class="o">=</span> <span class="s">api.geonames.org</span>
+<span class="na">user</span> <span class="o">=</span> <span class="s">humph</span>
+<span class="na">limit</span> <span class="o">=</span> <span class="s">5</span>
+<span class="na">fuzzy</span> <span class="o">=</span> <span class="s">0.8</span>
+
+<span class="k">[dbpedia]</span>
+<span class="na">spotlight_url</span> <span class="o">=</span> <span class="s">spotlight.sztaki.hu</span>
+<span class="na">spotlight_port</span> <span class="o">=</span> <span class="s">2222</span>
+<span class="na">spotlight_page</span> <span class="o">=</span> <span class="s">/rest/annotate</span>
+
+<span class="k">[slinf]</span>
+<span class="na">min_mentions</span> <span class="o">=</span> <span class="s">3</span>
+<span class="c1"># 4</span>
+<span class="na">max_depth</span> <span class="o">=</span> <span class="s">3</span>
+<span class="na">req_locations</span> <span class="o">=</span> <span class="s">1</span>
+<span class="na">max_iterations</span> <span class="o">=</span> <span class="s">4</span>
+<span class="na">num_timelines</span> <span class="o">=</span> <span class="s">2</span>
+</pre></div>
+</div>
+<dl class="docutils">
+<dt><strong>Fields:</strong></dt>
+<dd><ul class="first last">
+<li><p class="first"><strong>twitter</strong> - This section contains the settings for the Twitter API.
+These settings are not directly used by the Inference class, so can be omitted.</p>
+</li>
+<li><p class="first"><strong>mongo</strong> - This section contains the connection information for the MongoDB,
+including the location of the database, and the database and table names to infer the tweets from.</p>
+</li>
+<li><p class="first"><strong>multiindicator</strong> - The <em>workers</em> value is an integer value of the number of
+simultaneous inference threads to run concurrently. The <em>gadm_polydb_path</em> is the location of the polygon
+database (see below) and the <em>tld_csv</em> string is the location of the TLD to country name file (see below).</p>
+</li>
+<li><p class="first"><strong>mi_weights</strong> - This contains the weights of each of the indicators. The default
+values in this config are the values lifted from the original paper.</p>
+<blockquote>
+<div><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name"><cite>TAG</cite>:</th><td class="field-body">weight of geotag indicator</td>
+</tr>
+<tr class="field-even field"><th class="field-name"><cite>COD</cite>:</th><td class="field-body">weight of coordinate indicator</td>
+</tr>
+<tr class="field-odd field"><th class="field-name"><cite>GN</cite>:</th><td class="field-body">weight of default geonames indicator</td>
+</tr>
+<tr class="field-even field"><th class="field-name"><cite>GN_1</cite>:</th><td class="field-body">weight of geonames indicator when string split by &#8216;/&#8217;</td>
+</tr>
+<tr class="field-odd field"><th class="field-name"><cite>GN_2</cite>:</th><td class="field-body">weight of geonames indicator when string split by &#8216;-&#8216;</td>
+</tr>
+<tr class="field-even field"><th class="field-name"><cite>GN_3</cite>:</th><td class="field-body">weight of geonames indicator when backup message indicator is used</td>
+</tr>
+<tr class="field-odd field"><th class="field-name"><cite>SP</cite>:</th><td class="field-body">weight of message indicator</td>
+</tr>
+<tr class="field-even field"><th class="field-name"><cite>LBS</cite>:</th><td class="field-body">weight of location based services indicator (not implemented)</td>
+</tr>
+<tr class="field-odd field"><th class="field-name"><cite>TZ</cite>:</th><td class="field-body">weight of both timezone indicators</td>
+</tr>
+<tr class="field-even field"><th class="field-name"><cite>WS_1</cite>:</th><td class="field-body">weight of TLD indicator</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+</li>
+<li><p class="first"><strong>geonames</strong> - This contains settings for connecting to the geonames API. <em>limit</em> is the max
+number of suggestions to return and <em>fuzzy</em> is the search fuzzy-ness parameter.</p>
+</li>
+<li><p class="first"><strong>dbpedia</strong> - This contains settings for the URL of the DBPedia spotlight interface.</p>
+</li>
+<li><p class="first"><strong>slinf</strong> - This can be omitted. Containted settings for the spatial label propagation method.</p>
+</li>
+</ul>
+</dd>
+<dt><strong>Files:</strong></dt>
+<dd>The MI approach uses two main extra databases, the <em>polygon database</em> and the
+<em>tld</em> database. These are compiled from various sources. Precompiled database
+files can be downloaded here: <a class="reference external" href="https://drive.google.com/open?id=0B0xoZYJ_Tg1aYVhvNTRlRGRiLW8">https://drive.google.com/open?id=0B0xoZYJ_Tg1aYVhvNTRlRGRiLW8</a></dd>
+</dl>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">1. Guide</a><ul>
+<li><a class="reference internal" href="#installation">1.1. Installation</a></li>
+<li><a class="reference internal" href="#usage">1.2. Usage</a><ul>
+<li><a class="reference internal" href="#mi-configuration">1.2.1. MI Configuration</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Welcome to Twicol&#8217;s documentation!</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="collection.html"
+                        title="next chapter">2. <code class="docutils literal"><span class="pre">twied.twicol</span></code> &#8212; Twitter Collection</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/installation.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="collection.html" title="2. twied.twicol — Twitter Collection"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to Twicol’s documentation!"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Twicol 0.2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2016, Humphrey Shotton.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.2.
+    </div>
+  </body>
+</html>

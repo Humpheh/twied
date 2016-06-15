@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>twied.twicol — Twitter Collection &mdash; Twicol 0.2 documentation</title>
+    <title>2. twied.twicol — Twitter Collection &mdash; Twicol 0.2 documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -25,8 +25,8 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="top" title="Twicol 0.2 documentation" href="index.html" />
-    <link rel="next" title="twied.multiind — Multi-Indicator Location Inference" href="locinf.html" />
-    <link rel="prev" title="&lt;no title&gt;" href="includeme.html" /> 
+    <link rel="next" title="3. twied.multiind — Multi-Indicator Location Inference" href="locinf.html" />
+    <link rel="prev" title="1. Guide" href="installation.html" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -39,10 +39,10 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="locinf.html" title="twied.multiind — Multi-Indicator Location Inference"
+          <a href="locinf.html" title="3. twied.multiind — Multi-Indicator Location Inference"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="includeme.html" title="&lt;no title&gt;"
+          <a href="installation.html" title="1. Guide"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">Twicol 0.2 documentation</a> &raquo;</li> 
       </ul>
@@ -54,7 +54,7 @@
           <div class="body" role="main">
             
   <div class="section" id="module-twied.twicol">
-<span id="twied-twicol-twitter-collection"></span><h1><a class="reference internal" href="#module-twied.twicol" title="twied.twicol"><code class="xref py py-mod docutils literal"><span class="pre">twied.twicol</span></code></a> &#8212; Twitter Collection<a class="headerlink" href="#module-twied.twicol" title="Permalink to this headline">¶</a></h1>
+<span id="twied-twicol-twitter-collection"></span><h1>2. <a class="reference internal" href="#module-twied.twicol" title="twied.twicol"><code class="xref py py-mod docutils literal"><span class="pre">twied.twicol</span></code></a> &#8212; Twitter Collection<a class="headerlink" href="#module-twied.twicol" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
 <dt id="twied.twicol.exception_repeat">
 <code class="descclassname">twied.twicol.</code><code class="descname">exception_repeat</code><span class="sig-paren">(</span><em>func</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/twicol.html#exception_repeat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.twicol.exception_repeat" title="Permalink to this definition">¶</a></dt>
@@ -72,7 +72,7 @@ the function throws an exception. Initial time is 0.5 seconds.</p>
 </dd></dl>
 
 <div class="section" id="module-twied.twicol.collection">
-<span id="collection"></span><h2>Collection<a class="headerlink" href="#module-twied.twicol.collection" title="Permalink to this headline">¶</a></h2>
+<span id="collection"></span><h2>2.1. Collection<a class="headerlink" href="#module-twied.twicol.collection" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="twied.twicol.collection.TweetStreamer">
 <em class="property">class </em><code class="descclassname">twied.twicol.collection.</code><code class="descname">TweetStreamer</code><span class="sig-paren">(</span><em>name</em>, <em>trackstr</em>, <em>db=None</em>, <em>callbacks=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/twicol/collection.html#TweetStreamer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.twicol.collection.TweetStreamer" title="Permalink to this definition">¶</a></dt>
@@ -168,7 +168,7 @@ of the Twitter API settings.</p>
 
 </div>
 <div class="section" id="module-twied.twicol.counters">
-<span id="counter"></span><h2>Counter<a class="headerlink" href="#module-twied.twicol.counters" title="Permalink to this headline">¶</a></h2>
+<span id="counter"></span><h2>2.2. Counter<a class="headerlink" href="#module-twied.twicol.counters" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="twied.twicol.counters.CounterThread">
 <em class="property">class </em><code class="descclassname">twied.twicol.counters.</code><code class="descname">CounterThread</code><span class="sig-paren">(</span><em>interval_s</em>, <em>callbacks</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twied/twicol/counters.html#CounterThread"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twied.twicol.counters.CounterThread" title="Permalink to this definition">¶</a></dt>
@@ -233,7 +233,7 @@ the call back function is checked.</p>
 
 </div>
 <div class="section" id="example">
-<h2>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h2>
+<h2>2.3. Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h2>
 <p>Below is an example file using the collection class to collect tweets which
 contain the word &#8216;Twitter&#8217;. This script saves these tweets in a MongoDB database
 in the database &#8216;test&#8217; and the collection &#8216;coltest1&#8217;. A <a class="reference internal" href="#twied.twicol.counters.CounterThread" title="twied.twicol.counters.CounterThread"><code class="xref py py-class docutils literal"><span class="pre">CounterThread</span></code></a> is also
@@ -297,20 +297,20 @@ need to be created for your own app from the <a class="reference external" href=
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#"><code class="docutils literal"><span class="pre">twied.twicol</span></code> &#8212; Twitter Collection</a><ul>
-<li><a class="reference internal" href="#module-twied.twicol.collection">Collection</a></li>
-<li><a class="reference internal" href="#module-twied.twicol.counters">Counter</a></li>
-<li><a class="reference internal" href="#example">Example</a></li>
+<li><a class="reference internal" href="#">2. <code class="docutils literal"><span class="pre">twied.twicol</span></code> &#8212; Twitter Collection</a><ul>
+<li><a class="reference internal" href="#module-twied.twicol.collection">2.1. Collection</a></li>
+<li><a class="reference internal" href="#module-twied.twicol.counters">2.2. Counter</a></li>
+<li><a class="reference internal" href="#example">2.3. Example</a></li>
 </ul>
 </li>
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="includeme.html"
-                        title="previous chapter">&lt;no title&gt;</a></p>
+  <p class="topless"><a href="installation.html"
+                        title="previous chapter">1. Guide</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="locinf.html"
-                        title="next chapter"><code class="docutils literal"><span class="pre">twied.multiind</span></code> &#8212; Multi-Indicator Location Inference</a></p>
+                        title="next chapter">3. <code class="docutils literal"><span class="pre">twied.multiind</span></code> &#8212; Multi-Indicator Location Inference</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -342,10 +342,10 @@ need to be created for your own app from the <a class="reference external" href=
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="locinf.html" title="twied.multiind — Multi-Indicator Location Inference"
+          <a href="locinf.html" title="3. twied.multiind — Multi-Indicator Location Inference"
              >next</a> |</li>
         <li class="right" >
-          <a href="includeme.html" title="&lt;no title&gt;"
+          <a href="installation.html" title="1. Guide"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">Twicol 0.2 documentation</a> &raquo;</li> 
       </ul>

@@ -9,9 +9,10 @@ Welcome to Twicol's documentation!
 Contents:
 
 .. toctree::
+   :numbered:
    :maxdepth: 2
 
-   includeme
+   installation
    collection
    locinf
    eventdetection
