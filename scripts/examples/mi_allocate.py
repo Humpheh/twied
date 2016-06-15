@@ -1,14 +1,14 @@
 """
 For allocating ID's to each tweet in the database between a number.
 """
-import sys
-import logging
 import argparse
-
+import logging
+import sys
 from configparser import NoOptionError
 
 from pymongo import MongoClient
-import twieds
+
+from scripts.examples import twieds
 
 config = twieds.setup("logs/mi_alloc.log", "settings/locinf.ini")
 

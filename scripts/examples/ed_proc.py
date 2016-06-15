@@ -1,16 +1,17 @@
+#!/usr/bin/python
 """
-Script for running the event detection on the processed tweets.
+File for running the event detection process.
 """
-import logging
-import sys
-import pickle
 import argparse
-
+import logging
+import pickle
+import sys
 from configparser import NoOptionError
+
 from pymongo import MongoClient
 
-import twieds
 from eventec.eventdetection import EventDetection
+from scripts.examples import twieds
 
 parser = argparse.ArgumentParser(description="Run the event detection")
 parser.add_argument('output', help='the output file to write to')
@@ -25,33 +26,30 @@ logging.info("Connected to MongoDB")
 
 # select the database and collection based off config
 try:
-    db = client["twitter"]
-    col = db["ptweets"]
+    db = client["twitter"]  # config.get("mongo", "database")]
+    col = db["ptweets"]  # ["geotweets"]#config.get("mongo", "collection")]
 except NoOptionError:
     logging.critical("Cannot connect to MongoDB database and collection. Config incorrect?")
     sys.exit()
 
 # get the tweet cursor
 logging.info("Getting tweets...")
-cursor = col.find({'realgeo': {'$ne': None}}, no_cursor_timeout=True).sort('timestamp', 1)
+cursor = col.find(no_cursor_timeout=True).sort('timestamp', 1)
 
 count = 0
-tf = EventDetection('realgeo.coordinates', 'timestamp', popmaploc='D:\ds\population\glds15ag.asc')
+tf = EventDetection('centre', 'timestamp', popmaploc='D:\ds\population\glds15ag.asc')  # 'geo.coordinates')
 try:
     for doc in cursor:
-        centre = doc['realgeo']['coordinates']
-        doc['realgeo']['coordinates'] = [centre[1], centre[0]]
-
         tf.process_tweet(doc)
         count += 1
 
         if count % 100 == 0:
-            logging.info("Proc tweet %i by %s" % (count, doc['timestamp']))
+            logging.info("Proc tweet %i by %s" % (count, doc['timestamp']))  # doc['user']['screen_name']))
             logging.info(tf)
 
 except Exception as e:
     print(e)
-    pass
+    raise e
 
 print("Saving clusters...")
 allc = tf.get_all_clusters()

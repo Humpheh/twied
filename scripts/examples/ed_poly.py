@@ -4,13 +4,13 @@ File to build an animation.
 """
 import logging
 import sys
-
 from configparser import NoOptionError
+from datetime import timedelta
+
 from pymongo import MongoClient
 
-import twieds
-from polyani import plotevents_count
-from datetime import datetime, timedelta
+from scripts.examples import twieds
+from scripts.examples.polyani import plotevents_count
 
 config = twieds.setup("logs/ed_test.log", "settings/locinf.ini", logging.DEBUG)
 

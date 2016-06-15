@@ -1,17 +1,16 @@
 """
-Script for running the event detection on the processed tweets
-for the UK.
+Script for running the event detection on the processed tweets.
 """
-import logging
-import sys
-import pickle
 import argparse
-
+import logging
+import pickle
+import sys
 from configparser import NoOptionError
+
 from pymongo import MongoClient
 
-import twieds
 from eventec.eventdetection import EventDetection
+from scripts.examples import twieds
 
 parser = argparse.ArgumentParser(description="Run the event detection")
 parser.add_argument('output', help='the output file to write to')
@@ -32,19 +31,16 @@ except NoOptionError:
     logging.critical("Cannot connect to MongoDB database and collection. Config incorrect?")
     sys.exit()
 
-with open('D:/ds/code/workbooks/ukpoly.pkl', 'rb') as file:
-    mp = pickle.load(file)
-
 # get the tweet cursor
 logging.info("Getting tweets...")
-cursor = col.find(no_cursor_timeout=True).sort('timestamp', 1)
+cursor = col.find({'realgeo': {'$ne': None}}, no_cursor_timeout=True).sort('timestamp', 1)
 
 count = 0
-tf = EventDetection('centre', 'timestamp', popmaploc='D:\ds\population\glds15ag.asc')
+tf = EventDetection('realgeo.coordinates', 'timestamp', popmaploc='D:\ds\population\glds15ag.asc')
 try:
     for doc in cursor:
-        if doc['centre'] is None or not mp.isInside(doc['centre'][0], doc['centre'][1]):
-            continue
+        centre = doc['realgeo']['coordinates']
+        doc['realgeo']['coordinates'] = [centre[1], centre[0]]
 
         tf.process_tweet(doc)
         count += 1

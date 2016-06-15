@@ -4,20 +4,17 @@ Run the SLP algorithm on a user.
 import logging
 import sys
 from collections import defaultdict
-
-import pymongo
-import matplotlib.pyplot as plt
-import networkx as nx
-from mpl_toolkits.basemap import Basemap
-
-from pymongo import MongoClient
 from configparser import NoOptionError
 
-import twieds
-from labelprop.inference import InferSL
-from labelprop.distance import geometric_mean
-import polyplotter
+import matplotlib.pyplot as plt
+import networkx as nx
+import pymongo
+from mpl_toolkits.basemap import Basemap
+from pymongo import MongoClient
 
+from labelprop.distance import geometric_mean
+from labelprop.inference import InferSL
+from scripts.examples import twieds
 
 visited_users = {}
 colors = {}

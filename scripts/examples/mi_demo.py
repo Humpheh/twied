@@ -1,18 +1,15 @@
 import logging
-import time
 import sys
-
-from multiprocessing.dummy import Pool as ThreadPool
-from multiprocessing.context import TimeoutError
+import time
 from configparser import NoOptionError
+from multiprocessing.dummy import Pool as ThreadPool
 
-from pymongo import MongoClient
 from bson import objectid
+from pymongo import MongoClient
 
-import polyplotter
-import twieds
 import multiind.indicators as indicators
 from multiind import polystacker
+from scripts.examples import polyplotter, twieds
 
 
 def add_ind(task):

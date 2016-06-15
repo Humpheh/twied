@@ -1,13 +1,14 @@
 import logging
 import sys
-
 from configparser import NoOptionError
+
 from pymongo import MongoClient
 
-import twieds
 from eventec.eventdetection import EventDetection
+from scripts.examples import twieds
+
 #from polyplotter import plotevents
-from polyani import plotevents
+from scripts.examples.polyani import plotevents
 
 config = twieds.setup("logs/ed_test.log", "settings/locinf.ini", logging.DEBUG)
 

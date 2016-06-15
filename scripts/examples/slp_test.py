@@ -3,12 +3,12 @@ Testing the spatial label propagation algorithm.
 """
 import logging
 import sys
-
-import pymongo
 from configparser import NoOptionError
 
-import twieds
+import pymongo
+
 from labelprop.inference import InferSL
+from scripts.examples import twieds
 
 # Must run this as a script
 if __name__ == "__main__":

@@ -2,20 +2,20 @@
 The main Multi-Indicator process which connects to the DB and locates
 all of the tweets in the collection using the MI method.
 """
-import twieds
+import datetime
 import logging
 import sys
 import time
-import datetime
+from configparser import NoOptionError
 
 from pymongo import MongoClient
-from configparser import NoOptionError
-from urllib3.exceptions import MaxRetryError
 from twython import Twython, TwythonError
+from urllib3.exceptions import MaxRetryError
 
-from multiind.inference import InferThread
 from multiind.indicators.locfieldindicator import GeonamesException
+from multiind.inference import InferThread
 from multiind.interfaces.webinterfaces import GeonamesDecodeException
+from scripts.examples import twieds
 
 if __name__ == "__main__":
     # setup argpase, configparse and logger

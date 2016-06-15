@@ -1,22 +1,19 @@
-import tkinter as tk
-from tkinter import ttk
-import pprint
-
-import time
-from multiprocessing.dummy import Pool as ThreadPool
 import logging
-import twieds
-from pymongo import MongoClient
-from configparser import NoOptionError
-from bson.objectid import ObjectId
-import sys
-import datetime
+import pprint
 import random
+import sys
+import time
+import tkinter as tk
+from configparser import NoOptionError
+from multiprocessing.dummy import Pool as ThreadPool
+from tkinter import ttk
 
-import polyplotter
-import twieds
+from bson.objectid import ObjectId
+from pymongo import MongoClient
+
 import multiind.indicators as indicators
 from multiind import polystacker
+from scripts.examples import polyplotter, twieds
 
 
 class Application(tk.Frame):
@@ -111,6 +108,7 @@ class Application(tk.Frame):
             raise e
 
 config = twieds.setup("logs/locinf.log", "settings/locinf.ini")
+
 
 def add_ind(task):
     ind = task[0]
