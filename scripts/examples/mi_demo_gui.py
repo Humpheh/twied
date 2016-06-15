@@ -1,3 +1,7 @@
+#!/usr/bin/python
+"""
+A GUI demo of the MI approach.
+"""
 import logging
 import pprint
 import random
@@ -11,9 +15,9 @@ from tkinter import ttk
 from bson.objectid import ObjectId
 from pymongo import MongoClient
 
-import multiind.indicators as indicators
-from multiind import polystacker
-from scripts.examples import polyplotter, twieds
+import twied.multiind.indicators as indicators
+from twied.multiind import polystacker
+import polyplotter, twieds
 
 
 class Application(tk.Frame):

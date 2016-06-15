@@ -9,8 +9,8 @@ from datetime import timedelta
 
 from pymongo import MongoClient
 
-from scripts.examples import twieds
-from scripts.examples.polyani import plotevents_count
+import twieds
+from polyani import plotevents_count
 
 config = twieds.setup("logs/ed_test.log", "settings/locinf.ini", logging.DEBUG)
 

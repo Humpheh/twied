@@ -1,14 +1,17 @@
+#!/usr/bin/python
+"""
+Event detection test script.
+"""
 import logging
 import sys
 from configparser import NoOptionError
 
 from pymongo import MongoClient
 
-from eventec.eventdetection import EventDetection
-from scripts.examples import twieds
+from twied.eventec.eventdetection import EventDetection
+import twieds
 
-#from polyplotter import plotevents
-from scripts.examples.polyani import plotevents
+from polyani import plotevents
 
 config = twieds.setup("logs/ed_test.log", "settings/locinf.ini", logging.DEBUG)
 

@@ -1,3 +1,7 @@
+#!/usr/bin/python
+"""
+Demo of the MI method which can take a tweet ID to process.
+"""
 import logging
 import sys
 import time
@@ -7,10 +11,10 @@ from multiprocessing.dummy import Pool as ThreadPool
 from bson import objectid
 from pymongo import MongoClient
 
-import multiind.indicators as indicators
-from multiind import polystacker
-from scripts.examples import polyplotter, twieds
+import twied.multiind.indicators as indicators
+from twied.multiind import polystacker
 
+import twieds, polyplotter
 
 def add_ind(task):
     ind = task[0]

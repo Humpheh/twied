@@ -1,7 +1,11 @@
+#!/usr/bin/python
+"""
+Dirty script which for animation.
+"""
 import logging
 
 import numpy as np
-from multiind.polystacker import plot_area
+from twied.multiind.polystacker import plot_area
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 

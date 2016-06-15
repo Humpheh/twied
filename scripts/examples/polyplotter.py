@@ -1,3 +1,8 @@
+#!/usr/bin/python
+"""
+Dirty script which provides some (not well maintained) functions for plotting
+data.
+"""
 from mpl_toolkits.basemap import Basemap
 import numpy as np
 import matplotlib.pyplot as plt

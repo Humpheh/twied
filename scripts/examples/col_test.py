@@ -1,3 +1,7 @@
+#!/usr/bin/python
+"""
+Test script of the TweetStreamer and CounterThread.
+"""
 import time
 
 from twied.twicol import TweetStreamer, CounterThread

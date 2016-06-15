@@ -1,3 +1,4 @@
+#!/usr/bin/python
 """
 Script for running the event detection on the processed tweets
 for the UK.
@@ -10,8 +11,8 @@ from configparser import NoOptionError
 
 from pymongo import MongoClient
 
-from eventec.eventdetection import EventDetection
-from scripts.examples import twieds
+from twied.eventec.eventdetection import EventDetection
+import twieds
 
 parser = argparse.ArgumentParser(description="Run the event detection")
 parser.add_argument('output', help='the output file to write to')

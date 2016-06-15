@@ -1,3 +1,4 @@
+#!/usr/bin/python
 """
 Run the SLP algorithm on a user.
 """
@@ -12,9 +13,9 @@ import pymongo
 from mpl_toolkits.basemap import Basemap
 from pymongo import MongoClient
 
-from labelprop.distance import geometric_mean
-from labelprop.inference import InferSL
-from scripts.examples import twieds
+from twied.labelprop.distance import geometric_mean
+from twied.labelprop.inference import InferSL
+import twieds
 
 visited_users = {}
 colors = {}

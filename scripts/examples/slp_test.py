@@ -1,3 +1,4 @@
+#!/usr/bin/python
 """
 Testing the spatial label propagation algorithm.
 """
@@ -7,8 +8,8 @@ from configparser import NoOptionError
 
 import pymongo
 
-from labelprop.inference import InferSL
-from scripts.examples import twieds
+from twied.labelprop.inference import InferSL
+import twieds
 
 # Must run this as a script
 if __name__ == "__main__":

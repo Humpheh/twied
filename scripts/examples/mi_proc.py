@@ -1,3 +1,4 @@
+#!/usr/bin/python
 """
 The main Multi-Indicator process which connects to the DB and locates
 all of the tweets in the collection using the MI method.
@@ -12,10 +13,10 @@ from pymongo import MongoClient
 from twython import Twython, TwythonError
 from urllib3.exceptions import MaxRetryError
 
-from multiind.indicators.locfieldindicator import GeonamesException
-from multiind.inference import InferThread
-from multiind.interfaces.webinterfaces import GeonamesDecodeException
-from scripts.examples import twieds
+from twied.multiind.indicators.locfieldindicator import GeonamesException
+from twied.multiind.inference import InferThread
+from twied.multiind.interfaces.webinterfaces import GeonamesDecodeException
+import twieds
 
 if __name__ == "__main__":
     # setup argpase, configparse and logger
