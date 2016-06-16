@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>5. twied.labelprop — SLP Inference Method &mdash; Twicol 0.2 documentation</title>
+    <title>5. twied.labelprop — SLP Inference Method &mdash; twied 0.2 documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="Twicol 0.2 documentation" href="index.html" />
+    <link rel="top" title="twied 0.2 documentation" href="index.html" />
     <link rel="prev" title="4. twied.eventec — Event Detection" href="eventdetection.html" /> 
   </head>
   <body role="document">
@@ -40,7 +40,7 @@
         <li class="right" >
           <a href="eventdetection.html" title="4. twied.eventec — Event Detection"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Twicol 0.2 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">twied 0.2 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -209,74 +209,6 @@ Generates the network around a specific user in order to locate.</p>
 </dd></dl>
 
 </div>
-<div class="section" id="example">
-<h2>5.3. Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h2>
-<p>Below is an example of the slp method.</p>
-<div class="admonition warning">
-<p class="first admonition-title">Warning</p>
-<p class="last">This implementation is not complete and will not work outright
-without further work.</p>
-</div>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Testing the spatial label propagation algorithm.</span>
-<span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">sys</span>
-
-<span class="kn">import</span> <span class="nn">pymongo</span>
-<span class="kn">from</span> <span class="nn">configparser</span> <span class="kn">import</span> <span class="n">NoOptionError</span>
-
-<span class="kn">import</span> <span class="nn">twieds</span>
-<span class="kn">from</span> <span class="nn">labelprop.inference</span> <span class="kn">import</span> <span class="n">InferSL</span>
-
-<span class="c1"># Must run this as a script</span>
-<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
-    <span class="n">config</span> <span class="o">=</span> <span class="n">twieds</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="s2">&quot;logs/labelprop.log&quot;</span><span class="p">,</span> <span class="s2">&quot;settings/locinf.ini&quot;</span><span class="p">)</span>
-
-    <span class="c1"># Connect to the MongoDB</span>
-    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Connecting to MongoDB...&quot;</span><span class="p">)</span>
-    <span class="n">client</span> <span class="o">=</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">MongoClient</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;mongo&quot;</span><span class="p">,</span> <span class="s2">&quot;address&quot;</span><span class="p">),</span> <span class="n">config</span><span class="o">.</span><span class="n">getint</span><span class="p">(</span><span class="s2">&quot;mongo&quot;</span><span class="p">,</span> <span class="s2">&quot;port&quot;</span><span class="p">))</span>
-    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Connected to MongoDB&quot;</span><span class="p">)</span>
-
-    <span class="c1"># Select the database and collection based off config</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">db</span> <span class="o">=</span> <span class="n">client</span><span class="p">[</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;mongo&quot;</span><span class="p">,</span> <span class="s2">&quot;database&quot;</span><span class="p">)]</span>
-        <span class="n">user_col</span> <span class="o">=</span> <span class="n">db</span><span class="p">[</span><span class="s2">&quot;users&quot;</span><span class="p">]</span>
-        <span class="n">user_col</span><span class="o">.</span><span class="n">create_index</span><span class="p">([(</span><span class="s1">&#39;user.id&#39;</span><span class="p">,</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">ASCENDING</span><span class="p">)],</span> <span class="n">unique</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-        <span class="n">user_col</span><span class="o">.</span><span class="n">create_index</span><span class="p">([(</span><span class="s1">&#39;user.screen_name&#39;</span><span class="p">,</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">ASCENDING</span><span class="p">)])</span>
-    <span class="k">except</span> <span class="n">NoOptionError</span><span class="p">:</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s2">&quot;Cannot connect to MongoDB database and collection. Config incorrect?&quot;</span><span class="p">)</span>
-        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
-
-    <span class="c1"># Get the tweet collection</span>
-    <span class="n">tweet_col</span> <span class="o">=</span> <span class="n">db</span><span class="p">[</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;mongo&quot;</span><span class="p">,</span> <span class="s2">&quot;collection&quot;</span><span class="p">)]</span>
-
-    <span class="n">cursor</span> <span class="o">=</span> <span class="n">tweet_col</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s1">&#39;geo&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;$ne&#39;</span><span class="p">:</span> <span class="bp">None</span><span class="p">},</span> <span class="s1">&#39;locinf.sl.test&#39;</span><span class="p">:</span> <span class="bp">None</span><span class="p">})</span>
-    <span class="n">infersl</span> <span class="o">=</span> <span class="n">InferSL</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">user_col</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-
-    <span class="k">for</span> <span class="n">tweet</span> <span class="ow">in</span> <span class="n">cursor</span><span class="p">:</span>
-        <span class="k">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">NEXT USER&quot;</span><span class="p">,</span> <span class="n">tweet</span><span class="p">[</span><span class="s1">&#39;user&#39;</span><span class="p">][</span><span class="s1">&#39;screen_name&#39;</span><span class="p">],</span> <span class="s2">&quot;:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="nb">input</span><span class="p">(</span><span class="n">tweet</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;s&quot;</span><span class="p">:</span>
-            <span class="k">continue</span>
-
-        <span class="n">inf</span> <span class="o">=</span> <span class="n">infersl</span><span class="o">.</span><span class="n">infer</span><span class="p">(</span><span class="n">tweet</span><span class="p">[</span><span class="s1">&#39;user&#39;</span><span class="p">][</span><span class="s1">&#39;id&#39;</span><span class="p">],</span> <span class="n">test</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-
-        <span class="k">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Inferred location:&quot;</span><span class="p">,</span> <span class="n">inf</span><span class="p">)</span>
-        <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;&gt;&quot;</span><span class="p">)</span>
-
-        <span class="c1"># Store inferred loc in db</span>
-        <span class="n">db</span><span class="o">.</span><span class="n">tweets</span><span class="o">.</span><span class="n">update_one</span><span class="p">({</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="n">tweet</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">]},</span> <span class="p">{</span>
-            <span class="s1">&#39;$set&#39;</span><span class="p">:</span> <span class="p">{</span>
-                <span class="s1">&#39;locinf.sl.test&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">inf</span><span class="p">)</span>
-            <span class="p">}</span>
-        <span class="p">})</span>
-
-        <span class="k">if</span> <span class="n">inf</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
-            <span class="k">continue</span>
-</pre></div>
-</div>
-</div>
 </div>
 
 
@@ -290,7 +222,6 @@ without further work.</p>
 <li><a class="reference internal" href="#">5. <code class="docutils literal"><span class="pre">twied.labelprop</span></code> &#8212; SLP Inference Method</a><ul>
 <li><a class="reference internal" href="#geometric-mean">5.1. Geometric Mean</a></li>
 <li><a class="reference internal" href="#slp-inference">5.2. SLP Inference</a></li>
-<li><a class="reference internal" href="#example">5.3. Example</a></li>
 </ul>
 </li>
 </ul>
@@ -331,7 +262,7 @@ without further work.</p>
         <li class="right" >
           <a href="eventdetection.html" title="4. twied.eventec — Event Detection"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Twicol 0.2 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">twied 0.2 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

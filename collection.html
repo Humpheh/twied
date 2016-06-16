@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>2. twied.twicol — Twitter Collection &mdash; Twicol 0.2 documentation</title>
+    <title>2. twied.twicol — Twitter Collection &mdash; twied 0.2 documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -24,9 +24,9 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="Twicol 0.2 documentation" href="index.html" />
+    <link rel="top" title="twied 0.2 documentation" href="index.html" />
     <link rel="next" title="3. twied.multiind — Multi-Indicator Location Inference" href="locinf.html" />
-    <link rel="prev" title="1. Guide" href="installation.html" /> 
+    <link rel="prev" title="1. Guide" href="guide.html" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -42,9 +42,9 @@
           <a href="locinf.html" title="3. twied.multiind — Multi-Indicator Location Inference"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="installation.html" title="1. Guide"
+          <a href="guide.html" title="1. Guide"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Twicol 0.2 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">twied 0.2 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -232,61 +232,6 @@ the call back function is checked.</p>
 </dd></dl>
 
 </div>
-<div class="section" id="example">
-<h2>2.3. Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h2>
-<p>Below is an example file using the collection class to collect tweets which
-contain the word &#8216;Twitter&#8217;. This script saves these tweets in a MongoDB database
-in the database &#8216;test&#8217; and the collection &#8216;coltest1&#8217;. A <a class="reference internal" href="#twied.twicol.counters.CounterThread" title="twied.twicol.counters.CounterThread"><code class="xref py py-class docutils literal"><span class="pre">CounterThread</span></code></a> is also
-created which ouputs the number of tweets collected in the previous 5 seconds.</p>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">The API settings here have been altered so they are not valid. These would
-need to be created for your own app from the <a class="reference external" href="https://apps.twitter.com/">Twitter API</a>.</p>
-</div>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">time</span>
-
-<span class="kn">from</span> <span class="nn">twied.twicol</span> <span class="kn">import</span> <span class="n">TweetStreamer</span><span class="p">,</span> <span class="n">CounterThread</span>
-<span class="kn">from</span> <span class="nn">pymongo</span> <span class="kn">import</span> <span class="n">MongoClient</span>
-
-<span class="c1"># Save the Twitter API settings</span>
-<span class="n">api_settings</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">&#39;app_key&#39;</span><span class="p">:</span> <span class="s1">&#39;wYHFS6G9fqVNxYwt53UNUcxT0&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;app_secret&#39;</span><span class="p">:</span> <span class="s1">&#39;MU3r4yi2HGDrAbBma2syPpOvFOcWFxaUIiKmeySX8Ard80lr53&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;oauth_token&#39;</span><span class="p">:</span> <span class="s1">&#39;3950426785-SNgK3NmghSzdjLcJGRTAwQq3xyMait0bVQ6HVvV&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;oauth_token_secret&#39;</span><span class="p">:</span> <span class="s1">&#39;x0FASasjEHqsSvLAZ3h6sqClPWtt54TcM78W8PLOJ1BLv&#39;</span><span class="p">,</span>
-<span class="p">}</span>
-
-<span class="n">search_str</span> <span class="o">=</span> <span class="s2">&quot;twitter&quot;</span>
-
-<span class="c1"># Connect to the MongoDB and the correct collection</span>
-<span class="n">client</span> <span class="o">=</span> <span class="n">MongoClient</span><span class="p">()</span>
-<span class="n">collection</span> <span class="o">=</span> <span class="n">client</span><span class="p">[</span><span class="s1">&#39;test&#39;</span><span class="p">][</span><span class="s1">&#39;coltest1&#39;</span><span class="p">]</span>
-
-<span class="c1"># Setup the counter thread to output status count ever 5 secs</span>
-<span class="n">counter</span> <span class="o">=</span> <span class="n">CounterThread</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">count</span><span class="p">:</span> <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Recieved </span><span class="si">%i</span><span class="s2"> tweets in last 5 seconds&quot;</span> <span class="o">%</span> <span class="n">count</span><span class="p">))</span>
-
-<span class="c1"># Setup the tweet streamer to listen to tweets with &#39;twitter&#39; in them</span>
-<span class="n">ts</span> <span class="o">=</span> <span class="n">TweetStreamer</span><span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">,</span> <span class="n">search_str</span><span class="p">,</span> <span class="n">db</span><span class="o">=</span><span class="n">collection</span><span class="p">,</span> <span class="n">callbacks</span><span class="o">=</span><span class="n">counter</span><span class="p">,</span> <span class="o">**</span><span class="n">api_settings</span><span class="p">)</span>
-
-<span class="c1"># Start the threads</span>
-<span class="n">ts</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
-<span class="n">counter</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
-
-<span class="k">try</span><span class="p">:</span>
-    <span class="c1"># Wait</span>
-    <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
-        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>
-<span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Exception caught...&quot;</span><span class="p">)</span>
-    <span class="k">pass</span>
-<span class="k">finally</span><span class="p">:</span>
-    <span class="c1"># If excepted, close all threads</span>
-    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Stopping collection.&quot;</span><span class="p">)</span>
-    <span class="n">counter</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
-    <span class="n">ts</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
 </div>
 
 
@@ -300,13 +245,12 @@ need to be created for your own app from the <a class="reference external" href=
 <li><a class="reference internal" href="#">2. <code class="docutils literal"><span class="pre">twied.twicol</span></code> &#8212; Twitter Collection</a><ul>
 <li><a class="reference internal" href="#module-twied.twicol.collection">2.1. Collection</a></li>
 <li><a class="reference internal" href="#module-twied.twicol.counters">2.2. Counter</a></li>
-<li><a class="reference internal" href="#example">2.3. Example</a></li>
 </ul>
 </li>
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="installation.html"
+  <p class="topless"><a href="guide.html"
                         title="previous chapter">1. Guide</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="locinf.html"
@@ -345,9 +289,9 @@ need to be created for your own app from the <a class="reference external" href=
           <a href="locinf.html" title="3. twied.multiind — Multi-Indicator Location Inference"
              >next</a> |</li>
         <li class="right" >
-          <a href="installation.html" title="1. Guide"
+          <a href="guide.html" title="1. Guide"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Twicol 0.2 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">twied 0.2 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
