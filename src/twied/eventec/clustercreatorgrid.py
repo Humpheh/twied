@@ -44,7 +44,7 @@ class GeoGrid:
 
         .. note:: this function does not round the values of the coordinates.
         """
-        return "%.1d,%.1d" % (coord[0], coord[1])
+        return "%.1d,%.1d" % (round(coord[0]), round(coord[1]))
 
     def add_tweet(self, tweet):
         """
@@ -56,10 +56,8 @@ class GeoGrid:
         :type tweet: dict
         """
         coord = tweet['_coord']
-
-        for x in self.tests:
-            newc = self.get_str([(coord[0] - x[0]), (coord[1] - x[1])])
-            self.areas[newc].append(tweet)
+        newc = self.get_str(coord)
+        self.areas[newc].append(tweet)
 
     def remove_tweet(self, tweet):
         """
@@ -72,13 +70,8 @@ class GeoGrid:
             added using the :func:`add_tweet` method.
         """
         coord = tweet['_coord']
-
-        for x in self.tests:
-            newc = self.get_str([(coord[0] - x[0]), (coord[1] - x[1])])
-            try:
-                self.areas[newc].remove(tweet)
-            except (KeyError, ValueError):
-                pass
+        newc = self.get_str(coord)
+        self.areas[newc].remove(tweet)
 
     def get_surrounding(self, tweet):
         """
@@ -91,10 +84,14 @@ class GeoGrid:
         :return: Surrounding tweet dictionaries.
         :rtype: list, dict
         """
-        try:
-            return self.areas[self.get_str(tweet['_coord'])]
-        except KeyError:
-            return []
+        coord = tweet['_coord']
+
+        out = []
+        for x in self.tests:
+            a = self.get_str([(coord[0] - x[0]), (coord[1] - x[1])])
+            out.append(self.areas[a])
+
+        return out
 
 
 class ClusterCreatorGrid:
@@ -147,17 +144,18 @@ class ClusterCreatorGrid:
         # Keep a list of tweets that could be part of a new cluster
         candidates = [tweet]
 
-        for t in searchspace:
-            # Check if tweets were within time and radius
-            dist = vincenty(tweet['_coord'].rev(), t['_coord'].rev()).km
-            time = abs(tweet[self.clsman.tsfield] - t[self.clsman.tsfield])
+        for a in searchspace:
+            for t in a:
+                # Check if tweets were within time and radius
+                dist = vincenty(tweet['_coord'].rev(), t['_coord'].rev()).km
+                time = abs(tweet[self.clsman.tsfield] - t[self.clsman.tsfield])
 
-            if dist < self.clsman.radius and time < self.clsman.timediff:
-                # Tweet is within radius and time
-                candidates.append(t)
-            elif time > self.clsman.timediff:
-                # Tweet is older than the max age so remove from unclustered
-                toremove.append(t)
+                if dist < self.clsman.radius and time < self.clsman.timediff:
+                    # Tweet is within radius and time
+                    candidates.append(t)
+                elif time > self.clsman.timediff:
+                    # Tweet is older than the max age so remove from unclustered
+                    toremove.append(t)
 
         # Remove old tweets
         for x in toremove:
@@ -167,7 +165,8 @@ class ClusterCreatorGrid:
         if len(candidates) >= tweet['_popreq']:
             # Remove candidates from unclustered
             for x in candidates:
-                self.grid.remove_tweet(x)
+                if x != tweet:
+                    self.grid.remove_tweet(x)
 
             # Create new cluster
             self.clsman.add_cluster(candidates, tweet)
