@@ -64,7 +64,8 @@ class ClusterCreator:
         if len(candidates) >= tweet['_popreq']:
             # Remove candidates from unclustered
             for x in candidates:
-                self.unclustered.remove(x)
+                if x != tweet:
+                    self.unclustered.remove(x)
 
             # Create new cluster
             self.clsman.add_cluster(candidates, tweet)

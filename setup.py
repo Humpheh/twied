@@ -2,7 +2,7 @@ from distutils.core import setup
 
 setup(
     name="twied",
-    version="0.2.3",
+    version="0.2.4",
     description="Twitter event detection toolkit.",
     author="Humphrey Shotton",
     author_email="me@humpheh.com",
