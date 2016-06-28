@@ -335,3 +335,51 @@ created which ouputs the number of tweets collected in the previous 5 seconds.
         print("Stopping collection.")
         counter.stop()
         ts.stop()
+
+Event Detection Example
+-----------------------
+
+The event detection is an object which you should setup and then feed tweets in ascending time
+order via a method. Below is a basic example which shows connecting to the database, creating
+an :class:`twied.eventec.eventdetection.EventDetection` object, and then feeding the tweets in. The
+final step is getting the clusters from the object and saving them in a file. For more information about
+how the EventDetection operates or the class parameters see the class documentation.
+
+.. code-block:: python
+
+    import logging
+    import pickle
+
+    from pymongo import MongoClient
+    from twied.eventec.eventdetection import EventDetection
+
+    output_filename = "output.pkl"
+
+    # Connect to the MongoDB
+    client = MongoClient()
+
+    # Select the database and collection
+    db = client["twitter"]
+    col = db["ptweets"]
+
+    # Get the tweet cursor (sorted by timestamp - note slow if there is no index)
+    cursor = col.find(no_cursor_timeout=True).sort('timestamp', 1)
+
+    # Create the EventDetection object with the parameters
+    tf = EventDetection('centre', 'timestamp', popmaploc='D:\ds\population\glds15ag.asc')
+
+    # Process each tweet that has been found
+    for doc in cursor:
+        tf.process_tweet(doc)
+
+    # Get the clusters and save them
+    allc = tf.get_all_clusters()
+    carr = [c.as_dict() for c in allc]
+
+    # Dump the output to a pickle file to save it
+    pkl_file = open(output_filename, 'wb')
+    pickle.dump(carr, pkl_file)
+    pkl_file.close()
+
+    cursor.close()
+
