@@ -31,6 +31,16 @@ be cloned using:
 
 Example usage scripts can be seen in the *GitHub* repository under the directory `/scripts/examples`.
 
+
+Example System
+--------------
+
+Below is an image which shows the layout of components within a system. This system was originally
+designed for use in the authors dissertation.
+
+.. image:: /projectsystem.png
+
+
 SLP Example
 -----------
 

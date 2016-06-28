@@ -75,8 +75,14 @@ be cloned using:</p>
 <p><strong>Example Scripts:</strong></p>
 <p>Example usage scripts can be seen in the <em>GitHub</em> repository under the directory <cite>/scripts/examples</cite>.</p>
 </div>
+<div class="section" id="example-system">
+<h2>1.2. Example System<a class="headerlink" href="#example-system" title="Permalink to this headline">¶</a></h2>
+<p>Below is an image which shows the layout of components within a system. This system was originally
+designed for use in the authors dissertation.</p>
+<img alt="_images/projectsystem.png" src="_images/projectsystem.png" />
+</div>
 <div class="section" id="slp-example">
-<h2>1.2. SLP Example<a class="headerlink" href="#slp-example" title="Permalink to this headline">¶</a></h2>
+<h2>1.3. SLP Example<a class="headerlink" href="#slp-example" title="Permalink to this headline">¶</a></h2>
 <p>Below is an example of the slp method.</p>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
@@ -144,9 +150,9 @@ without further work.</p>
 </div>
 </div>
 <div class="section" id="mi-example">
-<h2>1.3. MI Example<a class="headerlink" href="#mi-example" title="Permalink to this headline">¶</a></h2>
+<h2>1.4. MI Example<a class="headerlink" href="#mi-example" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="configuration">
-<h3>1.3.1. Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h3>
+<h3>1.4.1. Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h3>
 <p>Below is a basic breakdown of how setting up for using the MI implementation would work:</p>
 <blockquote>
 <div><ol class="arabic simple">
@@ -271,7 +277,7 @@ files can be downloaded here: <a class="reference external" href="https://drive.
 </dl>
 </div>
 <div class="section" id="example-script">
-<h3>1.3.2. Example Script<a class="headerlink" href="#example-script" title="Permalink to this headline">¶</a></h3>
+<h3>1.4.2. Example Script<a class="headerlink" href="#example-script" title="Permalink to this headline">¶</a></h3>
 <p>Below shows an example script for running the Multi-Indicator inference process. The file loads a configuration file,
 connects to the MongoDB and then infers the tweets within that collection. Exceptions are also handled and delays are
 created if there are problems. The script will also tweet to the authenticated Twitter account every 5000 tweets.</p>
@@ -348,7 +354,7 @@ created if there are problems. The script will also tweet to the authenticated T
 </div>
 </div>
 <div class="section" id="collection-example">
-<h2>1.4. Collection Example<a class="headerlink" href="#collection-example" title="Permalink to this headline">¶</a></h2>
+<h2>1.5. Collection Example<a class="headerlink" href="#collection-example" title="Permalink to this headline">¶</a></h2>
 <p>Below is an example file using the collection class to collect tweets which
 contain the word &#8216;Twitter&#8217;. This script saves these tweets in a MongoDB database
 in the database &#8216;test&#8217; and the collection &#8216;coltest1&#8217;. A <code class="xref py py-class docutils literal"><span class="pre">CounterThread</span></code> is also
@@ -403,7 +409,7 @@ need to be created for your own app from the <a class="reference external" href=
 </div>
 </div>
 <div class="section" id="event-detection-example">
-<h2>1.5. Event Detection Example<a class="headerlink" href="#event-detection-example" title="Permalink to this headline">¶</a></h2>
+<h2>1.6. Event Detection Example<a class="headerlink" href="#event-detection-example" title="Permalink to this headline">¶</a></h2>
 <p>The event detection is an object which you should setup and then feed tweets in ascending time
 order via a method. Below is a basic example which shows connecting to the database, creating
 an <a class="reference internal" href="eventdetection.html#twied.eventec.eventdetection.EventDetection" title="twied.eventec.eventdetection.EventDetection"><code class="xref py py-class docutils literal"><span class="pre">twied.eventec.eventdetection.EventDetection</span></code></a> object, and then feeding the tweets in. The
@@ -459,14 +465,15 @@ how the EventDetection operates or the class parameters see the class documentat
   <ul>
 <li><a class="reference internal" href="#">1. Guide</a><ul>
 <li><a class="reference internal" href="#installation">1.1. Installation</a></li>
-<li><a class="reference internal" href="#slp-example">1.2. SLP Example</a></li>
-<li><a class="reference internal" href="#mi-example">1.3. MI Example</a><ul>
-<li><a class="reference internal" href="#configuration">1.3.1. Configuration</a></li>
-<li><a class="reference internal" href="#example-script">1.3.2. Example Script</a></li>
+<li><a class="reference internal" href="#example-system">1.2. Example System</a></li>
+<li><a class="reference internal" href="#slp-example">1.3. SLP Example</a></li>
+<li><a class="reference internal" href="#mi-example">1.4. MI Example</a><ul>
+<li><a class="reference internal" href="#configuration">1.4.1. Configuration</a></li>
+<li><a class="reference internal" href="#example-script">1.4.2. Example Script</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#collection-example">1.4. Collection Example</a></li>
-<li><a class="reference internal" href="#event-detection-example">1.5. Event Detection Example</a></li>
+<li><a class="reference internal" href="#collection-example">1.5. Collection Example</a></li>
+<li><a class="reference internal" href="#event-detection-example">1.6. Event Detection Example</a></li>
 </ul>
 </li>
 </ul>
