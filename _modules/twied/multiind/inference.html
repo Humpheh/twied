@@ -48,7 +48,7 @@
           <div class="body" role="main">
             
   <h1>Source code for twied.multiind.inference</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">datetime</span>
 <span class="kn">import</span> <span class="nn">time</span>
 
@@ -71,9 +71,9 @@
     <span class="n">LocField</span> <span class="o">=</span> <span class="mi">3</span>
     <span class="n">Coordinate</span> <span class="o">=</span> <span class="mi">4</span>
     <span class="n">Website</span> <span class="o">=</span> <span class="mi">5</span>
-    <span class="n">Geotag</span> <span class="o">=</span> <span class="mi">6</span></div>
+    <span class="n">Geotag</span> <span class="o">=</span> <span class="mi">6</span>
 
-
+</div>
 <div class="viewcode-block" id="InferThread"><a class="viewcode-back" href="../../../locinf.html#twied.multiind.inference.InferThread">[docs]</a><span class="k">class</span> <span class="nc">InferThread</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This class manages the inference of users by creating and managing multiple threads</span>
@@ -103,7 +103,7 @@
 <span class="sd">        data.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dbcol</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">inf_id</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">proc_id</span><span class="o">=</span><span class="s2">&quot;default&quot;</span><span class="p">,</span> <span class="n">test</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">tweetfunc</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">tweetint</span><span class="o">=</span><span class="mi">1000</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dbcol</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">inf_id</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">proc_id</span><span class="o">=</span><span class="s">&quot;default&quot;</span><span class="p">,</span> <span class="n">test</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">tweetfunc</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">tweetint</span><span class="o">=</span><span class="mi">1000</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialise the MI location inference.</span>
 
@@ -119,8 +119,8 @@
 <span class="sd">            tweets which passes a string of the current inference status.</span>
 <span class="sd">        :param tweetint: The number of tweets before each call of the `tweetfunc`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># Setup the indicators</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Setting up indicators...&quot;</span><span class="p">)</span>
+        <span class="c"># Setup the indicators</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Setting up indicators...&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">inds</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">inds</span><span class="p">[</span><span class="n">Indicators</span><span class="o">.</span><span class="n">Message</span><span class="p">]</span> <span class="o">=</span> <span class="n">indicators</span><span class="o">.</span><span class="n">MessageIndicator</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
@@ -130,12 +130,12 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">inds</span><span class="p">[</span><span class="n">Indicators</span><span class="o">.</span><span class="n">Coordinate</span><span class="p">]</span> <span class="o">=</span> <span class="n">indicators</span><span class="o">.</span><span class="n">CoordinateIndicator</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">inds</span><span class="p">[</span><span class="n">Indicators</span><span class="o">.</span><span class="n">Website</span><span class="p">]</span> <span class="o">=</span> <span class="n">indicators</span><span class="o">.</span><span class="n">WebsiteIndicator</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
 
-        <span class="c1"># If testing, dont use geotag inference</span>
+        <span class="c"># If testing, dont use geotag inference</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">test</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">inds</span><span class="p">[</span><span class="n">Indicators</span><span class="o">.</span><span class="n">Geotag</span><span class="p">]</span> <span class="o">=</span> <span class="n">indicators</span><span class="o">.</span><span class="n">GeotagIndicator</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Setup indicators.&quot;</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Setup indicators.&quot;</span><span class="p">)</span>
 
-        <span class="c1"># Store variables</span>
+        <span class="c"># Store variables</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">test</span> <span class="o">=</span> <span class="n">test</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">config</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dbcol</span> <span class="o">=</span> <span class="n">dbcol</span>
@@ -144,11 +144,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">tweetint</span> <span class="o">=</span> <span class="n">tweetint</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tweetfunc</span> <span class="o">=</span> <span class="n">tweetfunc</span>
 
-        <span class="c1"># Setup the workers</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">worker_count</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">getint</span><span class="p">(</span><span class="s2">&quot;multiindicator&quot;</span><span class="p">,</span> <span class="s2">&quot;workers&quot;</span><span class="p">)</span>
+        <span class="c"># Setup the workers</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">worker_count</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">getint</span><span class="p">(</span><span class="s">&quot;multiindicator&quot;</span><span class="p">,</span> <span class="s">&quot;workers&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">workers</span> <span class="o">=</span> <span class="n">ThreadPool</span><span class="p">(</span><span class="n">processes</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">worker_count</span><span class="p">)</span>
 
-<div class="viewcode-block" id="InferThread.infer"><a class="viewcode-back" href="../../../locinf.html#twied.multiind.inference.InferThread.infer">[docs]</a>    <span class="k">def</span> <span class="nf">infer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">field</span><span class="o">=</span><span class="s1">&#39;locinf.mi&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="InferThread.infer"><a class="viewcode-back" href="../../../locinf.html#twied.multiind.inference.InferThread.infer">[docs]</a>    <span class="k">def</span> <span class="nf">infer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">field</span><span class="o">=</span><span class="s">&#39;locinf.mi&#39;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Starts the location inference task.</span>
 
@@ -160,7 +160,7 @@
         <span class="n">counter</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="n">waiting</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
-            <span class="c1"># Get the tweet cursor</span>
+            <span class="c"># Get the tweet cursor</span>
             <span class="n">cursor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dbcol</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
 
             <span class="k">try</span><span class="p">:</span>
@@ -171,43 +171,43 @@
                                 <span class="n">result</span><span class="p">,</span> <span class="n">li</span><span class="p">,</span> <span class="n">lp</span><span class="p">,</span> <span class="n">maxval</span><span class="p">,</span> <span class="n">tweet</span> <span class="o">=</span> <span class="n">i</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mf">0.02</span><span class="p">)</span>
                                 <span class="n">waiting</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
 
-                                <span class="c1"># Process the data</span>
+                                <span class="c"># Process the data</span>
                                 <span class="n">pointarr</span> <span class="o">=</span> <span class="p">[]</span>
                                 <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
                                     <span class="n">pointarr</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
 
-                                <span class="c1"># Store the polygon in the database</span>
-                                <span class="bp">self</span><span class="o">.</span><span class="n">dbcol</span><span class="o">.</span><span class="n">update_one</span><span class="p">({</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="n">tweet</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">]},</span> <span class="p">{</span>
-                                    <span class="s1">&#39;$set&#39;</span><span class="p">:</span> <span class="p">{</span>
-                                        <span class="n">field</span> <span class="o">+</span> <span class="s1">&#39;.poly&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">pointarr</span><span class="p">),</span>
-                                        <span class="n">field</span> <span class="o">+</span> <span class="s1">&#39;.weight&#39;</span><span class="p">:</span> <span class="n">maxval</span><span class="p">,</span>
-                                        <span class="n">field</span> <span class="o">+</span> <span class="s1">&#39;.id&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">inf_id</span><span class="p">,</span>
-                                        <span class="n">field</span> <span class="o">+</span> <span class="s1">&#39;.pid&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">proc_id</span><span class="p">,</span>
-                                        <span class="n">field</span> <span class="o">+</span> <span class="s1">&#39;.len.inds&#39;</span><span class="p">:</span> <span class="n">li</span><span class="p">,</span>
-                                        <span class="n">field</span> <span class="o">+</span> <span class="s1">&#39;.len.polys&#39;</span><span class="p">:</span> <span class="n">lp</span><span class="p">,</span>
-                                        <span class="n">field</span> <span class="o">+</span> <span class="s1">&#39;.date&#39;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span>
+                                <span class="c"># Store the polygon in the database</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">dbcol</span><span class="o">.</span><span class="n">update_one</span><span class="p">({</span><span class="s">&#39;_id&#39;</span><span class="p">:</span> <span class="n">tweet</span><span class="p">[</span><span class="s">&#39;_id&#39;</span><span class="p">]},</span> <span class="p">{</span>
+                                    <span class="s">&#39;$set&#39;</span><span class="p">:</span> <span class="p">{</span>
+                                        <span class="n">field</span> <span class="o">+</span> <span class="s">&#39;.poly&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">pointarr</span><span class="p">),</span>
+                                        <span class="n">field</span> <span class="o">+</span> <span class="s">&#39;.weight&#39;</span><span class="p">:</span> <span class="n">maxval</span><span class="p">,</span>
+                                        <span class="n">field</span> <span class="o">+</span> <span class="s">&#39;.id&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">inf_id</span><span class="p">,</span>
+                                        <span class="n">field</span> <span class="o">+</span> <span class="s">&#39;.pid&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">proc_id</span><span class="p">,</span>
+                                        <span class="n">field</span> <span class="o">+</span> <span class="s">&#39;.len.inds&#39;</span><span class="p">:</span> <span class="n">li</span><span class="p">,</span>
+                                        <span class="n">field</span> <span class="o">+</span> <span class="s">&#39;.len.polys&#39;</span><span class="p">:</span> <span class="n">lp</span><span class="p">,</span>
+                                        <span class="n">field</span> <span class="o">+</span> <span class="s">&#39;.date&#39;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span>
                                     <span class="p">}</span>
                                 <span class="p">})</span>
                                 <span class="n">counter</span> <span class="o">+=</span> <span class="mi">1</span>
-                                <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;=== Tweets processed: </span><span class="si">%5i</span><span class="s2"> ===&quot;</span> <span class="o">%</span> <span class="n">counter</span><span class="p">)</span>
+                                <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;=== Tweets processed: </span><span class="si">%5i</span><span class="s"> ===&quot;</span> <span class="o">%</span> <span class="n">counter</span><span class="p">)</span>
 
                                 <span class="k">if</span> <span class="n">counter</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">tweetint</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">tweetfunc</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
-                                    <span class="n">tstr</span> <span class="o">=</span> <span class="s2">&quot;Infer process </span><span class="si">%s</span><span class="s2"> (</span><span class="si">%s</span><span class="s2">)</span><span class="se">\n</span><span class="si">%i</span><span class="s2"> processed.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inf_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">proc_id</span><span class="p">,</span> <span class="n">counter</span><span class="p">)</span>
+                                    <span class="n">tstr</span> <span class="o">=</span> <span class="s">&quot;Infer process </span><span class="si">%s</span><span class="s"> (</span><span class="si">%s</span><span class="s">)</span><span class="se">\n</span><span class="si">%i</span><span class="s"> processed.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inf_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">proc_id</span><span class="p">,</span> <span class="n">counter</span><span class="p">)</span>
                                     <span class="bp">self</span><span class="o">.</span><span class="n">tweetfunc</span><span class="p">(</span><span class="n">tstr</span><span class="p">)</span>
 
                             <span class="k">except</span> <span class="n">TimeoutError</span><span class="p">:</span>
                                 <span class="k">pass</span>
                         <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
 
-                    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Adding new process...&quot;</span><span class="p">)</span>
+                    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Adding new process...&quot;</span><span class="p">)</span>
                     <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">workers</span><span class="o">.</span><span class="n">apply_async</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">process_tweet</span><span class="p">,</span> <span class="p">(</span><span class="n">doc</span><span class="p">,))</span>
 
                     <span class="n">waiting</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
                 <span class="k">break</span>
             <span class="k">except</span> <span class="n">CursorNotFound</span><span class="p">:</span>
-                <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Cursor not found, retrying...&quot;</span><span class="p">)</span>
-                <span class="k">continue</span></div>
-
+                <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Cursor not found, retrying...&quot;</span><span class="p">)</span>
+                <span class="k">continue</span>
+</div>
 <div class="viewcode-block" id="InferThread.add_ind"><a class="viewcode-back" href="../../../locinf.html#twied.multiind.inference.InferThread.add_ind">[docs]</a>    <span class="k">def</span> <span class="nf">add_ind</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Processes a task. The task takes a tuple of a Indicator and a field. This</span>
@@ -219,16 +219,16 @@
         <span class="n">ind</span> <span class="o">=</span> <span class="n">task</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">field</span> <span class="o">=</span> <span class="n">task</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
 
-        <span class="n">f_field</span> <span class="o">=</span> <span class="n">field</span><span class="p">[:</span><span class="mi">50</span><span class="p">]</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf8&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="n">field</span>
+        <span class="n">f_field</span> <span class="o">=</span> <span class="n">field</span><span class="p">[:</span><span class="mi">50</span><span class="p">]</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">&#39;utf8&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="n">field</span>
 
         <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">clock</span><span class="p">()</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%10s</span><span class="s2"> &lt;- Value: </span><span class="si">%-50s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">ind</span><span class="p">)</span><span class="o">.</span><span class="n">__name__</span><span class="p">[:</span><span class="o">-</span><span class="mi">9</span><span class="p">],</span> <span class="n">f_field</span><span class="p">))</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%10s</span><span class="s"> &lt;- Value: </span><span class="si">%-50s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">ind</span><span class="p">)</span><span class="o">.</span><span class="n">__name__</span><span class="p">[:</span><span class="o">-</span><span class="mi">9</span><span class="p">],</span> <span class="n">f_field</span><span class="p">))</span>
         <span class="n">result</span> <span class="o">=</span> <span class="n">ind</span><span class="o">.</span><span class="n">get_loc</span><span class="p">(</span><span class="n">field</span><span class="p">)</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%10s</span><span class="s2"> -&gt; Took </span><span class="si">%.2f</span><span class="s2"> seconds. (</span><span class="si">%i</span><span class="s2"> polys)&quot;</span> <span class="o">%</span> <span class="p">(</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%10s</span><span class="s"> -&gt; Took </span><span class="si">%.2f</span><span class="s"> seconds. (</span><span class="si">%i</span><span class="s"> polys)&quot;</span> <span class="o">%</span> <span class="p">(</span>
             <span class="nb">type</span><span class="p">(</span><span class="n">ind</span><span class="p">)</span><span class="o">.</span><span class="n">__name__</span><span class="p">[:</span><span class="o">-</span><span class="mi">9</span><span class="p">],</span> <span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">clock</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">))</span>
         <span class="p">)</span>
-        <span class="k">return</span> <span class="n">result</span></div>
-
+        <span class="k">return</span> <span class="n">result</span>
+</div>
 <div class="viewcode-block" id="InferThread.process_tweet"><a class="viewcode-back" href="../../../locinf.html#twied.multiind.inference.InferThread.process_tweet">[docs]</a>    <span class="k">def</span> <span class="nf">process_tweet</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">twt</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Process a single tweet.</span>
@@ -238,29 +238,29 @@
 <span class="sd">            the number of polygons returned, the maximum &#39;height&#39; of the stacked polygons,</span>
 <span class="sd">            and the tweet object.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">: Starting inference...&quot;</span><span class="p">,</span> <span class="n">twt</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">])</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%s</span><span class="s">: Starting inference...&quot;</span><span class="p">,</span> <span class="n">twt</span><span class="p">[</span><span class="s">&#39;_id&#39;</span><span class="p">])</span>
 
         <span class="n">app_inds</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inds</span><span class="p">[</span><span class="n">Indicators</span><span class="o">.</span><span class="n">Message</span><span class="p">],</span> <span class="n">twt</span><span class="p">[</span><span class="s1">&#39;text&#39;</span><span class="p">]),</span>
-            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inds</span><span class="p">[</span><span class="n">Indicators</span><span class="o">.</span><span class="n">LocField</span><span class="p">],</span> <span class="n">twt</span><span class="p">[</span><span class="s1">&#39;user&#39;</span><span class="p">][</span><span class="s1">&#39;location&#39;</span><span class="p">]),</span>
-            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inds</span><span class="p">[</span><span class="n">Indicators</span><span class="o">.</span><span class="n">Website</span><span class="p">],</span> <span class="n">twt</span><span class="p">[</span><span class="s1">&#39;user&#39;</span><span class="p">][</span><span class="s1">&#39;url&#39;</span><span class="p">]),</span>
-            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inds</span><span class="p">[</span><span class="n">Indicators</span><span class="o">.</span><span class="n">Coordinate</span><span class="p">],</span> <span class="n">twt</span><span class="p">[</span><span class="s1">&#39;user&#39;</span><span class="p">][</span><span class="s1">&#39;location&#39;</span><span class="p">]),</span>
-            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inds</span><span class="p">[</span><span class="n">Indicators</span><span class="o">.</span><span class="n">TZ</span><span class="p">],</span> <span class="n">twt</span><span class="p">[</span><span class="s1">&#39;user&#39;</span><span class="p">][</span><span class="s1">&#39;time_zone&#39;</span><span class="p">]),</span>
-            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inds</span><span class="p">[</span><span class="n">Indicators</span><span class="o">.</span><span class="n">TZOffset</span><span class="p">],</span> <span class="n">twt</span><span class="p">[</span><span class="s1">&#39;user&#39;</span><span class="p">][</span><span class="s1">&#39;utc_offset&#39;</span><span class="p">]),</span>
+            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inds</span><span class="p">[</span><span class="n">Indicators</span><span class="o">.</span><span class="n">Message</span><span class="p">],</span> <span class="n">twt</span><span class="p">[</span><span class="s">&#39;text&#39;</span><span class="p">]),</span>
+            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inds</span><span class="p">[</span><span class="n">Indicators</span><span class="o">.</span><span class="n">LocField</span><span class="p">],</span> <span class="n">twt</span><span class="p">[</span><span class="s">&#39;user&#39;</span><span class="p">][</span><span class="s">&#39;location&#39;</span><span class="p">]),</span>
+            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inds</span><span class="p">[</span><span class="n">Indicators</span><span class="o">.</span><span class="n">Website</span><span class="p">],</span> <span class="n">twt</span><span class="p">[</span><span class="s">&#39;user&#39;</span><span class="p">][</span><span class="s">&#39;url&#39;</span><span class="p">]),</span>
+            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inds</span><span class="p">[</span><span class="n">Indicators</span><span class="o">.</span><span class="n">Coordinate</span><span class="p">],</span> <span class="n">twt</span><span class="p">[</span><span class="s">&#39;user&#39;</span><span class="p">][</span><span class="s">&#39;location&#39;</span><span class="p">]),</span>
+            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inds</span><span class="p">[</span><span class="n">Indicators</span><span class="o">.</span><span class="n">TZ</span><span class="p">],</span> <span class="n">twt</span><span class="p">[</span><span class="s">&#39;user&#39;</span><span class="p">][</span><span class="s">&#39;time_zone&#39;</span><span class="p">]),</span>
+            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inds</span><span class="p">[</span><span class="n">Indicators</span><span class="o">.</span><span class="n">TZOffset</span><span class="p">],</span> <span class="n">twt</span><span class="p">[</span><span class="s">&#39;user&#39;</span><span class="p">][</span><span class="s">&#39;utc_offset&#39;</span><span class="p">]),</span>
         <span class="p">]</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">test</span><span class="p">:</span>
-            <span class="n">app_inds</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">inds</span><span class="p">[</span><span class="n">Indicators</span><span class="o">.</span><span class="n">Geotag</span><span class="p">],</span> <span class="n">twt</span><span class="p">[</span><span class="s1">&#39;geo&#39;</span><span class="p">]))</span>
+            <span class="n">app_inds</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">inds</span><span class="p">[</span><span class="n">Indicators</span><span class="o">.</span><span class="n">Geotag</span><span class="p">],</span> <span class="n">twt</span><span class="p">[</span><span class="s">&#39;geo&#39;</span><span class="p">]))</span>
 
         <span class="n">pool</span> <span class="o">=</span> <span class="n">ThreadPool</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span>
         <span class="n">polys</span> <span class="o">=</span> <span class="n">pool</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">add_ind</span><span class="p">,</span> <span class="n">app_inds</span><span class="p">)</span>
 
-        <span class="c1"># count inds and polys</span>
+        <span class="c"># count inds and polys</span>
         <span class="n">leninds</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([</span><span class="n">p</span> <span class="o">!=</span> <span class="p">[]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">polys</span><span class="p">])</span>
         <span class="n">lenpolys</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">polys</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">polys</span><span class="p">])</span>
 
-        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">: Intersecting polygons for tweet...&quot;</span><span class="p">,</span> <span class="n">twt</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">])</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%s</span><span class="s">: Intersecting polygons for tweet...&quot;</span><span class="p">,</span> <span class="n">twt</span><span class="p">[</span><span class="s">&#39;_id&#39;</span><span class="p">])</span>
         <span class="n">new_polys</span><span class="p">,</span> <span class="n">max_val</span> <span class="o">=</span> <span class="n">polystacker</span><span class="o">.</span><span class="n">infer_location</span><span class="p">(</span><span class="n">polys</span><span class="p">)</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">: Polygon intersection complete.&quot;</span><span class="p">,</span> <span class="n">twt</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">])</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%s</span><span class="s">: Polygon intersection complete.&quot;</span><span class="p">,</span> <span class="n">twt</span><span class="p">[</span><span class="s">&#39;_id&#39;</span><span class="p">])</span>
 
         <span class="n">pool</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
         <span class="n">pool</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
@@ -276,11 +276,14 @@
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="../../../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -302,7 +305,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016, Humphrey Shotton.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.2.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
     </div>
   </body>
 </html>

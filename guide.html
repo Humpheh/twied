@@ -63,13 +63,13 @@ include all of these modules, however they may need to be retrieved seperately.<
 <p>Required modules and supported versions can be seen here: <a class="reference external" href="https://github.com/Humpheh/twied/blob/master/requirements.txt">https://github.com/Humpheh/twied/blob/master/requirements.txt</a>.</p>
 <p><strong>Pip Installation:</strong></p>
 <p><cite>twied</cite> can be installed via pip:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>pip install git+https://github.com/Humpheh/twied.git
+<div class="highlight-bash"><div class="highlight"><pre>pip install git+https://github.com/Humpheh/twied.git
 </pre></div>
 </div>
 <p><strong>Source Code:</strong></p>
 <p>The source code for <cite>twied</cite> can be retrieved from <em>GitHub</em> <a class="reference external" href="https://github.com/Humpheh/twied">https://github.com/Humpheh/twied</a>. This can
 be cloned using:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>git clone https://github.com/Humpheh/twied.git
+<div class="highlight-bash"><div class="highlight"><pre>git clone https://github.com/Humpheh/twied.git
 </pre></div>
 </div>
 <p><strong>Example Scripts:</strong></p>
@@ -83,7 +83,7 @@ be cloned using:</p>
 <p class="last">This implementation is not complete and will not work outright
 without further work.</p>
 </div>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Testing the spatial label propagation algorithm.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">logging</span>
@@ -95,46 +95,46 @@ without further work.</p>
 <span class="kn">import</span> <span class="nn">twieds</span>
 <span class="kn">from</span> <span class="nn">labelprop.inference</span> <span class="kn">import</span> <span class="n">InferSL</span>
 
-<span class="c1"># Must run this as a script</span>
-<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
-    <span class="n">config</span> <span class="o">=</span> <span class="n">twieds</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="s2">&quot;logs/labelprop.log&quot;</span><span class="p">,</span> <span class="s2">&quot;settings/locinf.ini&quot;</span><span class="p">)</span>
+<span class="c"># Must run this as a script</span>
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="n">twieds</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="s">&quot;logs/labelprop.log&quot;</span><span class="p">,</span> <span class="s">&quot;settings/locinf.ini&quot;</span><span class="p">)</span>
 
-    <span class="c1"># Connect to the MongoDB</span>
-    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Connecting to MongoDB...&quot;</span><span class="p">)</span>
-    <span class="n">client</span> <span class="o">=</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">MongoClient</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;mongo&quot;</span><span class="p">,</span> <span class="s2">&quot;address&quot;</span><span class="p">),</span> <span class="n">config</span><span class="o">.</span><span class="n">getint</span><span class="p">(</span><span class="s2">&quot;mongo&quot;</span><span class="p">,</span> <span class="s2">&quot;port&quot;</span><span class="p">))</span>
-    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Connected to MongoDB&quot;</span><span class="p">)</span>
+    <span class="c"># Connect to the MongoDB</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Connecting to MongoDB...&quot;</span><span class="p">)</span>
+    <span class="n">client</span> <span class="o">=</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">MongoClient</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;mongo&quot;</span><span class="p">,</span> <span class="s">&quot;address&quot;</span><span class="p">),</span> <span class="n">config</span><span class="o">.</span><span class="n">getint</span><span class="p">(</span><span class="s">&quot;mongo&quot;</span><span class="p">,</span> <span class="s">&quot;port&quot;</span><span class="p">))</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Connected to MongoDB&quot;</span><span class="p">)</span>
 
-    <span class="c1"># Select the database and collection based off config</span>
+    <span class="c"># Select the database and collection based off config</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="n">db</span> <span class="o">=</span> <span class="n">client</span><span class="p">[</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;mongo&quot;</span><span class="p">,</span> <span class="s2">&quot;database&quot;</span><span class="p">)]</span>
-        <span class="n">user_col</span> <span class="o">=</span> <span class="n">db</span><span class="p">[</span><span class="s2">&quot;users&quot;</span><span class="p">]</span>
-        <span class="n">user_col</span><span class="o">.</span><span class="n">create_index</span><span class="p">([(</span><span class="s1">&#39;user.id&#39;</span><span class="p">,</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">ASCENDING</span><span class="p">)],</span> <span class="n">unique</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-        <span class="n">user_col</span><span class="o">.</span><span class="n">create_index</span><span class="p">([(</span><span class="s1">&#39;user.screen_name&#39;</span><span class="p">,</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">ASCENDING</span><span class="p">)])</span>
+        <span class="n">db</span> <span class="o">=</span> <span class="n">client</span><span class="p">[</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;mongo&quot;</span><span class="p">,</span> <span class="s">&quot;database&quot;</span><span class="p">)]</span>
+        <span class="n">user_col</span> <span class="o">=</span> <span class="n">db</span><span class="p">[</span><span class="s">&quot;users&quot;</span><span class="p">]</span>
+        <span class="n">user_col</span><span class="o">.</span><span class="n">create_index</span><span class="p">([(</span><span class="s">&#39;user.id&#39;</span><span class="p">,</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">ASCENDING</span><span class="p">)],</span> <span class="n">unique</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="n">user_col</span><span class="o">.</span><span class="n">create_index</span><span class="p">([(</span><span class="s">&#39;user.screen_name&#39;</span><span class="p">,</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">ASCENDING</span><span class="p">)])</span>
     <span class="k">except</span> <span class="n">NoOptionError</span><span class="p">:</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s2">&quot;Cannot connect to MongoDB database and collection. Config incorrect?&quot;</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s">&quot;Cannot connect to MongoDB database and collection. Config incorrect?&quot;</span><span class="p">)</span>
         <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
 
-    <span class="c1"># Get the tweet collection</span>
-    <span class="n">tweet_col</span> <span class="o">=</span> <span class="n">db</span><span class="p">[</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;mongo&quot;</span><span class="p">,</span> <span class="s2">&quot;collection&quot;</span><span class="p">)]</span>
+    <span class="c"># Get the tweet collection</span>
+    <span class="n">tweet_col</span> <span class="o">=</span> <span class="n">db</span><span class="p">[</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;mongo&quot;</span><span class="p">,</span> <span class="s">&quot;collection&quot;</span><span class="p">)]</span>
 
-    <span class="n">cursor</span> <span class="o">=</span> <span class="n">tweet_col</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s1">&#39;geo&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;$ne&#39;</span><span class="p">:</span> <span class="bp">None</span><span class="p">},</span> <span class="s1">&#39;locinf.sl.test&#39;</span><span class="p">:</span> <span class="bp">None</span><span class="p">})</span>
+    <span class="n">cursor</span> <span class="o">=</span> <span class="n">tweet_col</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s">&#39;geo&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;$ne&#39;</span><span class="p">:</span> <span class="bp">None</span><span class="p">},</span> <span class="s">&#39;locinf.sl.test&#39;</span><span class="p">:</span> <span class="bp">None</span><span class="p">})</span>
     <span class="n">infersl</span> <span class="o">=</span> <span class="n">InferSL</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">user_col</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">tweet</span> <span class="ow">in</span> <span class="n">cursor</span><span class="p">:</span>
-        <span class="k">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">NEXT USER&quot;</span><span class="p">,</span> <span class="n">tweet</span><span class="p">[</span><span class="s1">&#39;user&#39;</span><span class="p">][</span><span class="s1">&#39;screen_name&#39;</span><span class="p">],</span> <span class="s2">&quot;:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\n\n</span><span class="s">NEXT USER&quot;</span><span class="p">,</span> <span class="n">tweet</span><span class="p">[</span><span class="s">&#39;user&#39;</span><span class="p">][</span><span class="s">&#39;screen_name&#39;</span><span class="p">],</span> <span class="s">&quot;:</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="nb">input</span><span class="p">(</span><span class="n">tweet</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;s&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">input</span><span class="p">(</span><span class="n">tweet</span><span class="p">)</span> <span class="o">==</span> <span class="s">&quot;s&quot;</span><span class="p">:</span>
             <span class="k">continue</span>
 
-        <span class="n">inf</span> <span class="o">=</span> <span class="n">infersl</span><span class="o">.</span><span class="n">infer</span><span class="p">(</span><span class="n">tweet</span><span class="p">[</span><span class="s1">&#39;user&#39;</span><span class="p">][</span><span class="s1">&#39;id&#39;</span><span class="p">],</span> <span class="n">test</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="n">inf</span> <span class="o">=</span> <span class="n">infersl</span><span class="o">.</span><span class="n">infer</span><span class="p">(</span><span class="n">tweet</span><span class="p">[</span><span class="s">&#39;user&#39;</span><span class="p">][</span><span class="s">&#39;id&#39;</span><span class="p">],</span> <span class="n">test</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 
-        <span class="k">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Inferred location:&quot;</span><span class="p">,</span> <span class="n">inf</span><span class="p">)</span>
-        <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;&gt;&quot;</span><span class="p">)</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">Inferred location:&quot;</span><span class="p">,</span> <span class="n">inf</span><span class="p">)</span>
+        <span class="nb">input</span><span class="p">(</span><span class="s">&quot;&gt;&quot;</span><span class="p">)</span>
 
-        <span class="c1"># Store inferred loc in db</span>
-        <span class="n">db</span><span class="o">.</span><span class="n">tweets</span><span class="o">.</span><span class="n">update_one</span><span class="p">({</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="n">tweet</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">]},</span> <span class="p">{</span>
-            <span class="s1">&#39;$set&#39;</span><span class="p">:</span> <span class="p">{</span>
-                <span class="s1">&#39;locinf.sl.test&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">inf</span><span class="p">)</span>
+        <span class="c"># Store inferred loc in db</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">tweets</span><span class="o">.</span><span class="n">update_one</span><span class="p">({</span><span class="s">&#39;_id&#39;</span><span class="p">:</span> <span class="n">tweet</span><span class="p">[</span><span class="s">&#39;_id&#39;</span><span class="p">]},</span> <span class="p">{</span>
+            <span class="s">&#39;$set&#39;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s">&#39;locinf.sl.test&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">inf</span><span class="p">)</span>
             <span class="p">}</span>
         <span class="p">})</span>
 
@@ -160,7 +160,7 @@ without further work.</p>
 </div></blockquote>
 <p>Below is an example config file for use with the <a class="reference internal" href="locinf.html#twied.multiind.inference.InferThread" title="twied.multiind.inference.InferThread"><code class="xref py py-class docutils literal"><span class="pre">twied.multiind.inference.InferThread</span></code></a>
 class. Each of the sections is broken down below the example.</p>
-<div class="highlight-ini"><div class="highlight"><pre><span></span><span class="k">[twitter]</span>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[twitter]</span>
 <span class="na">app_key</span> <span class="o">=</span> <span class="s">wYHFS6G9fqVNxYwt53UNUcxT0</span>
 <span class="na">app_secret</span> <span class="o">=</span> <span class="s">MU3r4yi2HGDrAbBma2syPpOvFOcWFxaUIiKmeySX8Ard80lr53</span>
 <span class="na">oauth_token</span> <span class="o">=</span> <span class="s">3950426785-SNgK3NmghSzdjLcJGRTAwQq3xyMait0bVQ6HVvV</span>
@@ -275,7 +275,7 @@ files can be downloaded here: <a class="reference external" href="https://drive.
 <p>Below shows an example script for running the Multi-Indicator inference process. The file loads a configuration file,
 connects to the MongoDB and then infers the tweets within that collection. Exceptions are also handled and delays are
 created if there are problems. The script will also tweet to the authenticated Twitter account every 5000 tweets.</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">configparser</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">configparser</span>
 <span class="kn">import</span> <span class="nn">time</span>
 
 <span class="kn">from</span> <span class="nn">twython</span> <span class="kn">import</span> <span class="n">Twython</span><span class="p">,</span> <span class="n">TwythonError</span>
@@ -286,62 +286,62 @@ created if there are problems. The script will also tweet to the authenticated T
 <span class="kn">from</span> <span class="nn">twied.multiind.indicators.locfieldindicator</span> <span class="kn">import</span> <span class="n">GeonamesException</span>
 <span class="kn">from</span> <span class="nn">twied.multiind.interfaces.webinterfaces</span> <span class="kn">import</span> <span class="n">GeonamesDecodeException</span>
 
-<span class="c1"># Setup configuration file</span>
+<span class="c"># Setup configuration file</span>
 <span class="n">config</span> <span class="o">=</span> <span class="n">configparser</span><span class="o">.</span><span class="n">ConfigParser</span><span class="p">()</span>
-<span class="n">config</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;settings.ini&quot;</span><span class="p">)</span>
+<span class="n">config</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s">&quot;settings.ini&quot;</span><span class="p">)</span>
 
-<span class="c1"># Connect to the MongoDB (database twitter, collection tweets)</span>
-<span class="n">client</span> <span class="o">=</span> <span class="n">MongoClient</span><span class="p">(</span><span class="s2">&quot;localhost&quot;</span><span class="p">,</span> <span class="mi">27017</span><span class="p">)</span>
-<span class="n">col</span> <span class="o">=</span> <span class="n">client</span><span class="p">[</span><span class="s2">&quot;twitter&quot;</span><span class="p">][</span><span class="s2">&quot;tweets&quot;</span><span class="p">]</span>
+<span class="c"># Connect to the MongoDB (database twitter, collection tweets)</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">MongoClient</span><span class="p">(</span><span class="s">&quot;localhost&quot;</span><span class="p">,</span> <span class="mi">27017</span><span class="p">)</span>
+<span class="n">col</span> <span class="o">=</span> <span class="n">client</span><span class="p">[</span><span class="s">&quot;twitter&quot;</span><span class="p">][</span><span class="s">&quot;tweets&quot;</span><span class="p">]</span>
 
-<span class="c1"># Query used for selecting tweets, empty because target is all tweets</span>
+<span class="c"># Query used for selecting tweets, empty because target is all tweets</span>
 <span class="n">query</span> <span class="o">=</span> <span class="p">{}</span>
 
-<span class="c1"># Setup a Twython object to tweet error message if problem</span>
-<span class="n">api_settings</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">_sections</span><span class="p">[</span><span class="s1">&#39;twitter&#39;</span><span class="p">]</span>
+<span class="c"># Setup a Twython object to tweet error message if problem</span>
+<span class="n">api_settings</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">_sections</span><span class="p">[</span><span class="s">&#39;twitter&#39;</span><span class="p">]</span>
 <span class="n">twitter</span> <span class="o">=</span> <span class="n">Twython</span><span class="p">(</span><span class="o">**</span><span class="n">api_settings</span><span class="p">)</span>
 
 
-<span class="c1"># Function for tweeting message if there is an error</span>
+<span class="c"># Function for tweeting message if there is an error</span>
 <span class="k">def</span> <span class="nf">tweetstr</span><span class="p">(</span><span class="n">string</span><span class="p">):</span>
     <span class="k">global</span> <span class="n">twitter</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="k">print</span><span class="p">(</span><span class="s2">&quot;[!] Attemting to send tweet: {0}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">string</span><span class="p">))</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">&quot;[!] Attemting to send tweet: {0}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">string</span><span class="p">))</span>
         <span class="n">twitter</span><span class="o">.</span><span class="n">update_status</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="n">string</span><span class="p">)</span>
-        <span class="k">print</span><span class="p">(</span><span class="s2">&quot;[+] Tweet sent.&quot;</span><span class="p">)</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">&quot;[+] Tweet sent.&quot;</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
         <span class="k">return</span>
 
 
-<span class="c1"># Name of inference task</span>
-<span class="n">inf_name</span> <span class="o">=</span> <span class="s2">&quot;MyCol&quot;</span>
+<span class="c"># Name of inference task</span>
+<span class="n">inf_name</span> <span class="o">=</span> <span class="s">&quot;MyCol&quot;</span>
 
-<span class="c1"># Name of the field to save the result to</span>
-<span class="n">field</span> <span class="o">=</span> <span class="s2">&quot;inf&quot;</span>
+<span class="c"># Name of the field to save the result to</span>
+<span class="n">field</span> <span class="o">=</span> <span class="s">&quot;inf&quot;</span>
 
-<span class="c1"># Run the inference</span>
+<span class="c"># Run the inference</span>
 <span class="n">inf</span> <span class="o">=</span> <span class="n">InferThread</span><span class="p">(</span><span class="n">col</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">inf_id</span><span class="o">=</span><span class="n">inf_name</span><span class="p">,</span> <span class="n">tweetfunc</span><span class="o">=</span><span class="n">tweetstr</span><span class="p">,</span> <span class="n">tweetint</span><span class="o">=</span><span class="mi">5000</span><span class="p">,</span> <span class="n">proc_id</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
-    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;[+] Starting inference...&quot;</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">&quot;[+] Starting inference...&quot;</span><span class="p">)</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">inf</span><span class="o">.</span><span class="n">infer</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">field</span><span class="o">=</span><span class="n">field</span><span class="p">)</span>
-        <span class="k">print</span><span class="p">(</span><span class="s2">&quot;[!] Inference finished successfully.&quot;</span><span class="p">)</span>
-        <span class="n">tweetstr</span><span class="p">(</span><span class="s2">&quot;@Humpheh </span><span class="si">%s</span><span class="s2"> - finished successfully.&quot;</span> <span class="o">%</span> <span class="n">inf_name</span><span class="p">)</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">&quot;[!] Inference finished successfully.&quot;</span><span class="p">)</span>
+        <span class="n">tweetstr</span><span class="p">(</span><span class="s">&quot;@Humpheh </span><span class="si">%s</span><span class="s"> - finished successfully.&quot;</span> <span class="o">%</span> <span class="n">inf_name</span><span class="p">)</span>
         <span class="k">break</span>
     <span class="k">except</span> <span class="n">MaxRetryError</span><span class="p">:</span>
-        <span class="k">print</span><span class="p">(</span><span class="s2">&quot;[!] Got a MaxRetryError - sleeping for 2 mins...&quot;</span><span class="p">)</span>
-        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="mi">60</span><span class="p">)</span>  <span class="c1"># sleep for 5 mins</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">&quot;[!] Got a MaxRetryError - sleeping for 2 mins...&quot;</span><span class="p">)</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="mi">60</span><span class="p">)</span>  <span class="c"># sleep for 5 mins</span>
     <span class="k">except</span> <span class="n">GeonamesException</span><span class="p">:</span>
-        <span class="k">print</span><span class="p">(</span><span class="s2">&quot;[!] Got a GeonamesException - sleeping for 10 mins...&quot;</span><span class="p">)</span>
-        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">10</span> <span class="o">*</span> <span class="mi">60</span><span class="p">)</span>  <span class="c1"># sleep for 10 mins</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">&quot;[!] Got a GeonamesException - sleeping for 10 mins...&quot;</span><span class="p">)</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">10</span> <span class="o">*</span> <span class="mi">60</span><span class="p">)</span>  <span class="c"># sleep for 10 mins</span>
     <span class="k">except</span> <span class="n">GeonamesDecodeException</span><span class="p">:</span>
-        <span class="k">print</span><span class="p">(</span><span class="s2">&quot;[!] Got a GeonamesDecodeException - sleeping for 2 mins...&quot;</span><span class="p">)</span>
-        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="mi">60</span><span class="p">)</span>  <span class="c1"># sleep for 2 mins</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">&quot;[!] Got a GeonamesDecodeException - sleeping for 2 mins...&quot;</span><span class="p">)</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="mi">60</span><span class="p">)</span>  <span class="c"># sleep for 2 mins</span>
     <span class="k">except</span> <span class="n">TwythonError</span><span class="p">:</span>
         <span class="k">break</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="k">print</span><span class="p">(</span><span class="s2">&quot;[!] Exception caught&quot;</span><span class="p">)</span>
-        <span class="n">tweetstr</span><span class="p">(</span><span class="s2">&quot;@Humpheh </span><span class="si">%s</span><span class="s2"> - exited due to a </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">inf_name</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="o">.</span><span class="n">__name__</span><span class="p">))</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">&quot;[!] Exception caught&quot;</span><span class="p">)</span>
+        <span class="n">tweetstr</span><span class="p">(</span><span class="s">&quot;@Humpheh </span><span class="si">%s</span><span class="s"> - exited due to a </span><span class="si">%s</span><span class="s">.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">inf_name</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="o">.</span><span class="n">__name__</span><span class="p">))</span>
         <span class="k">raise</span>
 </pre></div>
 </div>
@@ -358,47 +358,92 @@ created which ouputs the number of tweets collected in the previous 5 seconds.</
 <p class="last">The API settings here have been altered so they are not valid. These would
 need to be created for your own app from the <a class="reference external" href="https://apps.twitter.com/">Twitter API</a>.</p>
 </div>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">time</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">time</span>
 
 <span class="kn">from</span> <span class="nn">twied.twicol</span> <span class="kn">import</span> <span class="n">TweetStreamer</span><span class="p">,</span> <span class="n">CounterThread</span>
 <span class="kn">from</span> <span class="nn">pymongo</span> <span class="kn">import</span> <span class="n">MongoClient</span>
 
-<span class="c1"># Save the Twitter API settings</span>
+<span class="c"># Save the Twitter API settings</span>
 <span class="n">api_settings</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">&#39;app_key&#39;</span><span class="p">:</span> <span class="s1">&#39;wYHFS6G9fqVNxYwt53UNUcxT0&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;app_secret&#39;</span><span class="p">:</span> <span class="s1">&#39;MU3r4yi2HGDrAbBma2syPpOvFOcWFxaUIiKmeySX8Ard80lr53&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;oauth_token&#39;</span><span class="p">:</span> <span class="s1">&#39;3950426785-SNgK3NmghSzdjLcJGRTAwQq3xyMait0bVQ6HVvV&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;oauth_token_secret&#39;</span><span class="p">:</span> <span class="s1">&#39;x0FASasjEHqsSvLAZ3h6sqClPWtt54TcM78W8PLOJ1BLv&#39;</span><span class="p">,</span>
+    <span class="s">&#39;app_key&#39;</span><span class="p">:</span> <span class="s">&#39;wYHFS6G9fqVNxYwt53UNUcxT0&#39;</span><span class="p">,</span>
+    <span class="s">&#39;app_secret&#39;</span><span class="p">:</span> <span class="s">&#39;MU3r4yi2HGDrAbBma2syPpOvFOcWFxaUIiKmeySX8Ard80lr53&#39;</span><span class="p">,</span>
+    <span class="s">&#39;oauth_token&#39;</span><span class="p">:</span> <span class="s">&#39;3950426785-SNgK3NmghSzdjLcJGRTAwQq3xyMait0bVQ6HVvV&#39;</span><span class="p">,</span>
+    <span class="s">&#39;oauth_token_secret&#39;</span><span class="p">:</span> <span class="s">&#39;x0FASasjEHqsSvLAZ3h6sqClPWtt54TcM78W8PLOJ1BLv&#39;</span><span class="p">,</span>
 <span class="p">}</span>
 
-<span class="n">search_str</span> <span class="o">=</span> <span class="s2">&quot;twitter&quot;</span>
+<span class="n">search_str</span> <span class="o">=</span> <span class="s">&quot;twitter&quot;</span>
 
-<span class="c1"># Connect to the MongoDB and the correct collection</span>
+<span class="c"># Connect to the MongoDB and the correct collection</span>
 <span class="n">client</span> <span class="o">=</span> <span class="n">MongoClient</span><span class="p">()</span>
-<span class="n">collection</span> <span class="o">=</span> <span class="n">client</span><span class="p">[</span><span class="s1">&#39;test&#39;</span><span class="p">][</span><span class="s1">&#39;coltest1&#39;</span><span class="p">]</span>
+<span class="n">collection</span> <span class="o">=</span> <span class="n">client</span><span class="p">[</span><span class="s">&#39;test&#39;</span><span class="p">][</span><span class="s">&#39;coltest1&#39;</span><span class="p">]</span>
 
-<span class="c1"># Setup the counter thread to output status count ever 5 secs</span>
-<span class="n">counter</span> <span class="o">=</span> <span class="n">CounterThread</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">count</span><span class="p">:</span> <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Recieved </span><span class="si">%i</span><span class="s2"> tweets in last 5 seconds&quot;</span> <span class="o">%</span> <span class="n">count</span><span class="p">))</span>
+<span class="c"># Setup the counter thread to output status count ever 5 secs</span>
+<span class="n">counter</span> <span class="o">=</span> <span class="n">CounterThread</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">count</span><span class="p">:</span> <span class="k">print</span><span class="p">(</span><span class="s">&quot;Recieved </span><span class="si">%i</span><span class="s"> tweets in last 5 seconds&quot;</span> <span class="o">%</span> <span class="n">count</span><span class="p">))</span>
 
-<span class="c1"># Setup the tweet streamer to listen to tweets with &#39;twitter&#39; in them</span>
-<span class="n">ts</span> <span class="o">=</span> <span class="n">TweetStreamer</span><span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">,</span> <span class="n">search_str</span><span class="p">,</span> <span class="n">db</span><span class="o">=</span><span class="n">collection</span><span class="p">,</span> <span class="n">callbacks</span><span class="o">=</span><span class="n">counter</span><span class="p">,</span> <span class="o">**</span><span class="n">api_settings</span><span class="p">)</span>
+<span class="c"># Setup the tweet streamer to listen to tweets with &#39;twitter&#39; in them</span>
+<span class="n">ts</span> <span class="o">=</span> <span class="n">TweetStreamer</span><span class="p">(</span><span class="s">&quot;test&quot;</span><span class="p">,</span> <span class="n">search_str</span><span class="p">,</span> <span class="n">db</span><span class="o">=</span><span class="n">collection</span><span class="p">,</span> <span class="n">callbacks</span><span class="o">=</span><span class="n">counter</span><span class="p">,</span> <span class="o">**</span><span class="n">api_settings</span><span class="p">)</span>
 
-<span class="c1"># Start the threads</span>
+<span class="c"># Start the threads</span>
 <span class="n">ts</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
 <span class="n">counter</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
 
 <span class="k">try</span><span class="p">:</span>
-    <span class="c1"># Wait</span>
+    <span class="c"># Wait</span>
     <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
         <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>
 <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Exception caught...&quot;</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">&quot;Exception caught...&quot;</span><span class="p">)</span>
     <span class="k">pass</span>
 <span class="k">finally</span><span class="p">:</span>
-    <span class="c1"># If excepted, close all threads</span>
-    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Stopping collection.&quot;</span><span class="p">)</span>
+    <span class="c"># If excepted, close all threads</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">&quot;Stopping collection.&quot;</span><span class="p">)</span>
     <span class="n">counter</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
     <span class="n">ts</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="event-detection-example">
+<h2>1.5. Event Detection Example<a class="headerlink" href="#event-detection-example" title="Permalink to this headline">¶</a></h2>
+<p>The event detection is an object which you should setup and then feed tweets in ascending time
+order via a method. Below is a basic example which shows connecting to the database, creating
+an <a class="reference internal" href="eventdetection.html#twied.eventec.eventdetection.EventDetection" title="twied.eventec.eventdetection.EventDetection"><code class="xref py py-class docutils literal"><span class="pre">twied.eventec.eventdetection.EventDetection</span></code></a> object, and then feeding the tweets in. The
+final step is getting the clusters from the object and saving them in a file. For more information about
+how the EventDetection operates or the class parameters see the class documentation.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">pickle</span>
+
+<span class="kn">from</span> <span class="nn">pymongo</span> <span class="kn">import</span> <span class="n">MongoClient</span>
+<span class="kn">from</span> <span class="nn">twied.eventec.eventdetection</span> <span class="kn">import</span> <span class="n">EventDetection</span>
+
+<span class="n">output_filename</span> <span class="o">=</span> <span class="s">&quot;output.pkl&quot;</span>
+
+<span class="c"># Connect to the MongoDB</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">MongoClient</span><span class="p">()</span>
+
+<span class="c"># Select the database and collection</span>
+<span class="n">db</span> <span class="o">=</span> <span class="n">client</span><span class="p">[</span><span class="s">&quot;twitter&quot;</span><span class="p">]</span>
+<span class="n">col</span> <span class="o">=</span> <span class="n">db</span><span class="p">[</span><span class="s">&quot;ptweets&quot;</span><span class="p">]</span>
+
+<span class="c"># Get the tweet cursor (sorted by timestamp - note slow if there is no index)</span>
+<span class="n">cursor</span> <span class="o">=</span> <span class="n">col</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">no_cursor_timeout</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="s">&#39;timestamp&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="c"># Create the EventDetection object with the parameters</span>
+<span class="n">tf</span> <span class="o">=</span> <span class="n">EventDetection</span><span class="p">(</span><span class="s">&#39;centre&#39;</span><span class="p">,</span> <span class="s">&#39;timestamp&#39;</span><span class="p">,</span> <span class="n">popmaploc</span><span class="o">=</span><span class="s">&#39;D:\ds\population\glds15ag.asc&#39;</span><span class="p">)</span>
+
+<span class="c"># Process each tweet that has been found</span>
+<span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">cursor</span><span class="p">:</span>
+    <span class="n">tf</span><span class="o">.</span><span class="n">process_tweet</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
+
+<span class="c"># Get the clusters and save them</span>
+<span class="n">allc</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">get_all_clusters</span><span class="p">()</span>
+<span class="n">carr</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span><span class="o">.</span><span class="n">as_dict</span><span class="p">()</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">allc</span><span class="p">]</span>
+
+<span class="c"># Dump the output to a pickle file to save it</span>
+<span class="n">pkl_file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">output_filename</span><span class="p">,</span> <span class="s">&#39;wb&#39;</span><span class="p">)</span>
+<span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">carr</span><span class="p">,</span> <span class="n">pkl_file</span><span class="p">)</span>
+<span class="n">pkl_file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<span class="n">cursor</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -421,6 +466,7 @@ need to be created for your own app from the <a class="reference external" href=
 </ul>
 </li>
 <li><a class="reference internal" href="#collection-example">1.4. Collection Example</a></li>
+<li><a class="reference internal" href="#event-detection-example">1.5. Event Detection Example</a></li>
 </ul>
 </li>
 </ul>
@@ -441,11 +487,14 @@ need to be created for your own app from the <a class="reference external" href=
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -472,7 +521,7 @@ need to be created for your own app from the <a class="reference external" href=
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016, Humphrey Shotton.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.2.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
     </div>
   </body>
 </html>

@@ -49,7 +49,7 @@
           <div class="body" role="main">
             
   <h1>Source code for twied.twicol.collection</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">twied.twicol</span>
 
 <span class="kn">from</span> <span class="nn">threading</span> <span class="kn">import</span> <span class="n">Thread</span>
@@ -128,62 +128,62 @@
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">running</span><span class="p">:</span>
                 <span class="k">return</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Starting to track: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">trackstr</span><span class="p">)</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Starting to track: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">trackstr</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">statuses</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">track</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">trackstr</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Exception in collection: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">e</span><span class="p">)</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s">&quot;Exception in collection: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">e</span><span class="p">)</span>
                 <span class="k">raise</span> <span class="n">e</span>
 
-        <span class="c1"># Run the thread</span>
+        <span class="c"># Run the thread</span>
         <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">running</span><span class="p">:</span>
-            <span class="n">ex_run</span><span class="p">()</span></div>
-
+            <span class="n">ex_run</span><span class="p">()</span>
+</div>
 <div class="viewcode-block" id="TweetStreamer.stop"><a class="viewcode-back" href="../../../collection.html#twied.twicol.collection.TweetStreamer.stop">[docs]</a>    <span class="k">def</span> <span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Stop the tweet collection.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Shutting down thread...&quot;</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Shutting down thread...&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">running</span> <span class="o">=</span> <span class="bp">False</span></div>
-
+        <span class="bp">self</span><span class="o">.</span><span class="n">running</span> <span class="o">=</span> <span class="bp">False</span>
+</div>
 <div class="viewcode-block" id="TweetStreamer.on_success"><a class="viewcode-back" href="../../../collection.html#twied.twicol.collection.TweetStreamer.on_success">[docs]</a>    <span class="k">def</span> <span class="nf">on_success</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Function called when a tweet was successfully recieved from the API.</span>
 
 <span class="sd">        :param data: The tweet data.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="s1">&#39;text&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Recieved tweet without text&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s">&#39;text&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s">&quot;Recieved tweet without text&quot;</span><span class="p">)</span>
             <span class="k">return</span>
 
-        <span class="c1"># Save the name of the collection task alongside the tweet data</span>
-        <span class="n">data</span><span class="p">[</span><span class="s1">&#39;collection&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+        <span class="c"># Save the name of the collection task alongside the tweet data</span>
+        <span class="n">data</span><span class="p">[</span><span class="s">&#39;collection&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
 
-        <span class="c1"># Calculate a timestamp object from the data</span>
-        <span class="n">ts_float</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;timestamp_ms&#39;</span><span class="p">])</span>
-        <span class="n">data</span><span class="p">[</span><span class="s1">&#39;timestamp_obj&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">utcfromtimestamp</span><span class="p">(</span><span class="n">ts_float</span><span class="o">/</span><span class="mi">1000</span><span class="p">)</span>
+        <span class="c"># Calculate a timestamp object from the data</span>
+        <span class="n">ts_float</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s">&#39;timestamp_ms&#39;</span><span class="p">])</span>
+        <span class="n">data</span><span class="p">[</span><span class="s">&#39;timestamp_obj&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">utcfromtimestamp</span><span class="p">(</span><span class="n">ts_float</span><span class="o">/</span><span class="mi">1000</span><span class="p">)</span>
 
-        <span class="c1"># Insert the tweet into the database</span>
+        <span class="c"># Insert the tweet into the database</span>
         <span class="n">insertid</span> <span class="o">=</span> <span class="bp">None</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
             <span class="n">insertid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">insert_one</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">inserted_id</span>
 
-        <span class="c1"># Call the callback functions if exists</span>
+        <span class="c"># Call the callback functions if exists</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">callbacks</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">callbacks</span><span class="p">:</span>
-                <span class="n">f</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">insertid</span><span class="p">)</span></div>
-
+                <span class="n">f</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">insertid</span><span class="p">)</span>
+</div>
 <div class="viewcode-block" id="TweetStreamer.on_error"><a class="viewcode-back" href="../../../collection.html#twied.twicol.collection.TweetStreamer.on_error">[docs]</a>    <span class="k">def</span> <span class="nf">on_error</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">status_code</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called on error with recieving tweet.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Error recieving tweet: {0}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">status_code</span><span class="p">))</span></div>
-
+        <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s">&quot;Error recieving tweet: {0}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">status_code</span><span class="p">))</span>
+</div>
 <div class="viewcode-block" id="TweetStreamer.on_timeout"><a class="viewcode-back" href="../../../collection.html#twied.twicol.collection.TweetStreamer.on_timeout">[docs]</a>    <span class="k">def</span> <span class="nf">on_timeout</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called on timeout of the streaming API.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Streaming request timed out&quot;</span><span class="p">)</span></div></div>
+        <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Streaming request timed out&quot;</span><span class="p">)</span></div></div>
 </pre></div>
 
           </div>
@@ -194,11 +194,14 @@
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="../../../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -221,7 +224,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016, Humphrey Shotton.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.2.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
     </div>
   </body>
 </html>

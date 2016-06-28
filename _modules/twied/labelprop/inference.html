@@ -48,7 +48,7 @@
           <div class="body" role="main">
             
   <h1>Source code for twied.labelprop.inference</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
 
 <span class="kn">from</span> <span class="nn">twython</span> <span class="kn">import</span> <span class="n">Twython</span>
@@ -66,9 +66,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">connections</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">key_user</span> <span class="o">=</span> <span class="bp">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">limdepth</span> <span class="o">=</span> <span class="mi">100</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">testing</span> <span class="o">=</span> <span class="bp">False</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">testing</span> <span class="o">=</span> <span class="bp">False</span>
 
-
+</div>
 <div class="viewcode-block" id="InferSL"><a class="viewcode-back" href="../../../labelprop.html#twied.labelprop.inference.InferSL">[docs]</a><span class="k">class</span> <span class="nc">InferSL</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Implementation of the spatial label propagation method for infering the location of Twitter users.</span>
@@ -82,18 +82,18 @@
 <span class="sd">        :param dbcollection: The MongoDB collection to connect with.</span>
 <span class="sd">        :param verbose: Boolean if to output log.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># setup Twitter API interface</span>
-        <span class="n">api_settings</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">_sections</span><span class="p">[</span><span class="s1">&#39;twitter&#39;</span><span class="p">]</span>
+        <span class="c"># setup Twitter API interface</span>
+        <span class="n">api_settings</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">_sections</span><span class="p">[</span><span class="s">&#39;twitter&#39;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">twitter</span> <span class="o">=</span> <span class="n">Twython</span><span class="p">(</span><span class="o">**</span><span class="n">api_settings</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span> <span class="o">=</span> <span class="n">dbcollection</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">verbose</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">min_mentions</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">getint</span><span class="p">(</span><span class="s2">&quot;slinf&quot;</span><span class="p">,</span> <span class="s2">&quot;min_mentions&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">req_locs</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">getint</span><span class="p">(</span><span class="s2">&quot;slinf&quot;</span><span class="p">,</span> <span class="s2">&quot;req_locations&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">max_iter</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">getint</span><span class="p">(</span><span class="s2">&quot;slinf&quot;</span><span class="p">,</span> <span class="s2">&quot;max_iterations&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">max_depth</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">getint</span><span class="p">(</span><span class="s2">&quot;slinf&quot;</span><span class="p">,</span> <span class="s2">&quot;max_depth&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">timelines</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">getint</span><span class="p">(</span><span class="s2">&quot;slinf&quot;</span><span class="p">,</span> <span class="s2">&quot;num_timelines&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">min_mentions</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">getint</span><span class="p">(</span><span class="s">&quot;slinf&quot;</span><span class="p">,</span> <span class="s">&quot;min_mentions&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">req_locs</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">getint</span><span class="p">(</span><span class="s">&quot;slinf&quot;</span><span class="p">,</span> <span class="s">&quot;req_locations&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_iter</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">getint</span><span class="p">(</span><span class="s">&quot;slinf&quot;</span><span class="p">,</span> <span class="s">&quot;max_iterations&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_depth</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">getint</span><span class="p">(</span><span class="s">&quot;slinf&quot;</span><span class="p">,</span> <span class="s">&quot;max_depth&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timelines</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">getint</span><span class="p">(</span><span class="s">&quot;slinf&quot;</span><span class="p">,</span> <span class="s">&quot;num_timelines&quot;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="InferSL.log"><a class="viewcode-back" href="../../../labelprop.html#twied.labelprop.inference.InferSL.log">[docs]</a>    <span class="k">def</span> <span class="nf">log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -102,8 +102,8 @@
 <span class="sd">        :param message: The message to log.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">message</span><span class="p">)</span></div>
-
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+</div>
 <div class="viewcode-block" id="InferSL.infer"><a class="viewcode-back" href="../../../labelprop.html#twied.labelprop.inference.InferSL.infer">[docs]</a>    <span class="k">def</span> <span class="nf">infer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">,</span> <span class="n">test</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Infers a location for a user with an ID.</span>
@@ -113,8 +113,8 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">network</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_network</span><span class="p">(</span><span class="n">user_id</span><span class="p">)</span>
         <span class="n">network</span><span class="o">.</span><span class="n">testing</span> <span class="o">=</span> <span class="n">test</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_location</span><span class="p">(</span><span class="n">network</span><span class="p">)</span></div>
-
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_location</span><span class="p">(</span><span class="n">network</span><span class="p">)</span>
+</div>
 <div class="viewcode-block" id="InferSL.get_network"><a class="viewcode-back" href="../../../labelprop.html#twied.labelprop.inference.InferSL.get_network">[docs]</a>    <span class="k">def</span> <span class="nf">get_network</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">,</span> <span class="n">hidegeo</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Gets the network surronding a user.</span>
@@ -122,20 +122,20 @@
 <span class="sd">        :param user_id: The Twitter ID of the user.</span>
 <span class="sd">        :return: An SLNetwork object with the network information.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># setup the network object</span>
+        <span class="c"># setup the network object</span>
         <span class="n">network</span> <span class="o">=</span> <span class="n">SLNetwork</span><span class="p">()</span>
         <span class="n">network</span><span class="o">.</span><span class="n">key_user</span> <span class="o">=</span> <span class="n">user_id</span>
 
-        <span class="c1"># gets the users&#39; connections</span>
+        <span class="c"># gets the users&#39; connections</span>
         <span class="n">user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_user</span><span class="p">(</span><span class="n">user_id</span><span class="p">)</span>
-        <span class="c1"># removes the users locations if testing</span>
+        <span class="c"># removes the users locations if testing</span>
         <span class="k">if</span> <span class="n">hidegeo</span><span class="p">:</span>
-            <span class="n">user</span><span class="p">[</span><span class="s1">&#39;locations_real&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">user</span><span class="p">[</span><span class="s1">&#39;locations&#39;</span><span class="p">]</span>
-            <span class="n">user</span><span class="p">[</span><span class="s1">&#39;locations&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">user</span><span class="p">[</span><span class="s">&#39;locations_real&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">user</span><span class="p">[</span><span class="s">&#39;locations&#39;</span><span class="p">]</span>
+            <span class="n">user</span><span class="p">[</span><span class="s">&#39;locations&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">get_connections</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">network</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">network</span></div>
-
+        <span class="k">return</span> <span class="n">network</span>
+</div>
 <div class="viewcode-block" id="InferSL.get_user"><a class="viewcode-back" href="../../../labelprop.html#twied.labelprop.inference.InferSL.get_user">[docs]</a>    <span class="k">def</span> <span class="nf">get_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Gets a user profile from the Twitter API and stores their geotag tweets and mentions.</span>
@@ -143,12 +143,12 @@
 <span class="sd">        :param user_id: The Twitter ID of the user to find.</span>
 <span class="sd">        :return: The data for the Twitter user with that ID.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># find the user in the database</span>
-        <span class="n">dbusr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s1">&#39;user.id&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">user_id</span><span class="p">)})</span>
+        <span class="c"># find the user in the database</span>
+        <span class="n">dbusr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s">&#39;user.id&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">user_id</span><span class="p">)})</span>
 
-        <span class="c1"># return none if the user is private or field empty</span>
+        <span class="c"># return none if the user is private or field empty</span>
         <span class="k">if</span> <span class="n">dbusr</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">dbusr</span> <span class="k">if</span> <span class="s1">&#39;private&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">dbusr</span> <span class="k">else</span> <span class="bp">None</span>
+            <span class="k">return</span> <span class="n">dbusr</span> <span class="k">if</span> <span class="s">&#39;private&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">dbusr</span> <span class="k">else</span> <span class="bp">None</span>
 
         <span class="n">mentions</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
         <span class="n">geotags</span> <span class="o">=</span> <span class="p">[]</span>
@@ -157,44 +157,44 @@
         <span class="n">max_id</span> <span class="o">=</span> <span class="bp">None</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">timelines</span><span class="p">):</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="c1"># get the next part of the twitter timeline</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;Downloading new Twitter profile: </span><span class="si">%s</span><span class="s2"> </span><span class="si">%i</span><span class="s2">/</span><span class="si">%i</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">user_id</span><span class="p">,</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">timelines</span><span class="p">))</span>
+                <span class="c"># get the next part of the twitter timeline</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s">&quot;Downloading new Twitter profile: </span><span class="si">%s</span><span class="s"> </span><span class="si">%i</span><span class="s">/</span><span class="si">%i</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">user_id</span><span class="p">,</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">timelines</span><span class="p">))</span>
                 <span class="n">usr_tweets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">twitter</span><span class="o">.</span><span class="n">get_user_timeline</span><span class="p">(</span><span class="n">user_id</span><span class="o">=</span><span class="n">user_id</span><span class="p">,</span> <span class="n">count</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">include_rts</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">max_id</span><span class="o">=</span><span class="n">max_id</span><span class="p">)</span>
             <span class="k">except</span> <span class="n">TwythonAuthError</span><span class="p">:</span>
-                <span class="c1"># if auth error, user is private, store as private entry</span>
+                <span class="c"># if auth error, user is private, store as private entry</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">insert_one</span><span class="p">({</span>
-                    <span class="s1">&#39;user&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">user_id</span><span class="p">)},</span>
-                    <span class="s1">&#39;private&#39;</span><span class="p">:</span> <span class="bp">True</span>
+                    <span class="s">&#39;user&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;id&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">user_id</span><span class="p">)},</span>
+                    <span class="s">&#39;private&#39;</span><span class="p">:</span> <span class="bp">True</span>
                 <span class="p">})</span>
                 <span class="k">return</span> <span class="bp">None</span>
             <span class="k">except</span> <span class="n">TwythonError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                <span class="c1"># error in getting the information (API limited?)</span>
+                <span class="c"># error in getting the information (API limited?)</span>
                 <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
                 <span class="k">return</span> <span class="bp">None</span>
 
-            <span class="c1"># search the returned tweets for geotags and mentions</span>
+            <span class="c"># search the returned tweets for geotags and mentions</span>
             <span class="k">for</span> <span class="n">twt</span> <span class="ow">in</span> <span class="n">usr_tweets</span><span class="p">:</span>
-                <span class="n">user</span> <span class="o">=</span> <span class="n">twt</span><span class="p">[</span><span class="s1">&#39;user&#39;</span><span class="p">]</span>
-                <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">twt</span><span class="p">[</span><span class="s1">&#39;entities&#39;</span><span class="p">][</span><span class="s1">&#39;user_mentions&#39;</span><span class="p">]:</span>
-                    <span class="n">mentions</span><span class="p">[</span><span class="n">m</span><span class="p">[</span><span class="s1">&#39;id_str&#39;</span><span class="p">]]</span> <span class="o">+=</span> <span class="mi">1</span>
-                <span class="k">if</span> <span class="n">twt</span><span class="p">[</span><span class="s1">&#39;geo&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
-                    <span class="n">geotags</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">twt</span><span class="p">[</span><span class="s1">&#39;geo&#39;</span><span class="p">])</span>
-                <span class="n">max_id</span> <span class="o">=</span> <span class="n">twt</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
+                <span class="n">user</span> <span class="o">=</span> <span class="n">twt</span><span class="p">[</span><span class="s">&#39;user&#39;</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">twt</span><span class="p">[</span><span class="s">&#39;entities&#39;</span><span class="p">][</span><span class="s">&#39;user_mentions&#39;</span><span class="p">]:</span>
+                    <span class="n">mentions</span><span class="p">[</span><span class="n">m</span><span class="p">[</span><span class="s">&#39;id_str&#39;</span><span class="p">]]</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">if</span> <span class="n">twt</span><span class="p">[</span><span class="s">&#39;geo&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                    <span class="n">geotags</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">twt</span><span class="p">[</span><span class="s">&#39;geo&#39;</span><span class="p">])</span>
+                <span class="n">max_id</span> <span class="o">=</span> <span class="n">twt</span><span class="p">[</span><span class="s">&#39;id&#39;</span><span class="p">]</span>
 
-        <span class="c1"># if the user is none, no tweets were returned</span>
+        <span class="c"># if the user is none, no tweets were returned</span>
         <span class="k">if</span> <span class="n">user</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">None</span>
 
-        <span class="c1"># store the data</span>
+        <span class="c"># store the data</span>
         <span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s1">&#39;user&#39;</span><span class="p">:</span> <span class="n">user</span><span class="p">,</span>
-            <span class="s1">&#39;locations&#39;</span><span class="p">:</span> <span class="n">geotags</span><span class="p">,</span>
-            <span class="s1">&#39;mentions&#39;</span><span class="p">:</span> <span class="n">mentions</span>
+            <span class="s">&#39;user&#39;</span><span class="p">:</span> <span class="n">user</span><span class="p">,</span>
+            <span class="s">&#39;locations&#39;</span><span class="p">:</span> <span class="n">geotags</span><span class="p">,</span>
+            <span class="s">&#39;mentions&#39;</span><span class="p">:</span> <span class="n">mentions</span>
         <span class="p">}</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">insert_one</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">data</span></div>
-
+        <span class="k">return</span> <span class="n">data</span>
+</div>
 <div class="viewcode-block" id="InferSL.get_connections"><a class="viewcode-back" href="../../../labelprop.html#twied.labelprop.inference.InferSL.get_connections">[docs]</a>    <span class="k">def</span> <span class="nf">get_connections</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">network</span><span class="p">,</span> <span class="n">depth</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Recursively gets the connections around a user until at least one with enough geotags has been found.</span>
@@ -204,61 +204,61 @@
 <span class="sd">        :param depth: The depth of the recursion (default 0)</span>
 <span class="sd">        :return: Boolean of if the network was attempted to be extended.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># store the user in net_users</span>
-        <span class="n">network</span><span class="o">.</span><span class="n">users</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">user</span><span class="p">[</span><span class="s1">&#39;user&#39;</span><span class="p">][</span><span class="s1">&#39;id&#39;</span><span class="p">])]</span> <span class="o">=</span> <span class="n">user</span>
+        <span class="c"># store the user in net_users</span>
+        <span class="n">network</span><span class="o">.</span><span class="n">users</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">user</span><span class="p">[</span><span class="s">&#39;user&#39;</span><span class="p">][</span><span class="s">&#39;id&#39;</span><span class="p">])]</span> <span class="o">=</span> <span class="n">user</span>
 
-        <span class="c1"># if the user is None, then it cannot be found, so return</span>
+        <span class="c"># if the user is None, then it cannot be found, so return</span>
         <span class="k">if</span> <span class="n">user</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">False</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;Processing: </span><span class="si">%-17s</span><span class="s2"> (</span><span class="si">%10s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">user</span><span class="p">[</span><span class="s1">&#39;user&#39;</span><span class="p">][</span><span class="s1">&#39;screen_name&#39;</span><span class="p">],</span> <span class="n">user</span><span class="p">[</span><span class="s1">&#39;user&#39;</span><span class="p">][</span><span class="s1">&#39;id&#39;</span><span class="p">]))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s">&quot;Processing: </span><span class="si">%-17s</span><span class="s"> (</span><span class="si">%10s</span><span class="s">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">user</span><span class="p">[</span><span class="s">&#39;user&#39;</span><span class="p">][</span><span class="s">&#39;screen_name&#39;</span><span class="p">],</span> <span class="n">user</span><span class="p">[</span><span class="s">&#39;user&#39;</span><span class="p">][</span><span class="s">&#39;id&#39;</span><span class="p">]))</span>
 
-        <span class="c1"># if recursive depth has been met, return</span>
+        <span class="c"># if recursive depth has been met, return</span>
         <span class="k">if</span> <span class="n">depth</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_depth</span> <span class="ow">or</span> <span class="n">depth</span> <span class="o">&gt;</span> <span class="n">network</span><span class="o">.</span><span class="n">limdepth</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">False</span>
 
         <span class="n">next_connections</span> <span class="o">=</span> <span class="p">[]</span>
 
-        <span class="k">for</span> <span class="n">uid</span><span class="p">,</span> <span class="n">count</span> <span class="ow">in</span> <span class="n">user</span><span class="p">[</span><span class="s1">&#39;mentions&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="c1"># if the number of mentions is less than a threshold, pass it</span>
+        <span class="k">for</span> <span class="n">uid</span><span class="p">,</span> <span class="n">count</span> <span class="ow">in</span> <span class="n">user</span><span class="p">[</span><span class="s">&#39;mentions&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="c"># if the number of mentions is less than a threshold, pass it</span>
             <span class="k">if</span> <span class="n">count</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_mentions</span><span class="p">:</span>
                 <span class="k">continue</span>
 
-            <span class="c1"># get the mentioned user</span>
+            <span class="c"># get the mentioned user</span>
             <span class="n">user2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_user</span><span class="p">(</span><span class="n">uid</span><span class="p">)</span>
 
-            <span class="c1"># if cannot find the user, continue</span>
+            <span class="c"># if cannot find the user, continue</span>
             <span class="k">if</span> <span class="n">user2</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
                 <span class="k">continue</span>
 
-            <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">user</span><span class="p">[</span><span class="s1">&#39;user&#39;</span><span class="p">][</span><span class="s1">&#39;id&#39;</span><span class="p">])</span> <span class="ow">in</span> <span class="n">user2</span><span class="p">[</span><span class="s1">&#39;mentions&#39;</span><span class="p">]:</span>
-                <span class="c1"># if the other user has not mentioned the main subject enough, skip</span>
-                <span class="k">if</span> <span class="n">user2</span><span class="p">[</span><span class="s1">&#39;mentions&#39;</span><span class="p">][</span><span class="nb">str</span><span class="p">(</span><span class="n">user</span><span class="p">[</span><span class="s1">&#39;user&#39;</span><span class="p">][</span><span class="s1">&#39;id&#39;</span><span class="p">])]</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_mentions</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">user</span><span class="p">[</span><span class="s">&#39;user&#39;</span><span class="p">][</span><span class="s">&#39;id&#39;</span><span class="p">])</span> <span class="ow">in</span> <span class="n">user2</span><span class="p">[</span><span class="s">&#39;mentions&#39;</span><span class="p">]:</span>
+                <span class="c"># if the other user has not mentioned the main subject enough, skip</span>
+                <span class="k">if</span> <span class="n">user2</span><span class="p">[</span><span class="s">&#39;mentions&#39;</span><span class="p">][</span><span class="nb">str</span><span class="p">(</span><span class="n">user</span><span class="p">[</span><span class="s">&#39;user&#39;</span><span class="p">][</span><span class="s">&#39;id&#39;</span><span class="p">])]</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_mentions</span><span class="p">:</span>
                     <span class="k">continue</span>
 
-                <span class="n">network</span><span class="o">.</span><span class="n">connections</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="nb">str</span><span class="p">(</span><span class="n">user</span><span class="p">[</span><span class="s1">&#39;user&#39;</span><span class="p">][</span><span class="s1">&#39;id&#39;</span><span class="p">]),</span> <span class="nb">str</span><span class="p">(</span><span class="n">user2</span><span class="p">[</span><span class="s1">&#39;user&#39;</span><span class="p">][</span><span class="s1">&#39;id&#39;</span><span class="p">])))</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;    Connection: </span><span class="si">%17s</span><span class="s2"> - </span><span class="si">%-17s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">user</span><span class="p">[</span><span class="s1">&#39;user&#39;</span><span class="p">][</span><span class="s1">&#39;screen_name&#39;</span><span class="p">],</span> <span class="n">user2</span><span class="p">[</span><span class="s1">&#39;user&#39;</span><span class="p">][</span><span class="s1">&#39;screen_name&#39;</span><span class="p">]))</span>
+                <span class="n">network</span><span class="o">.</span><span class="n">connections</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="nb">str</span><span class="p">(</span><span class="n">user</span><span class="p">[</span><span class="s">&#39;user&#39;</span><span class="p">][</span><span class="s">&#39;id&#39;</span><span class="p">]),</span> <span class="nb">str</span><span class="p">(</span><span class="n">user2</span><span class="p">[</span><span class="s">&#39;user&#39;</span><span class="p">][</span><span class="s">&#39;id&#39;</span><span class="p">])))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s">&quot;    Connection: </span><span class="si">%17s</span><span class="s"> - </span><span class="si">%-17s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">user</span><span class="p">[</span><span class="s">&#39;user&#39;</span><span class="p">][</span><span class="s">&#39;screen_name&#39;</span><span class="p">],</span> <span class="n">user2</span><span class="p">[</span><span class="s">&#39;user&#39;</span><span class="p">][</span><span class="s">&#39;screen_name&#39;</span><span class="p">]))</span>
 
                 <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">uid</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">network</span><span class="o">.</span><span class="n">users</span><span class="p">:</span>
-                    <span class="c1"># recursively get the connections of the next user</span>
+                    <span class="c"># recursively get the connections of the next user</span>
                     <span class="n">next_connections</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">user2</span><span class="p">)</span>
 
-                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">user2</span><span class="p">[</span><span class="s1">&#39;locations&#39;</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">3</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">user2</span><span class="p">[</span><span class="s">&#39;locations&#39;</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">3</span><span class="p">:</span>
                         <span class="n">network</span><span class="o">.</span><span class="n">limdepth</span> <span class="o">=</span> <span class="n">depth</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;    &gt; Found located user </span><span class="si">%s</span><span class="s2"> at </span><span class="si">%i</span><span class="s2"> depth.&quot;</span> <span class="o">%</span>
-                                 <span class="p">(</span><span class="n">user2</span><span class="p">[</span><span class="s1">&#39;user&#39;</span><span class="p">][</span><span class="s1">&#39;screen_name&#39;</span><span class="p">],</span> <span class="n">network</span><span class="o">.</span><span class="n">limdepth</span><span class="p">))</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s">&quot;    &gt; Found located user </span><span class="si">%s</span><span class="s"> at </span><span class="si">%i</span><span class="s"> depth.&quot;</span> <span class="o">%</span>
+                                 <span class="p">(</span><span class="n">user2</span><span class="p">[</span><span class="s">&#39;user&#39;</span><span class="p">][</span><span class="s">&#39;screen_name&#39;</span><span class="p">],</span> <span class="n">network</span><span class="o">.</span><span class="n">limdepth</span><span class="p">))</span>
 
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">next_connections</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;    &gt; No futher connections to explore.&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s">&quot;    &gt; No futher connections to explore.&quot;</span><span class="p">)</span>
 
-        <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;&gt;&quot;</span><span class="p">)</span>
+        <span class="nb">input</span><span class="p">(</span><span class="s">&quot;&gt;&quot;</span><span class="p">)</span>
 
-        <span class="c1"># continue for next users</span>
+        <span class="c"># continue for next users</span>
         <span class="k">for</span> <span class="n">usr_i</span> <span class="ow">in</span> <span class="n">next_connections</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">get_connections</span><span class="p">(</span><span class="n">usr_i</span><span class="p">,</span> <span class="n">network</span><span class="p">,</span> <span class="n">depth</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="bp">True</span></div>
-
+        <span class="k">return</span> <span class="bp">True</span>
+</div>
 <div class="viewcode-block" id="InferSL.get_location"><a class="viewcode-back" href="../../../labelprop.html#twied.labelprop.inference.InferSL.get_location">[docs]</a>    <span class="k">def</span> <span class="nf">get_location</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">netw</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Infers the location of a user from a network.</span>
@@ -268,28 +268,28 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">ground_truth</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">netw</span><span class="o">.</span><span class="n">users</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="c1"># if there are more than the required number of locations</span>
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;locations&#39;</span><span class="p">,</span> <span class="p">[]))</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">req_locs</span><span class="p">:</span>
-                <span class="c1"># if in testing and the user is key, ignore him</span>
-                <span class="k">if</span> <span class="n">netw</span><span class="o">.</span><span class="n">testing</span> <span class="ow">and</span> <span class="nb">str</span><span class="p">(</span><span class="n">u</span><span class="p">[</span><span class="s1">&#39;user&#39;</span><span class="p">][</span><span class="s1">&#39;id&#39;</span><span class="p">])</span> <span class="o">==</span> <span class="nb">str</span><span class="p">(</span><span class="n">netw</span><span class="o">.</span><span class="n">key_user</span><span class="p">):</span>
+            <span class="c"># if there are more than the required number of locations</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;locations&#39;</span><span class="p">,</span> <span class="p">[]))</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">req_locs</span><span class="p">:</span>
+                <span class="c"># if in testing and the user is key, ignore him</span>
+                <span class="k">if</span> <span class="n">netw</span><span class="o">.</span><span class="n">testing</span> <span class="ow">and</span> <span class="nb">str</span><span class="p">(</span><span class="n">u</span><span class="p">[</span><span class="s">&#39;user&#39;</span><span class="p">][</span><span class="s">&#39;id&#39;</span><span class="p">])</span> <span class="o">==</span> <span class="nb">str</span><span class="p">(</span><span class="n">netw</span><span class="o">.</span><span class="n">key_user</span><span class="p">):</span>
                     <span class="k">continue</span>
 
-                <span class="n">locc</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;coordinates&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">u</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;locations&#39;</span><span class="p">)]</span>
-                <span class="n">ground_truth</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">u</span><span class="p">[</span><span class="s1">&#39;user&#39;</span><span class="p">][</span><span class="s1">&#39;id&#39;</span><span class="p">])]</span> <span class="o">=</span> <span class="n">geometric_mean</span><span class="p">(</span><span class="n">locc</span><span class="p">)</span>
+                <span class="n">locc</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span><span class="p">[</span><span class="s">&#39;coordinates&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">u</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;locations&#39;</span><span class="p">)]</span>
+                <span class="n">ground_truth</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">u</span><span class="p">[</span><span class="s">&#39;user&#39;</span><span class="p">][</span><span class="s">&#39;id&#39;</span><span class="p">])]</span> <span class="o">=</span> <span class="n">geometric_mean</span><span class="p">(</span><span class="n">locc</span><span class="p">)</span>
 
-        <span class="c1"># build a dictionary of connections between users</span>
+        <span class="c"># build a dictionary of connections between users</span>
         <span class="n">ego</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">dict</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">netw</span><span class="o">.</span><span class="n">connections</span><span class="p">:</span>
             <span class="n">ego</span><span class="p">[</span><span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">]][</span><span class="n">c</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="bp">True</span>
             <span class="n">ego</span><span class="p">[</span><span class="n">c</span><span class="p">[</span><span class="mi">1</span><span class="p">]][</span><span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="bp">True</span>
 
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_iter</span><span class="p">):</span>
-            <span class="c1"># if have found the required user, return</span>
+            <span class="c"># if have found the required user, return</span>
             <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">netw</span><span class="o">.</span><span class="n">key_user</span><span class="p">)</span> <span class="ow">in</span> <span class="n">ground_truth</span><span class="p">:</span>
                 <span class="k">break</span>
 
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ground_truth</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">netw</span><span class="o">.</span><span class="n">users</span><span class="p">):</span>
-                <span class="c1"># all users have been located</span>
+                <span class="c"># all users have been located</span>
                 <span class="k">break</span>
 
             <span class="n">new_gt</span> <span class="o">=</span> <span class="p">{}</span>
@@ -299,21 +299,21 @@
                     <span class="k">continue</span>
                 <span class="n">egon</span> <span class="o">=</span> <span class="n">ego</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">uid</span><span class="p">))</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
 
-                <span class="c1"># if any of the connections have been located</span>
+                <span class="c"># if any of the connections have been located</span>
                 <span class="k">if</span> <span class="nb">any</span><span class="p">([</span><span class="n">eg</span> <span class="ow">in</span> <span class="n">ground_truth</span> <span class="k">for</span> <span class="n">eg</span> <span class="ow">in</span> <span class="n">egon</span><span class="p">]):</span>
-                    <span class="c1"># set the grount_truth for that user</span>
+                    <span class="c"># set the grount_truth for that user</span>
                     <span class="n">friend_locs</span> <span class="o">=</span> <span class="p">[</span><span class="n">ground_truth</span><span class="p">[</span><span class="n">eg</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">eg</span> <span class="ow">in</span> <span class="n">egon</span> <span class="k">if</span> <span class="n">eg</span> <span class="ow">in</span> <span class="n">ground_truth</span><span class="p">]</span>
                     <span class="n">new_gt</span><span class="p">[</span><span class="n">uid</span><span class="p">]</span> <span class="o">=</span> <span class="n">geometric_mean</span><span class="p">(</span><span class="n">friend_locs</span><span class="p">)</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;Located </span><span class="si">%s</span><span class="s2"> (</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">u</span><span class="p">[</span><span class="s1">&#39;user&#39;</span><span class="p">][</span><span class="s1">&#39;screen_name&#39;</span><span class="p">],</span> <span class="n">new_gt</span><span class="p">[</span><span class="n">uid</span><span class="p">]))</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s">&quot;Located </span><span class="si">%s</span><span class="s"> (</span><span class="si">%s</span><span class="s">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">u</span><span class="p">[</span><span class="s">&#39;user&#39;</span><span class="p">][</span><span class="s">&#39;screen_name&#39;</span><span class="p">],</span> <span class="n">new_gt</span><span class="p">[</span><span class="n">uid</span><span class="p">]))</span>
 
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">new_gt</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="c1"># could not locate anymore users</span>
+                <span class="c"># could not locate anymore users</span>
                 <span class="k">break</span>
 
             <span class="n">ground_truth</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">new_gt</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">netw</span><span class="o">.</span><span class="n">key_user</span><span class="p">)</span> <span class="ow">in</span> <span class="n">ground_truth</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;Found user </span><span class="si">%s</span><span class="s2"> after </span><span class="si">%i</span><span class="s2"> iterations.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">netw</span><span class="o">.</span><span class="n">key_user</span><span class="p">,</span> <span class="n">i</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s">&quot;Found user </span><span class="si">%s</span><span class="s"> after </span><span class="si">%i</span><span class="s"> iterations.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">netw</span><span class="o">.</span><span class="n">key_user</span><span class="p">,</span> <span class="n">i</span><span class="p">))</span>
             <span class="k">return</span> <span class="n">ground_truth</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">netw</span><span class="o">.</span><span class="n">key_user</span><span class="p">)]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">None</span></div></div>
@@ -327,11 +327,14 @@
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="../../../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -353,7 +356,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016, Humphrey Shotton.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.2.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
     </div>
   </body>
 </html>

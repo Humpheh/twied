@@ -111,7 +111,7 @@ in ascending datetime order to the <a class="reference internal" href="#twied.ev
 The order is required as the classes will compare times based off
 the newest tweet, removing tweets or events older than a certain
 age.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ed</span> <span class="o">=</span> <span class="n">EventDetection</span><span class="p">()</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">ed</span> <span class="o">=</span> <span class="n">EventDetection</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tweets</span><span class="p">:</span>
 <span class="gp">&gt;&gt;&gt; </span>    <span class="n">ed</span><span class="o">.</span><span class="n">process_tweet</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
 </pre></div>
@@ -123,7 +123,7 @@ clusters that did not add a new tweet for a period of time.</p>
 arrived. Each cluster returned from these methods is a <code class="xref py py-class docutils literal"><span class="pre">EventCluster</span></code>
 object. A dictionary of the clusters can be retrieved using the <code class="xref py py-func docutils literal"><span class="pre">as_dict()</span></code>
 method on the cluster object.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">clusters</span> <span class="o">=</span> <span class="n">ed</span><span class="o">.</span><span class="n">get_all_clusters</span><span class="p">()</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">clusters</span> <span class="o">=</span> <span class="n">ed</span><span class="o">.</span><span class="n">get_all_clusters</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">cdicts</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span><span class="o">.</span><span class="n">as_dict</span><span class="p">()</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">clusters</span><span class="p">]</span>
 </pre></div>
 </div>
@@ -159,7 +159,7 @@ tweets to start an event at that coordinate. If this function is
 not set, then the population map will be assumed and the <cite>popmaploc</cite>
 string must be set.</p>
 <p>Simple example for a static value:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">popfunc</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">lat</span><span class="p">,</span> <span class="n">lon</span><span class="p">:</span> <span class="mi">25</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">popfunc</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">lat</span><span class="p">,</span> <span class="n">lon</span><span class="p">:</span> <span class="mi">25</span>
 </pre></div>
 </div>
 </li>
@@ -746,7 +746,7 @@ for fast indexing using a dictionary.</p>
 </tr>
 </tbody>
 </table>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">g</span> <span class="o">=</span> <span class="n">GeoGrid</span><span class="p">()</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">g</span> <span class="o">=</span> <span class="n">GeoGrid</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">g</span><span class="o">.</span><span class="n">get_str</span><span class="p">((</span><span class="mf">50.734910</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.533687</span><span class="p">))</span>
 <span class="go">&#39;50,-3&#39;</span>
 </pre></div>
@@ -1016,11 +1016,14 @@ required number of tweets.</p>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -1047,7 +1050,7 @@ required number of tweets.</p>
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016, Humphrey Shotton.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.2.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
     </div>
   </body>
 </html>

@@ -48,7 +48,7 @@
           <div class="body" role="main">
             
   <h1>Source code for twied.multiind.indicators.locfieldindicator</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">logging</span>
 
 <span class="kn">from</span> <span class="nn">.indicator</span> <span class="kn">import</span> <span class="n">Indicator</span>
 <span class="kn">from</span> <span class="nn">.messageindicator</span> <span class="kn">import</span> <span class="n">MessageIndicator</span>
@@ -60,9 +60,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
 
     <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
 
-
+</div>
 <div class="viewcode-block" id="LocFieldIndicator"><a class="viewcode-back" href="../../../../locinf.html#twied.multiind.indicators.locfieldindicator.LocFieldIndicator">[docs]</a><span class="k">class</span> <span class="nc">LocFieldIndicator</span><span class="p">(</span><span class="n">Indicator</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Indicator which finds toponyms in the location field and maps them to a area or point using</span>
@@ -71,63 +71,63 @@
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">polydb_url</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;multiindicator&quot;</span><span class="p">,</span> <span class="s2">&quot;gadm_polydb_path&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">polydb_url</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;multiindicator&quot;</span><span class="p">,</span> <span class="s">&quot;gadm_polydb_path&quot;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">geonames</span> <span class="o">=</span> <span class="n">GeonamesInterface</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">weight</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">getfloat</span><span class="p">(</span><span class="s2">&quot;mi_weights&quot;</span><span class="p">,</span> <span class="s2">&quot;GN&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">weight_pp</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">getfloat</span><span class="p">(</span><span class="s2">&quot;mi_weights&quot;</span><span class="p">,</span> <span class="s2">&quot;GN_1&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">weight_sym</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">getfloat</span><span class="p">(</span><span class="s2">&quot;mi_weights&quot;</span><span class="p">,</span> <span class="s2">&quot;GN_2&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">weight</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">getfloat</span><span class="p">(</span><span class="s">&quot;mi_weights&quot;</span><span class="p">,</span> <span class="s">&quot;GN&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">weight_pp</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">getfloat</span><span class="p">(</span><span class="s">&quot;mi_weights&quot;</span><span class="p">,</span> <span class="s">&quot;GN_1&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">weight_sym</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">getfloat</span><span class="p">(</span><span class="s">&quot;mi_weights&quot;</span><span class="p">,</span> <span class="s">&quot;GN_2&quot;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">messageindicator</span> <span class="o">=</span> <span class="n">MessageIndicator</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">messageindicator</span><span class="o">.</span><span class="n">weight</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">getfloat</span><span class="p">(</span><span class="s2">&quot;mi_weights&quot;</span><span class="p">,</span> <span class="s2">&quot;GN_3&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">messageindicator</span><span class="o">.</span><span class="n">weight</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">getfloat</span><span class="p">(</span><span class="s">&quot;mi_weights&quot;</span><span class="p">,</span> <span class="s">&quot;GN_3&quot;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_get_polys</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">countrypoly</span><span class="p">,</span> <span class="n">gadmpoly</span><span class="p">,</span> <span class="n">weight</span><span class="p">):</span>
-        <span class="k">if</span> <span class="s1">&#39;geonames&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">res</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">GeonamesException</span><span class="p">(</span><span class="s2">&quot;Geonames not present in result - rate limit reached?&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s">&#39;geonames&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">res</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">GeonamesException</span><span class="p">(</span><span class="s">&quot;Geonames not present in result - rate limit reached?&quot;</span><span class="p">)</span>
 
-        <span class="n">statstr</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">statstr</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
         <span class="n">polygons</span> <span class="o">=</span> <span class="p">[]</span>
 
         <span class="n">maxscore</span> <span class="o">=</span> <span class="bp">None</span>
 
-        <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">res</span><span class="p">[</span><span class="s1">&#39;geonames&#39;</span><span class="p">]:</span>
+        <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">res</span><span class="p">[</span><span class="s">&#39;geonames&#39;</span><span class="p">]:</span>
             <span class="n">userpoint</span> <span class="o">=</span> <span class="bp">True</span>
 
             <span class="k">if</span> <span class="n">maxscore</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
-                <span class="n">maxscore</span> <span class="o">=</span> <span class="n">g</span><span class="p">[</span><span class="s1">&#39;score&#39;</span><span class="p">]</span>
-            <span class="n">belief</span> <span class="o">=</span> <span class="n">g</span><span class="p">[</span><span class="s1">&#39;score&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">maxscore</span>
+                <span class="n">maxscore</span> <span class="o">=</span> <span class="n">g</span><span class="p">[</span><span class="s">&#39;score&#39;</span><span class="p">]</span>
+            <span class="n">belief</span> <span class="o">=</span> <span class="n">g</span><span class="p">[</span><span class="s">&#39;score&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">maxscore</span>
 
-            <span class="k">if</span> <span class="s1">&#39;country&#39;</span> <span class="ow">in</span> <span class="n">g</span><span class="p">[</span><span class="s1">&#39;fclName&#39;</span><span class="p">]:</span>
-                <span class="n">polys</span> <span class="o">=</span> <span class="n">countrypoly</span><span class="o">.</span><span class="n">get_polys</span><span class="p">(</span><span class="n">g</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_weight</span><span class="p">(</span><span class="n">belief</span><span class="p">,</span> <span class="n">weight</span><span class="p">))</span>
+            <span class="k">if</span> <span class="s">&#39;country&#39;</span> <span class="ow">in</span> <span class="n">g</span><span class="p">[</span><span class="s">&#39;fclName&#39;</span><span class="p">]:</span>
+                <span class="n">polys</span> <span class="o">=</span> <span class="n">countrypoly</span><span class="o">.</span><span class="n">get_polys</span><span class="p">(</span><span class="n">g</span><span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_weight</span><span class="p">(</span><span class="n">belief</span><span class="p">,</span> <span class="n">weight</span><span class="p">))</span>
                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">polys</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                     <span class="n">polygons</span> <span class="o">+=</span> <span class="n">polys</span>
                     <span class="n">userpoint</span> <span class="o">=</span> <span class="bp">False</span>
-                    <span class="n">statstr</span> <span class="o">+=</span> <span class="s2">&quot;#&quot;</span>
+                    <span class="n">statstr</span> <span class="o">+=</span> <span class="s">&quot;#&quot;</span>
 
-            <span class="k">if</span> <span class="n">userpoint</span> <span class="ow">and</span> <span class="nb">any</span><span class="p">(</span><span class="n">p</span> <span class="ow">in</span> <span class="n">g</span><span class="p">[</span><span class="s1">&#39;fclName&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;state&#39;</span><span class="p">,</span> <span class="s1">&#39;region&#39;</span><span class="p">]):</span>
-                <span class="c1"># getpolygon for the place</span>
-                <span class="n">polys</span> <span class="o">=</span> <span class="n">gadmpoly</span><span class="o">.</span><span class="n">get_polys</span><span class="p">(</span><span class="n">g</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_weight</span><span class="p">(</span><span class="n">belief</span><span class="p">,</span> <span class="n">weight</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">userpoint</span> <span class="ow">and</span> <span class="nb">any</span><span class="p">(</span><span class="n">p</span> <span class="ow">in</span> <span class="n">g</span><span class="p">[</span><span class="s">&#39;fclName&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&#39;state&#39;</span><span class="p">,</span> <span class="s">&#39;region&#39;</span><span class="p">]):</span>
+                <span class="c"># getpolygon for the place</span>
+                <span class="n">polys</span> <span class="o">=</span> <span class="n">gadmpoly</span><span class="o">.</span><span class="n">get_polys</span><span class="p">(</span><span class="n">g</span><span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_weight</span><span class="p">(</span><span class="n">belief</span><span class="p">,</span> <span class="n">weight</span><span class="p">))</span>
                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">polys</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                     <span class="n">polygons</span> <span class="o">+=</span> <span class="n">polys</span>
                     <span class="n">userpoint</span> <span class="o">=</span> <span class="bp">False</span>
-                    <span class="n">statstr</span> <span class="o">+=</span> <span class="s2">&quot;=&quot;</span>
+                    <span class="n">statstr</span> <span class="o">+=</span> <span class="s">&quot;=&quot;</span>
 
             <span class="k">if</span> <span class="n">userpoint</span><span class="p">:</span>
-                <span class="c1"># cannot get any polys, just plot the point</span>
-                <span class="n">polypoint</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">point_to_poly</span><span class="p">((</span><span class="nb">float</span><span class="p">(</span><span class="n">g</span><span class="p">[</span><span class="s1">&#39;lng&#39;</span><span class="p">]),</span> <span class="nb">float</span><span class="p">(</span><span class="n">g</span><span class="p">[</span><span class="s1">&#39;lat&#39;</span><span class="p">])),</span> <span class="n">belief</span><span class="p">,</span> <span class="n">weight</span><span class="p">)</span>
+                <span class="c"># cannot get any polys, just plot the point</span>
+                <span class="n">polypoint</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">point_to_poly</span><span class="p">((</span><span class="nb">float</span><span class="p">(</span><span class="n">g</span><span class="p">[</span><span class="s">&#39;lng&#39;</span><span class="p">]),</span> <span class="nb">float</span><span class="p">(</span><span class="n">g</span><span class="p">[</span><span class="s">&#39;lat&#39;</span><span class="p">])),</span> <span class="n">belief</span><span class="p">,</span> <span class="n">weight</span><span class="p">)</span>
                 <span class="n">polygons</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">polypoint</span><span class="p">)</span>
-                <span class="n">statstr</span> <span class="o">+=</span> <span class="s2">&quot;.&quot;</span>
+                <span class="n">statstr</span> <span class="o">+=</span> <span class="s">&quot;.&quot;</span>
 
-        <span class="n">pargs</span> <span class="o">=</span> <span class="p">(</span><span class="n">LocFieldIndicator</span><span class="o">.</span><span class="n">__name__</span><span class="p">[:</span><span class="o">-</span><span class="mi">9</span><span class="p">],</span> <span class="nb">len</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="s1">&#39;geonames&#39;</span><span class="p">]),</span> <span class="n">statstr</span><span class="p">)</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%10s</span><span class="s2"> =  </span><span class="si">%i</span><span class="s2"> geonames [</span><span class="si">%s</span><span class="s2">]&quot;</span> <span class="o">%</span> <span class="n">pargs</span><span class="p">)</span>
+        <span class="n">pargs</span> <span class="o">=</span> <span class="p">(</span><span class="n">LocFieldIndicator</span><span class="o">.</span><span class="n">__name__</span><span class="p">[:</span><span class="o">-</span><span class="mi">9</span><span class="p">],</span> <span class="nb">len</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="s">&#39;geonames&#39;</span><span class="p">]),</span> <span class="n">statstr</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%10s</span><span class="s"> =  </span><span class="si">%i</span><span class="s"> geonames [</span><span class="si">%s</span><span class="s">]&quot;</span> <span class="o">%</span> <span class="n">pargs</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">polygons</span>
 
     <span class="k">def</span> <span class="nf">_try_split</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">location</span><span class="p">,</span> <span class="n">symbol</span><span class="p">,</span> <span class="n">countrypoly</span><span class="p">,</span> <span class="n">gadmpoly</span><span class="p">,</span> <span class="n">weight</span><span class="p">):</span>
         <span class="n">polygons</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">linesplit</span> <span class="o">=</span> <span class="n">location</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">symbol</span><span class="p">)</span>
-        <span class="n">linesplit</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">linesplit</span> <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">]</span>
+        <span class="n">linesplit</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">linesplit</span> <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">!=</span> <span class="s">&#39;&#39;</span><span class="p">]</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">linesplit</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">linesplit</span><span class="p">:</span>
                 <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">geonames</span><span class="o">.</span><span class="n">req</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
@@ -138,26 +138,26 @@
         <span class="k">if</span> <span class="n">location</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">[]</span>
 
-        <span class="c1"># setup db</span>
+        <span class="c"># setup db</span>
         <span class="n">countrypoly</span> <span class="o">=</span> <span class="n">CountryPolyInterface</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">polydb_url</span><span class="p">)</span>
         <span class="n">gadmpoly</span> <span class="o">=</span> <span class="n">GADMPolyInterface</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">polydb_url</span><span class="p">)</span>
 
-        <span class="c1"># TODO: edit the location to conform to standards</span>
+        <span class="c"># TODO: edit the location to conform to standards</span>
 
         <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">geonames</span><span class="o">.</span><span class="n">req</span><span class="p">(</span><span class="n">location</span><span class="p">)</span>
 
-        <span class="c1"># check if failed, if have then raise an exception</span>
+        <span class="c"># check if failed, if have then raise an exception</span>
         <span class="n">polygons</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_polys</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">countrypoly</span><span class="p">,</span> <span class="n">gadmpoly</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">weight</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">polygons</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Trying locationfield slashes...&quot;</span><span class="p">)</span>
-            <span class="n">polygons</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_try_split</span><span class="p">(</span><span class="n">location</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">countrypoly</span><span class="p">,</span> <span class="n">gadmpoly</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">weight_pp</span><span class="p">)</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Trying locationfield slashes...&quot;</span><span class="p">)</span>
+            <span class="n">polygons</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_try_split</span><span class="p">(</span><span class="n">location</span><span class="p">,</span> <span class="s">&quot;/&quot;</span><span class="p">,</span> <span class="n">countrypoly</span><span class="p">,</span> <span class="n">gadmpoly</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">weight_pp</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">polygons</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Trying locationfield dashes...&quot;</span><span class="p">)</span>
-            <span class="n">polygons</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_try_split</span><span class="p">(</span><span class="n">location</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="n">countrypoly</span><span class="p">,</span> <span class="n">gadmpoly</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">weight_sym</span><span class="p">)</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Trying locationfield dashes...&quot;</span><span class="p">)</span>
+            <span class="n">polygons</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_try_split</span><span class="p">(</span><span class="n">location</span><span class="p">,</span> <span class="s">&quot;-&quot;</span><span class="p">,</span> <span class="n">countrypoly</span><span class="p">,</span> <span class="n">gadmpoly</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">weight_sym</span><span class="p">)</span>
 
-        <span class="c1"># if geonames couldn&#39;t find anything - try running it through the backup message indicator</span>
+        <span class="c"># if geonames couldn&#39;t find anything - try running it through the backup message indicator</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">polygons</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">polygons</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">messageindicator</span><span class="o">.</span><span class="n">get_loc</span><span class="p">(</span><span class="n">location</span><span class="p">)</span>
 
@@ -175,11 +175,14 @@
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="../../../../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -201,7 +204,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016, Humphrey Shotton.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.2.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
     </div>
   </body>
 </html>

@@ -48,7 +48,7 @@
           <div class="body" role="main">
             
   <h1>Source code for twied.eventec.eventdetection</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">.clustermanager</span> <span class="kn">import</span> <span class="n">ClusterManager</span>
+<span class="kn">from</span> <span class="nn">.clustermanager</span> <span class="kn">import</span> <span class="n">ClusterManager</span>
 <span class="kn">from</span> <span class="nn">.clustercreatorgrid</span> <span class="kn">import</span> <span class="n">ClusterCreatorGrid</span>
 <span class="kn">from</span> <span class="nn">.clustercreator</span> <span class="kn">import</span> <span class="n">ClusterCreator</span>
 <span class="kn">from</span> <span class="nn">.clusterupdater</span> <span class="kn">import</span> <span class="n">ClusterUpdater</span>
@@ -114,7 +114,7 @@
 <span class="sd">        in each cluster.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="o">=</span><span class="s1">&#39;geo.coordinate&#39;</span><span class="p">,</span> <span class="n">tsfield</span><span class="o">=</span><span class="s1">&#39;timestamp_obj&#39;</span><span class="p">,</span> <span class="n">gridded</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="o">=</span><span class="s">&#39;geo.coordinate&#39;</span><span class="p">,</span> <span class="n">tsfield</span><span class="o">=</span><span class="s">&#39;timestamp_obj&#39;</span><span class="p">,</span> <span class="n">gridded</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
                  <span class="n">popfunc</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">popmaploc</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">mincnt</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">mdcnt</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
                  <span class="n">cluster_radius</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">cluster_timediff</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">minutes</span><span class="o">=</span><span class="mi">30</span><span class="p">),</span>
                  <span class="n">cluster_maxage</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">hours</span><span class="o">=</span><span class="mi">6</span><span class="p">)):</span>
@@ -181,29 +181,29 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tsfield</span> <span class="o">=</span> <span class="n">tsfield</span>
 
-        <span class="c1"># Setup the cluster manager and updater modules.</span>
+        <span class="c"># Setup the cluster manager and updater modules.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">c_manager</span> <span class="o">=</span> <span class="n">ClusterManager</span><span class="p">(</span><span class="n">field</span><span class="o">=</span><span class="n">field</span><span class="p">,</span> <span class="n">tsfield</span><span class="o">=</span><span class="n">tsfield</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="n">cluster_radius</span><span class="p">,</span>
                                         <span class="n">timediff</span><span class="o">=</span><span class="n">cluster_timediff</span><span class="p">,</span> <span class="n">maxage</span><span class="o">=</span><span class="n">cluster_maxage</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">c_updater</span> <span class="o">=</span> <span class="n">ClusterUpdater</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">c_manager</span><span class="p">)</span>
 
-        <span class="c1"># Setup the cluster creator selected from the gridded parameter</span>
+        <span class="c"># Setup the cluster creator selected from the gridded parameter</span>
         <span class="k">if</span> <span class="n">gridded</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">c_creator</span> <span class="o">=</span> <span class="n">ClusterCreatorGrid</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">c_manager</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">c_creator</span> <span class="o">=</span> <span class="n">ClusterCreator</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">c_manager</span><span class="p">)</span>
 
-        <span class="c1"># Setup the population function</span>
+        <span class="c"># Setup the population function</span>
         <span class="k">if</span> <span class="n">popfunc</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">popmaploc</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
-            <span class="c1"># Setup the population map</span>
+            <span class="c"># Setup the population map</span>
             <span class="n">popmap</span> <span class="o">=</span> <span class="n">PopMap</span><span class="p">(</span><span class="n">popmaploc</span><span class="p">)</span>
-            <span class="n">ppfnc</span> <span class="o">=</span> <span class="n">popmap</span><span class="o">.</span><span class="n">get_reqfunc_uk</span><span class="p">(</span><span class="n">mdcnt</span><span class="p">,</span> <span class="n">mincnt</span><span class="p">)</span>  <span class="c1"># (5, 3 for geo)</span>
+            <span class="n">ppfnc</span> <span class="o">=</span> <span class="n">popmap</span><span class="o">.</span><span class="n">get_reqfunc_uk</span><span class="p">(</span><span class="n">mdcnt</span><span class="p">,</span> <span class="n">mincnt</span><span class="p">)</span>  <span class="c"># (5, 3 for geo)</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">popfunc</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">lt</span><span class="p">,</span> <span class="n">ln</span><span class="p">:</span> <span class="n">ppfnc</span><span class="p">(</span><span class="n">popmap</span><span class="o">.</span><span class="n">get_population</span><span class="p">(</span><span class="n">ln</span><span class="p">,</span> <span class="n">lt</span><span class="p">))</span>
         <span class="k">elif</span> <span class="n">popfunc</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">popmaploc</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">popfunc</span> <span class="o">=</span> <span class="n">popfunc</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Incorrect setup of Event Detection class: &quot;</span>
-                            <span class="s2">&quot;popfunc and popmaploc cannot both be null or set.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s">&quot;Incorrect setup of Event Detection class: &quot;</span>
+                            <span class="s">&quot;popfunc and popmaploc cannot both be null or set.&quot;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="EventDetection.process_tweet"><a class="viewcode-back" href="../../../eventdetection.html#twied.eventec.eventdetection.EventDetection.process_tweet">[docs]</a>    <span class="k">def</span> <span class="nf">process_tweet</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tweet</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -219,48 +219,48 @@
 <span class="sd">        :return: Whether the tweet was processed correctly.</span>
 <span class="sd">        :rtype: bool</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># Try to get the coordinate, if fails, pass the tweet</span>
+        <span class="c"># Try to get the coordinate, if fails, pass the tweet</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">coord</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">c_manager</span><span class="o">.</span><span class="n">get_coordinate</span><span class="p">(</span><span class="n">tweet</span><span class="p">)</span>
-            <span class="n">tweet</span><span class="p">[</span><span class="s1">&#39;_coord&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">coord</span>
+            <span class="n">tweet</span><span class="p">[</span><span class="s">&#39;_coord&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">coord</span>
 
-            <span class="n">tweet</span><span class="p">[</span><span class="s1">&#39;_popreq&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">popfunc</span><span class="p">(</span><span class="n">coord</span><span class="o">.</span><span class="n">lon</span><span class="p">,</span> <span class="n">coord</span><span class="o">.</span><span class="n">lat</span><span class="p">)</span>
+            <span class="n">tweet</span><span class="p">[</span><span class="s">&#39;_popreq&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">popfunc</span><span class="p">(</span><span class="n">coord</span><span class="o">.</span><span class="n">lon</span><span class="p">,</span> <span class="n">coord</span><span class="o">.</span><span class="n">lat</span><span class="p">)</span>
         <span class="k">except</span> <span class="p">(</span><span class="ne">KeyError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
-            <span class="c1"># Could not get coordinate or population</span>
+            <span class="c"># Could not get coordinate or population</span>
             <span class="k">return</span> <span class="bp">False</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="c1"># Unknown error was thrown</span>
+            <span class="c"># Unknown error was thrown</span>
             <span class="k">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
             <span class="k">raise</span> <span class="n">e</span>
 
-        <span class="c1"># Update the manager with the time of the latest tweet</span>
+        <span class="c"># Update the manager with the time of the latest tweet</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">c_manager</span><span class="o">.</span><span class="n">lasttime</span> <span class="o">=</span> <span class="n">tweet</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">tsfield</span><span class="p">]</span>
 
-        <span class="c1"># Attempt to create new cluster</span>
+        <span class="c"># Attempt to create new cluster</span>
         <span class="n">created</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">c_creator</span><span class="o">.</span><span class="n">process_tweet</span><span class="p">(</span><span class="n">tweet</span><span class="p">)</span>
 
-        <span class="c1"># If none created, update existing</span>
+        <span class="c"># If none created, update existing</span>
         <span class="n">updated</span> <span class="o">=</span> <span class="bp">False</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">created</span><span class="p">:</span>
             <span class="n">updated</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">c_updater</span><span class="o">.</span><span class="n">process_tweet</span><span class="p">(</span><span class="n">tweet</span><span class="p">)</span>
 
-        <span class="c1"># If tweet was not added to a cluster, add to unclustered</span>
+        <span class="c"># If tweet was not added to a cluster, add to unclustered</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">updated</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">created</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">c_creator</span><span class="o">.</span><span class="n">add_unclustered</span><span class="p">(</span><span class="n">tweet</span><span class="p">)</span>
 
-        <span class="c1"># Update and merge clusters</span>
+        <span class="c"># Update and merge clusters</span>
         <span class="k">if</span> <span class="n">created</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">c_updater</span><span class="o">.</span><span class="n">update_clusters</span><span class="p">(</span><span class="n">tweet</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">c_updater</span><span class="o">.</span><span class="n">update_oldclusters</span><span class="p">(</span><span class="n">tweet</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="bp">True</span></div>
-
+        <span class="k">return</span> <span class="bp">True</span>
+</div>
 <div class="viewcode-block" id="EventDetection.get_clusters"><a class="viewcode-back" href="../../../eventdetection.html#twied.eventec.eventdetection.EventDetection.get_clusters">[docs]</a>    <span class="k">def</span> <span class="nf">get_clusters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Gets the list of current active clusters from the :class:`ClusterManager`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">c_manager</span><span class="o">.</span><span class="n">clusters</span></div>
-
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">c_manager</span><span class="o">.</span><span class="n">clusters</span>
+</div>
 <div class="viewcode-block" id="EventDetection.get_unclustered"><a class="viewcode-back" href="../../../eventdetection.html#twied.eventec.eventdetection.EventDetection.get_unclustered">[docs]</a>    <span class="k">def</span> <span class="nf">get_unclustered</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Gets the list of current unclustered tweets from the :class:`ClusterCreator`.</span>
@@ -274,28 +274,27 @@
 <span class="sd">        :returns: List of unclustered tweets.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">c_creator</span><span class="p">)</span> <span class="o">==</span> <span class="n">ClusterCreatorGrid</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;List of unclustered tweets cannot be retrieved using the &quot;</span>
-                            <span class="s2">&quot;grid version of ClusterCreator&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s">&quot;List of unclustered tweets cannot be retrieved using the &quot;</span>
+                            <span class="s">&quot;grid version of ClusterCreator&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">c_creator</span><span class="o">.</span><span class="n">unclustered</span></div>
-
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">c_creator</span><span class="o">.</span><span class="n">unclustered</span>
+</div>
 <div class="viewcode-block" id="EventDetection.get_unclustered_points"><a class="viewcode-back" href="../../../eventdetection.html#twied.eventec.eventdetection.EventDetection.get_unclustered_points">[docs]</a>    <span class="k">def</span> <span class="nf">get_unclustered_points</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">c_manager</span><span class="o">.</span><span class="n">get_coordinate</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_unclustered</span><span class="p">()]</span></div>
-
+        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">c_manager</span><span class="o">.</span><span class="n">get_coordinate</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_unclustered</span><span class="p">()]</span>
+</div>
 <div class="viewcode-block" id="EventDetection.get_all_clusters"><a class="viewcode-back" href="../../../eventdetection.html#twied.eventec.eventdetection.EventDetection.get_all_clusters">[docs]</a>    <span class="k">def</span> <span class="nf">get_all_clusters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Gets the list of current active clusters and old clusters appended</span>
 <span class="sd">        together from the :class:`ClusterManager`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">c_manager</span><span class="o">.</span><span class="n">get_all_clusters</span><span class="p">()</span></div>
-
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">c_manager</span><span class="o">.</span><span class="n">get_all_clusters</span><span class="p">()</span>
+</div>
     <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a string of the status from each of the three modules.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">c_manager</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">c_creator</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">c_updater</span><span class="p">)</span></div>
-
-</pre></div>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">c_manager</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot; &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">c_creator</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot; &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">c_updater</span><span class="p">)</span>
+</pre></div></div>
 
           </div>
         </div>
@@ -305,11 +304,14 @@
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="../../../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -331,7 +333,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016, Humphrey Shotton.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.2.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
     </div>
   </body>
 </html>

@@ -48,7 +48,7 @@
           <div class="body" role="main">
             
   <h1>Source code for twied.multiind.indicators.tzindicator</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">re</span>
 
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">Indicator</span>
 <span class="kn">from</span> <span class="nn">..interfaces</span> <span class="kn">import</span> <span class="n">TZPolyInterface</span>
@@ -61,8 +61,8 @@
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">polydb_url</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;multiindicator&quot;</span><span class="p">,</span> <span class="s2">&quot;gadm_polydb_path&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">weight</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">getfloat</span><span class="p">(</span><span class="s2">&quot;mi_weights&quot;</span><span class="p">,</span> <span class="s2">&quot;TZ&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">polydb_url</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;multiindicator&quot;</span><span class="p">,</span> <span class="s">&quot;gadm_polydb_path&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">weight</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">getfloat</span><span class="p">(</span><span class="s">&quot;mi_weights&quot;</span><span class="p">,</span> <span class="s">&quot;TZ&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">history</span> <span class="o">=</span> <span class="p">{}</span>
 
 <div class="viewcode-block" id="TZIndicator.get_loc"><a class="viewcode-back" href="../../../../locinf.html#twied.multiind.indicators.tzindicator.TZIndicator.get_loc">[docs]</a>    <span class="k">def</span> <span class="nf">get_loc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tz</span><span class="p">):</span>
@@ -72,19 +72,19 @@
         <span class="k">if</span> <span class="n">tz</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="p">[</span><span class="n">tz</span><span class="p">]</span>
 
-        <span class="c1"># setup db connection</span>
+        <span class="c"># setup db connection</span>
         <span class="n">tzpoly</span> <span class="o">=</span> <span class="n">TZPolyInterface</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">polydb_url</span><span class="p">)</span>
 
-        <span class="c1"># Check if falls in america</span>
-        <span class="k">if</span> <span class="s1">&#39;Pacific Time (US &amp; Canada)&#39;</span> <span class="ow">in</span> <span class="n">tz</span><span class="p">:</span>
-            <span class="n">result</span> <span class="o">=</span> <span class="n">tzpoly</span><span class="o">.</span><span class="n">get_polys_america</span><span class="p">(</span><span class="s1">&#39;PST&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_weight</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
-        <span class="k">elif</span> <span class="s1">&#39;Eastern Time (US &amp; Canada)&#39;</span> <span class="ow">in</span> <span class="n">tz</span><span class="p">:</span>
-            <span class="n">result</span> <span class="o">=</span> <span class="n">tzpoly</span><span class="o">.</span><span class="n">get_polys_america</span><span class="p">(</span><span class="s1">&#39;EST&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_weight</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
-        <span class="k">elif</span> <span class="s1">&#39;Central Time (US &amp; Canada)&#39;</span> <span class="ow">in</span> <span class="n">tz</span><span class="p">:</span>
-            <span class="n">result</span> <span class="o">=</span> <span class="n">tzpoly</span><span class="o">.</span><span class="n">get_polys_america</span><span class="p">(</span><span class="s1">&#39;CST&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_weight</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+        <span class="c"># Check if falls in america</span>
+        <span class="k">if</span> <span class="s">&#39;Pacific Time (US &amp; Canada)&#39;</span> <span class="ow">in</span> <span class="n">tz</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">tzpoly</span><span class="o">.</span><span class="n">get_polys_america</span><span class="p">(</span><span class="s">&#39;PST&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_weight</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="s">&#39;Eastern Time (US &amp; Canada)&#39;</span> <span class="ow">in</span> <span class="n">tz</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">tzpoly</span><span class="o">.</span><span class="n">get_polys_america</span><span class="p">(</span><span class="s">&#39;EST&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_weight</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="s">&#39;Central Time (US &amp; Canada)&#39;</span> <span class="ow">in</span> <span class="n">tz</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">tzpoly</span><span class="o">.</span><span class="n">get_polys_america</span><span class="p">(</span><span class="s">&#39;CST&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_weight</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># Format timezone a little better</span>
-            <span class="n">tz</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">r&#39;\([^)]*\)&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">tz</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="p">)</span>
+            <span class="c"># Format timezone a little better</span>
+            <span class="n">tz</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s">r&#39;\([^)]*\)&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="n">tz</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39; &#39;</span><span class="p">,</span> <span class="s">&#39;_&#39;</span><span class="p">)</span>
 
             <span class="n">result</span> <span class="o">=</span> <span class="n">tzpoly</span><span class="o">.</span><span class="n">get_polys</span><span class="p">(</span><span class="n">tz</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_weight</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
 
@@ -102,11 +102,14 @@
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="../../../../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -128,7 +131,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016, Humphrey Shotton.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.2.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
     </div>
   </body>
 </html>

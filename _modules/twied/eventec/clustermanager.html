@@ -48,7 +48,7 @@
           <div class="body" role="main">
             
   <h1>Source code for twied.eventec.clustermanager</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 
 <span class="kn">from</span> <span class="nn">geopy.distance</span> <span class="kn">import</span> <span class="n">vincenty</span>
@@ -86,11 +86,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">oldclusters</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">geofield</span> <span class="o">=</span> <span class="n">field</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">geofieldspl</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">geofieldspl</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;.&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tsfield</span> <span class="o">=</span> <span class="n">tsfield</span>
 
-        <span class="c1"># Store the settings for the cluster</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">radius</span> <span class="o">=</span> <span class="n">radius</span>  <span class="c1"># km</span>
+        <span class="c"># Store the settings for the cluster</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">radius</span> <span class="o">=</span> <span class="n">radius</span>  <span class="c"># km</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">timediff</span> <span class="o">=</span> <span class="n">timediff</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">maxage</span> <span class="o">=</span> <span class="n">maxage</span>
 
@@ -110,7 +110,7 @@
 
 <span class="sd">        :return: String of the number of active clusters.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="s2">&quot;&lt;ClusterManager: </span><span class="si">%i</span><span class="s2"> clusters, </span><span class="si">%i</span><span class="s2"> old clusters&gt;&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">clusters</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">oldclusters</span><span class="p">))</span>
+        <span class="k">return</span> <span class="s">&quot;&lt;ClusterManager: </span><span class="si">%i</span><span class="s"> clusters, </span><span class="si">%i</span><span class="s"> old clusters&gt;&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">clusters</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">oldclusters</span><span class="p">))</span>
 
 <div class="viewcode-block" id="ClusterManager.get_coordinate"><a class="viewcode-back" href="../../../eventdetection.html#twied.eventec.clustermanager.ClusterManager.get_coordinate">[docs]</a>    <span class="k">def</span> <span class="nf">get_coordinate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tweet</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -123,14 +123,14 @@
 <span class="sd">        :return: Coordinate object.</span>
 <span class="sd">        :rtype: :class:`Coordinate`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># Traverses the tweet dictionary to the correct field</span>
+        <span class="c"># Traverses the tweet dictionary to the correct field</span>
         <span class="n">cur_dict</span> <span class="o">=</span> <span class="n">tweet</span>
         <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">geofieldspl</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
             <span class="n">cur_dict</span> <span class="o">=</span> <span class="n">cur_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">geofieldspl</span><span class="p">[</span><span class="n">x</span><span class="p">])</span>
 
         <span class="n">coord</span> <span class="o">=</span> <span class="n">cur_dict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">geofieldspl</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
-        <span class="k">return</span> <span class="n">Coordinate</span><span class="p">(</span><span class="n">coord</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">coord</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span></div>
-
+        <span class="k">return</span> <span class="n">Coordinate</span><span class="p">(</span><span class="n">coord</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">coord</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+</div>
 <div class="viewcode-block" id="ClusterManager.add_cluster"><a class="viewcode-back" href="../../../eventdetection.html#twied.eventec.clustermanager.ClusterManager.add_cluster">[docs]</a>    <span class="k">def</span> <span class="nf">add_cluster</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tweets</span><span class="p">,</span> <span class="n">maintweet</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates a new cluster and saves it. The `maintweet` parameter will be</span>
@@ -142,10 +142,10 @@
 <span class="sd">        :rtype: :class:`TweetCluster`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">newcls</span> <span class="o">=</span> <span class="n">TweetCluster</span><span class="p">(</span><span class="n">tweets</span><span class="p">,</span> <span class="n">maintweet</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Created cluster </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="nb">id</span><span class="p">(</span><span class="n">newcls</span><span class="p">))</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Created cluster </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="nb">id</span><span class="p">(</span><span class="n">newcls</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">newcls</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">newcls</span></div>
-
+        <span class="k">return</span> <span class="n">newcls</span>
+</div>
 <div class="viewcode-block" id="ClusterManager.remove_cluster"><a class="viewcode-back" href="../../../eventdetection.html#twied.eventec.clustermanager.ClusterManager.remove_cluster">[docs]</a>    <span class="k">def</span> <span class="nf">remove_cluster</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cluster</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Removes a cluster from the current active list and adds it to the</span>
@@ -157,13 +157,13 @@
 <span class="sd">        :rtype: bool</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="c1"># Remove the cluster from the active and add to old</span>
+            <span class="c"># Remove the cluster from the active and add to old</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">cluster</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">oldclusters</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cluster</span><span class="p">)</span>
             <span class="k">return</span> <span class="bp">True</span>
         <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">False</span></div>
-
+            <span class="k">return</span> <span class="bp">False</span>
+</div>
 <div class="viewcode-block" id="ClusterManager.merge_clusters"><a class="viewcode-back" href="../../../eventdetection.html#twied.eventec.clustermanager.ClusterManager.merge_clusters">[docs]</a>    <span class="k">def</span> <span class="nf">merge_clusters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c1</span><span class="p">,</span> <span class="n">c2</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Merges two clusters together. Will add of the information from</span>
@@ -174,10 +174,10 @@
 <span class="sd">        :param c2: Second cluster to merge.</span>
 <span class="sd">        :type c2: :class:`TweetCluster`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># Merging clusters</span>
+        <span class="c"># Merging clusters</span>
         <span class="n">c1</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">c2</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">c2</span><span class="p">)</span></div>
-
+        <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">c2</span><span class="p">)</span>
+</div>
 <div class="viewcode-block" id="ClusterManager.get_all_clusters"><a class="viewcode-back" href="../../../eventdetection.html#twied.eventec.clustermanager.ClusterManager.get_all_clusters">[docs]</a>    <span class="k">def</span> <span class="nf">get_all_clusters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Gets a list of all clusters that have been created, including ones</span>
@@ -186,9 +186,9 @@
 <span class="sd">        :return: List of clusters.</span>
 <span class="sd">        :rtype: list</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">oldclusters</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span></div></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">oldclusters</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span>
 
-
+</div></div>
 <div class="viewcode-block" id="Coordinate"><a class="viewcode-back" href="../../../eventdetection.html#twied.eventec.clustermanager.Coordinate">[docs]</a><span class="k">class</span> <span class="nc">Coordinate</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Object to store the lat and lon coordinates and provides some methods</span>
@@ -231,17 +231,17 @@
 
 <span class="sd">        :return: List of the lat, lon.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">arr</span></div>
-
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">arr</span>
+</div>
 <div class="viewcode-block" id="Coordinate.rev"><a class="viewcode-back" href="../../../eventdetection.html#twied.eventec.clustermanager.Coordinate.rev">[docs]</a>    <span class="k">def</span> <span class="nf">rev</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Gets the reverse form of the coordinates in lon, lat.</span>
 
 <span class="sd">        :return: List of the lon, lat.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">arr_r</span></div></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">arr_r</span>
 
-
+</div></div>
 <div class="viewcode-block" id="TweetCluster"><a class="viewcode-back" href="../../../eventdetection.html#twied.eventec.clustermanager.TweetCluster">[docs]</a><span class="k">class</span> <span class="nc">TweetCluster</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Holds information about a tweet cluster including the list of tweets within</span>
@@ -267,13 +267,13 @@
 <span class="sd">        :param clsman: The :class:`ClusterManager` object.</span>
 <span class="sd">        :type clsman: :class:`ClusterManager`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># Store the tweets in order they were posted</span>
+        <span class="c"># Store the tweets in order they were posted</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_tweets</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">tweets</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="n">clsman</span><span class="o">.</span><span class="n">tsfield</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">centres</span> <span class="o">=</span> <span class="p">[</span><span class="n">centre</span><span class="p">[</span><span class="s1">&#39;_coord&#39;</span><span class="p">]]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">popreq</span> <span class="o">=</span> <span class="n">centre</span><span class="p">[</span><span class="s1">&#39;_popreq&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">centres</span> <span class="o">=</span> <span class="p">[</span><span class="n">centre</span><span class="p">[</span><span class="s">&#39;_coord&#39;</span><span class="p">]]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">popreq</span> <span class="o">=</span> <span class="n">centre</span><span class="p">[</span><span class="s">&#39;_popreq&#39;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">clsman</span> <span class="o">=</span> <span class="n">clsman</span>
 
-        <span class="c1"># Save the latest tweet</span>
+        <span class="c"># Save the latest tweet</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">latest</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tweets</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="n">clsman</span><span class="o">.</span><span class="n">tsfield</span><span class="p">]</span>
 
 <div class="viewcode-block" id="TweetCluster.merge"><a class="viewcode-back" href="../../../eventdetection.html#twied.eventec.clustermanager.TweetCluster.merge">[docs]</a>    <span class="k">def</span> <span class="nf">merge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cluster</span><span class="p">):</span>
@@ -286,8 +286,8 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_tweets</span> <span class="o">+=</span> <span class="n">cluster</span><span class="o">.</span><span class="n">_tweets</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">centres</span> <span class="o">+=</span> <span class="n">cluster</span><span class="o">.</span><span class="n">centres</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">latest</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">latest</span><span class="p">,</span> <span class="n">cluster</span><span class="o">.</span><span class="n">latest</span><span class="p">])</span></div>
-
+        <span class="bp">self</span><span class="o">.</span><span class="n">latest</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">latest</span><span class="p">,</span> <span class="n">cluster</span><span class="o">.</span><span class="n">latest</span><span class="p">])</span>
+</div>
 <div class="viewcode-block" id="TweetCluster.in_cluster"><a class="viewcode-back" href="../../../eventdetection.html#twied.eventec.clustermanager.TweetCluster.in_cluster">[docs]</a>    <span class="k">def</span> <span class="nf">in_cluster</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tweet</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Checks if a tweet was posted within the radius of the cluster. Will</span>
@@ -299,11 +299,11 @@
 <span class="sd">        :rtype: bool</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">centres</span><span class="p">:</span>
-            <span class="c1"># Check if tweet was posted within the maximum distance.</span>
-            <span class="k">if</span> <span class="n">vincenty</span><span class="p">(</span><span class="n">tweet</span><span class="p">[</span><span class="s1">&#39;_coord&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">rev</span><span class="p">(),</span> <span class="n">c</span><span class="o">.</span><span class="n">rev</span><span class="p">())</span><span class="o">.</span><span class="n">km</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">clsman</span><span class="o">.</span><span class="n">radius</span><span class="p">:</span>
+            <span class="c"># Check if tweet was posted within the maximum distance.</span>
+            <span class="k">if</span> <span class="n">vincenty</span><span class="p">(</span><span class="n">tweet</span><span class="p">[</span><span class="s">&#39;_coord&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">rev</span><span class="p">(),</span> <span class="n">c</span><span class="o">.</span><span class="n">rev</span><span class="p">())</span><span class="o">.</span><span class="n">km</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">clsman</span><span class="o">.</span><span class="n">radius</span><span class="p">:</span>
                 <span class="k">return</span> <span class="bp">True</span>
-        <span class="k">return</span> <span class="bp">False</span></div>
-
+        <span class="k">return</span> <span class="bp">False</span>
+</div>
 <div class="viewcode-block" id="TweetCluster.add_tweet"><a class="viewcode-back" href="../../../eventdetection.html#twied.eventec.clustermanager.TweetCluster.add_tweet">[docs]</a>    <span class="k">def</span> <span class="nf">add_tweet</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tweet</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add a tweet to the cluster. Will also update the value for the latest</span>
@@ -318,8 +318,8 @@
 <span class="sd">            radius.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_tweets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tweet</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">latest</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">latest</span><span class="p">,</span> <span class="n">tweet</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">clsman</span><span class="o">.</span><span class="n">tsfield</span><span class="p">]])</span></div>
-
+        <span class="bp">self</span><span class="o">.</span><span class="n">latest</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">latest</span><span class="p">,</span> <span class="n">tweet</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">clsman</span><span class="o">.</span><span class="n">tsfield</span><span class="p">]])</span>
+</div>
 <div class="viewcode-block" id="TweetCluster.get_points"><a class="viewcode-back" href="../../../eventdetection.html#twied.eventec.clustermanager.TweetCluster.get_points">[docs]</a>    <span class="k">def</span> <span class="nf">get_points</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Gets a list of the coordinates of all the tweets in the cluster.</span>
@@ -328,8 +328,8 @@
 <span class="sd">            of the tweets.</span>
 <span class="sd">        :rtype: list, :class:`Coordinate`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="s1">&#39;_coord&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tweets</span><span class="p">]</span></div>
-
+        <span class="k">return</span> <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="s">&#39;_coord&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tweets</span><span class="p">]</span>
+</div>
 <div class="viewcode-block" id="TweetCluster.as_dict"><a class="viewcode-back" href="../../../eventdetection.html#twied.eventec.clustermanager.TweetCluster.as_dict">[docs]</a>    <span class="k">def</span> <span class="nf">as_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the information from the tweet cluster in a dicationary format.</span>
@@ -346,16 +346,16 @@
 <span class="sd">        :return: Cluster dictionary.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">{</span>
-            <span class="s1">&#39;tweets&#39;</span><span class="p">:</span> <span class="p">[{</span>
-                    <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="n">t</span><span class="p">[</span><span class="s1">&#39;tweetid&#39;</span><span class="p">],</span>
-                    <span class="s1">&#39;time&#39;</span><span class="p">:</span> <span class="n">t</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">clsman</span><span class="o">.</span><span class="n">tsfield</span><span class="p">],</span>
-                    <span class="s1">&#39;coordinate&#39;</span><span class="p">:</span> <span class="n">t</span><span class="p">[</span><span class="s1">&#39;_coord&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+            <span class="s">&#39;tweets&#39;</span><span class="p">:</span> <span class="p">[{</span>
+                    <span class="s">&#39;id&#39;</span><span class="p">:</span> <span class="n">t</span><span class="p">[</span><span class="s">&#39;tweetid&#39;</span><span class="p">],</span>
+                    <span class="s">&#39;time&#39;</span><span class="p">:</span> <span class="n">t</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">clsman</span><span class="o">.</span><span class="n">tsfield</span><span class="p">],</span>
+                    <span class="s">&#39;coordinate&#39;</span><span class="p">:</span> <span class="n">t</span><span class="p">[</span><span class="s">&#39;_coord&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
                 <span class="p">}</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tweets</span>
             <span class="p">],</span>
-            <span class="s1">&#39;centres&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">get</span><span class="p">()</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">centres</span><span class="p">],</span>
-            <span class="s1">&#39;times&#39;</span><span class="p">:</span> <span class="p">{</span>
-                <span class="s1">&#39;start&#39;</span><span class="p">:</span> <span class="nb">min</span><span class="p">([</span><span class="n">t</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">clsman</span><span class="o">.</span><span class="n">tsfield</span><span class="p">]</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tweets</span><span class="p">]),</span>
-                <span class="s1">&#39;finish&#39;</span><span class="p">:</span> <span class="nb">max</span><span class="p">([</span><span class="n">t</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">clsman</span><span class="o">.</span><span class="n">tsfield</span><span class="p">]</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tweets</span><span class="p">])</span>
+            <span class="s">&#39;centres&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">get</span><span class="p">()</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">centres</span><span class="p">],</span>
+            <span class="s">&#39;times&#39;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s">&#39;start&#39;</span><span class="p">:</span> <span class="nb">min</span><span class="p">([</span><span class="n">t</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">clsman</span><span class="o">.</span><span class="n">tsfield</span><span class="p">]</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tweets</span><span class="p">]),</span>
+                <span class="s">&#39;finish&#39;</span><span class="p">:</span> <span class="nb">max</span><span class="p">([</span><span class="n">t</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">clsman</span><span class="o">.</span><span class="n">tsfield</span><span class="p">]</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tweets</span><span class="p">])</span>
             <span class="p">}</span>
         <span class="p">}</span></div></div>
 </pre></div>
@@ -368,11 +368,14 @@
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="../../../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -394,7 +397,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016, Humphrey Shotton.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.2.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
     </div>
   </body>
 </html>

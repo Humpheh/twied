@@ -48,7 +48,7 @@
           <div class="body" role="main">
             
   <h1>Source code for twied.eventec.popcount</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">math</span>
 
 
@@ -66,7 +66,7 @@
 <span class="sd">        for the UK, there is no function for the rest of the world.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s1">&#39;glds15ag.asc&#39;</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s">&#39;glds15ag.asc&#39;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create a new PopMap instance.</span>
 
@@ -75,17 +75,17 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">genfromtxt</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">max_rows</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">usecols</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 
-        <span class="c1"># Load the settings and save them in a dictionary.</span>
+        <span class="c"># Load the settings and save them in a dictionary.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">settings</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s1">&#39;ncols&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
-            <span class="s1">&#39;nrows&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
-            <span class="s1">&#39;xllcorner&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span>
-            <span class="s1">&#39;yllcorner&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="mi">3</span><span class="p">]),</span>
-            <span class="s1">&#39;cellsize&#39;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="mi">4</span><span class="p">]),</span>
-            <span class="s1">&#39;NODATA_value&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="mi">5</span><span class="p">])</span>
+            <span class="s">&#39;ncols&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
+            <span class="s">&#39;nrows&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
+            <span class="s">&#39;xllcorner&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span>
+            <span class="s">&#39;yllcorner&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="mi">3</span><span class="p">]),</span>
+            <span class="s">&#39;cellsize&#39;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="mi">4</span><span class="p">]),</span>
+            <span class="s">&#39;NODATA_value&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="mi">5</span><span class="p">])</span>
         <span class="p">}</span>
 
-        <span class="c1"># Load the population data</span>
+        <span class="c"># Load the population data</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">skiprows</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
 
 <div class="viewcode-block" id="PopMap.get_cell"><a class="viewcode-back" href="../../../eventdetection.html#twied.eventec.popcount.PopMap.get_cell">[docs]</a>    <span class="k">def</span> <span class="nf">get_cell</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lon</span><span class="p">,</span> <span class="n">lat</span><span class="p">):</span>
@@ -102,11 +102,11 @@
 
 <span class="sd">        .. seealso:: :func:`get_ll` performs the reverse of this method.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">clat</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">lat</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;xllcorner&#39;</span><span class="p">])</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;cellsize&#39;</span><span class="p">]</span>
-        <span class="n">clon</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">lon</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;yllcorner&#39;</span><span class="p">])</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;cellsize&#39;</span><span class="p">]</span>
+        <span class="n">clat</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">lat</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s">&#39;xllcorner&#39;</span><span class="p">])</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s">&#39;cellsize&#39;</span><span class="p">]</span>
+        <span class="n">clon</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">lon</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s">&#39;yllcorner&#39;</span><span class="p">])</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s">&#39;cellsize&#39;</span><span class="p">]</span>
 
-        <span class="k">return</span> <span class="nb">round</span><span class="p">(</span><span class="n">clat</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;nrows&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="nb">round</span><span class="p">(</span><span class="n">clon</span><span class="p">)</span></div>
-
+        <span class="k">return</span> <span class="nb">round</span><span class="p">(</span><span class="n">clat</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s">&#39;nrows&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="nb">round</span><span class="p">(</span><span class="n">clon</span><span class="p">)</span>
+</div>
 <div class="viewcode-block" id="PopMap.get_population"><a class="viewcode-back" href="../../../eventdetection.html#twied.eventec.popcount.PopMap.get_population">[docs]</a>    <span class="k">def</span> <span class="nf">get_population</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lon</span><span class="p">,</span> <span class="n">lat</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Gets the population at a lon, lat coordinate.</span>
@@ -119,8 +119,8 @@
 <span class="sd">        :type: float</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">cellat</span><span class="p">,</span> <span class="n">cellon</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_cell</span><span class="p">(</span><span class="n">lon</span><span class="p">,</span> <span class="n">lat</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">cellon</span><span class="p">,</span> <span class="n">cellat</span><span class="p">]</span></div>
-
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">cellon</span><span class="p">,</span> <span class="n">cellat</span><span class="p">]</span>
+</div>
 <div class="viewcode-block" id="PopMap.get_ll"><a class="viewcode-back" href="../../../eventdetection.html#twied.eventec.popcount.PopMap.get_ll">[docs]</a>    <span class="k">def</span> <span class="nf">get_ll</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">clat</span><span class="p">,</span> <span class="n">clon</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Translates a cell_lat, cell_lon coordinate back into global</span>
@@ -136,11 +136,11 @@
 
 <span class="sd">        .. seealso:: :func:`get_cell` performs the reverse of this method.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">lat</span> <span class="o">=</span> <span class="p">(</span><span class="n">clat</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;cellsize&#39;</span><span class="p">])</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;xllcorner&#39;</span><span class="p">]</span>
-        <span class="n">lon</span> <span class="o">=</span> <span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;nrows&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">clon</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;cellsize&#39;</span><span class="p">])</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;yllcorner&#39;</span><span class="p">]</span>
+        <span class="n">lat</span> <span class="o">=</span> <span class="p">(</span><span class="n">clat</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s">&#39;cellsize&#39;</span><span class="p">])</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s">&#39;xllcorner&#39;</span><span class="p">]</span>
+        <span class="n">lon</span> <span class="o">=</span> <span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s">&#39;nrows&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">clon</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s">&#39;cellsize&#39;</span><span class="p">])</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s">&#39;yllcorner&#39;</span><span class="p">]</span>
 
-        <span class="k">return</span> <span class="n">lat</span><span class="p">,</span> <span class="n">lon</span></div>
-
+        <span class="k">return</span> <span class="n">lat</span><span class="p">,</span> <span class="n">lon</span>
+</div>
 <div class="viewcode-block" id="PopMap.get_reqfunc_uk"><a class="viewcode-back" href="../../../eventdetection.html#twied.eventec.popcount.PopMap.get_reqfunc_uk">[docs]</a>    <span class="k">def</span> <span class="nf">get_reqfunc_uk</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mediancount</span><span class="p">,</span> <span class="n">mincount</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calculates and returns a function for finding the required number</span>
@@ -161,7 +161,7 @@
 <span class="sd">            required number of tweets.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">ukdata</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">600</span><span class="p">:</span><span class="mi">850</span><span class="p">,</span> <span class="mi">4025</span><span class="p">:</span><span class="mi">4400</span><span class="p">]</span>
-        <span class="n">ukvals</span> <span class="o">=</span> <span class="n">ukdata</span><span class="p">[</span><span class="n">ukdata</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;NODATA_value&#39;</span><span class="p">]]</span>
+        <span class="n">ukvals</span> <span class="o">=</span> <span class="n">ukdata</span><span class="p">[</span><span class="n">ukdata</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s">&#39;NODATA_value&#39;</span><span class="p">]]</span>
 
         <span class="n">x1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">ukvals</span><span class="p">)</span>
         <span class="n">x2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">ukvals</span><span class="p">)</span>
@@ -183,11 +183,14 @@
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="../../../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -209,7 +212,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016, Humphrey Shotton.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.2.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
     </div>
   </body>
 </html>
