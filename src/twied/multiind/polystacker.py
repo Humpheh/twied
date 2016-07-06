@@ -1,7 +1,10 @@
 import logging
 
 import numpy as np
-import matplotlib.pyplot as plt
+try:
+    import matplotlib.pyplot as plt
+except ImportError:
+    logging.warning("matplotlib is not installed, cannot demo polystacker.")
 
 from Polygon import Polygon
 from PIL import Image, ImageDraw
@@ -170,7 +173,7 @@ def infer_location(polys, demo=False):
     mask2, scale2, offset2 = plot_area(polys, focus_scale, c_min, c_max)
 
     if demo:
-        # show diagrampy
+        # show diagram
         plt.imshow(mask, interpolation='none')
         plt.colorbar(orientation='vertical')
         plt.show()

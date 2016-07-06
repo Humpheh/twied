@@ -27,6 +27,22 @@ be cloned using:
 
     git clone https://github.com/Humpheh/twied.git
 
+**Required Modules:**
+
+This package requires a number of external modules to function:
+
+- pymongo
+- twython
+- numpy
+- urllib3
+- Pillow
+- Polygon3
+
+Two other optional modules may be required to run the scripts or to use the demo on the `polystacker.py` file:
+
+- matplotlib
+- basemap
+
 **Example Scripts:**
 
 Example usage scripts can be seen in the *GitHub* repository under the directory `/scripts/examples`.
